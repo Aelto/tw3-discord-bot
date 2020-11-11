@@ -366,6 +366,8 @@ commands['modrequests'] = {
       
       if (is_accepted) {
         registered_mods.set(args[0], pending_request);
+        saveModDatabase();
+
 
         return consume(
           client,
