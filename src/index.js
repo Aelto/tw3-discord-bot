@@ -281,7 +281,7 @@ commands['modregister'] = {
 
     const [name, link, ...description] = args;
 
-    mod_requests.set(args[0], new Mod(name, link, description));
+    mod_requests.set(args[0], new Mod(name, link, description.join(' ')));
     saveModDatabase();
 
     consume(
