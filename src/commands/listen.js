@@ -156,7 +156,7 @@ exports.addListenCommands = function addListenCommand(commands) {
 exports.listenForMessage = function listenForMessage(message) {
   for (const listener of registered_listeners) {
     const should_answer = listener.matches
-      .filter(m => m.every(word => message.content.includes(word)));
+      .some(m => m.every(word => message.content.includes(word)));
 
     if (should_answer) {
       message.channel.send(
