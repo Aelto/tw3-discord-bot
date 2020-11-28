@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const fs = require('fs');
-const { listenForMessage } = require('./commands/listen.js');
+const { listenForMessage, addListenCommands } = require('./commands/listen.js');
 const { ADMIN_ROLE_ID, WARNED_ROLE_1_ID, WARNED_ROLE_2_ID, MAIN_CHANNEL_ID, COMMANDS_PREFIX } = require('./constants.js');
 const key = require('./key');
 
@@ -494,6 +494,8 @@ commands['modremove'] = {
     );
   }
 }
+
+addListenCommands(commands);
 
 client.on('ready', () => console.log('The Caretaker is ready'));
 
