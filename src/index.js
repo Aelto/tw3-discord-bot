@@ -2,11 +2,12 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const { listenForMessage } = require('./commands/listen.js');
 const { ADMIN_ROLE_ID, WARNED_ROLE_1_ID, WARNED_ROLE_2_ID, MAIN_CHANNEL_ID, COMMANDS_PREFIX } = require('./constants.js');
+const key = require('./key');
 
 const consume = require('./core/consume-command.js');
 
 const client = new Discord.Client();
-client.login('');
+client.login(key);
 
 /**
  * if set to a value, the next message received from `author`
