@@ -1,13 +1,9 @@
 const Discord = require('discord.js');
 const fs = require('fs');
+const { listenForMessage } = require('./commands/listen.js');
+const { ADMIN_ROLE_ID, WARNED_ROLE_1_ID, WARNED_ROLE_2_ID, MAIN_CHANNEL_ID, COMMANDS_PREFIX } = require('./constants.js');
 
 const consume = require('./core/consume-command.js');
-
-const COMMANDS_PREFIX = '$';
-const MAIN_CHANNEL_ID = '728022549283340351';
-const ADMIN_ROLE_ID = "746855968889110549";
-const WARNED_ROLE_1_ID = '774254557043097651';
-const WARNED_ROLE_2_ID = '728733165509673010';
 
 const client = new Discord.Client();
 client.login('');
@@ -532,6 +528,11 @@ client.on('message', message => {
       'red'
     );
   }
+
+  /**
+   * listen if the bot can answer with a listener
+   */
+  listenForMessage(message);
 });
 
 
