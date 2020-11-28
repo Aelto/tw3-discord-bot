@@ -130,7 +130,7 @@ exports.addListenCommands = function addListenCommand(commands) {
         );
       }
 
-      const [id] = args;
+      const id = Number(args[0]);
 
       if (!id) {
         return consume(
@@ -145,6 +145,14 @@ exports.addListenCommands = function addListenCommand(commands) {
       getListenersDatabase();
       registered_listeners = registered_listeners.filter((l, i) => i !== id);
       saveListenersDatabase();
+
+      return consume(
+        client,
+        message,
+        "Listener removed",
+        `Listener with previous id \`${id}\` was removed`,
+        'red'
+      );
     }
   }
 }
