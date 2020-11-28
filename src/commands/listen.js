@@ -68,7 +68,7 @@ exports.addListenCommands = function addListenCommand(commands) {
       const matches = matches_string
         .trim()
         .split(',')
-        .map(match => match.split(' '));
+        .map(match => match.trim().split(' '));
 
       getListenersDatabase();
 
