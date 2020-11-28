@@ -21,10 +21,9 @@ class Listener {
 let registered_listeners = new Array();
 
 function saveListenersDatabase() {
-  const listeners = Array.from(registered_listeners.entries());
 
   const content = {
-    listeners
+    listeners: registered_listeners
   };
 
   fs.writeFileSync('listeners-database.json', JSON.stringify(content, null, '  '), { encoding: 'utf-8' });
