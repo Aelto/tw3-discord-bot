@@ -106,7 +106,7 @@ exports.addListenCommands = function addListenCommand(commands) {
       }
 
       registered_listeners.forEach((listener, index) => {
-        message.channel.send(`**#${index}** - ${listener.matches.join(` , `)} ; ${listener.answer}`);
+        message.channel.send(`**#${index}** - ${listener.matches.map(m => m.join(' ')).join(` , `)} ; ${listener.answer}`);
       });
     }
   }
@@ -151,7 +151,7 @@ exports.addListenCommands = function addListenCommand(commands) {
         message,
         "Listener removed",
         `Listener with previous id \`${id}\` was removed`,
-        'red'
+        'green'
       );
     }
   }
