@@ -68,7 +68,7 @@ exports.addListenCommands = function addListenCommand(commands) {
       const matches = matches_string
         .trim()
         .split(',')
-        .map(match => match.trim().split(' '));
+        .map(match => match.trim().split(' ').map(word => word.toLowerCase()));
 
       getListenersDatabase();
 
@@ -162,9 +162,11 @@ exports.addListenCommands = function addListenCommand(commands) {
  * @param {Discord.Message} message 
  */
 exports.listenForMessage = function listenForMessage(message) {
+  const content = message.content.toLowerCase();
+
   for (const listener of registered_listeners) {
     const should_answer = listener.matches
-      .some(m => m.every(word => message.content.includes(word)));
+      .some(m => m.every(word => content.includes(word)));
 
     if (should_answer) {
       message.channel.send(
