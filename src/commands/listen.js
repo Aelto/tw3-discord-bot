@@ -130,9 +130,7 @@ exports.addListenCommands = function addListenCommand(commands) {
         );
       }
 
-      const id = Number(args[0]);
-
-      if (!id) {
+      if (!args.length) {
         return consume(
           client,
           message,
@@ -141,6 +139,8 @@ exports.addListenCommands = function addListenCommand(commands) {
           'red'
         );
       }
+
+      const id = Number(args[0]);
 
       getListenersDatabase();
       registered_listeners = registered_listeners.filter((l, i) => i !== id);
