@@ -520,7 +520,18 @@ client.on('message', message => {
     const [command, ...argv] = args;
 
     if (command in commands) {
-      return commands[command].command(client, message, argv);
+      try {
+        return commands[command].command(client, message, argv);
+      }
+      catch (err) {
+        return consume(
+          client,
+          message,
+          'Error',
+          `error when running command \`${command}\`: ${err}`,
+          'red'
+        );    
+      }
     }
     
     return consume(
@@ -535,7 +546,9 @@ client.on('message', message => {
   /**
    * listen if the bot can answer with a listener
    */
-  listenForMessage(message);
+  if (!message.author.username.includes('Caretaker')) {
+    listenForMessage(message);
+  }
 });
 
 
