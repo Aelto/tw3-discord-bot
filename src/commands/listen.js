@@ -67,6 +67,7 @@ exports.addListenCommands = function addListenCommand(commands) {
 
       const [matches_string, ...answer] = args.join(' ').split(';');
       const matches = matches_string
+        .trim()
         .split(',')
         .map(match => match.split(' '));
 
