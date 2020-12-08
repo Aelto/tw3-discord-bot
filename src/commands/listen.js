@@ -86,6 +86,103 @@ exports.addListenCommands = function addListenCommand(commands) {
     }
   }
 
+  commands['listener-add-pattern'] = {
+    name: 'listener-add-pattern',
+    help: '`$listener-add-match <listener-id> <pattern>`',
+    command: (client, message, args) => {
+      const author_member = message.guild.members.cache.get(message.author.id);
+      const has_admin_role = author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
+      if (!has_admin_role) {
+        return consume(
+          client,
+          message,
+          "Missing permissions",
+          "You don't have the sufficient role to add a pattern to a listener",
+          'red'
+        );
+      }
+
+      const [id, ...pattern_words] = args;
+
+      getListenersDatabase();
+
+      const listener = registered_listeners[id];
+
+      if (!listener) {
+        return consume (
+          client,
+          message,
+          "No such listener",
+          `Could not find a listener with the id = ${id}`,
+          'red'
+        );
+      }
+
+      listener.matches.push(pattern_words);
+
+      saveListenersDatabase();
+
+      return consume(
+        client,
+        message,
+        "Pattern added",
+        `Pattern \`${pattern_words.join(' ')}\` added to listener #${id}`
+      );
+    }
+  }
+
+  commands['listener-remove-pattern'] = {
+    name: 'listener-remove-pattern',
+    help: '`$listener-remove-match <listener-id> <pattern>`',
+    command: (client, message, args) => {
+      const author_member = message.guild.members.cache.get(message.author.id);
+      const has_admin_role = author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
+      if (!has_admin_role) {
+        return consume(
+          client,
+          message,
+          "Missing permissions",
+          "You don't have the sufficient role to remove a pattern from a listener",
+          'red'
+        );
+      }
+
+      const [id, ...pattern_words] = args;
+      /**
+       * @type {string[]}
+       */
+      const pattern_to_remove = pattern_words.filter(c => !c.length);
+
+      getListenersDatabase();
+
+      const listener = registered_listeners[id];
+
+      if (!listener) {
+        return consume (
+          client,
+          message,
+          "No such listener",
+          `Could not find a listener with the id = ${id}`,
+          'red'
+        );
+      }
+
+      listener.matches = listener.matches
+        .filter(pattern => pattern.length === pattern_to_remove.length && pattern_to_remove
+          .reduce((acc, cur, i) => pattern[i] === cur && acc, false)
+        );
+
+      saveListenersDatabase();
+
+      return consume(
+        client,
+        message,
+        "Pattern removed",
+        `Pattern \`${pattern_words.join(' ')}\` added to listener #${id}`
+      );
+    }
+  }
+
   commands['get-listeners'] = {
     name: 'get-listeners',
     help: '`$get-listeners` show all the listeners and their ID',
