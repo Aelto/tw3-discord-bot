@@ -259,11 +259,11 @@ exports.addListenCommands = function addListenCommand(commands) {
  * @param {Discord.Message} message 
  */
 exports.listenForMessage = function listenForMessage(message) {
-  const content = message.content.toLowerCase();
+  const content = ' ' + message.content.toLowerCase() + ' ';
 
   for (const listener of registered_listeners) {
     const should_answer = listener.matches
-      .some(m => m.every(word => content.includes(word)));
+      .some(m => m.every(word => content.includes(word.replace(/\$/g, ' '))));
 
     if (should_answer) {
       message.channel.send(
