@@ -215,6 +215,133 @@ commands['report'] = {
   }
 }
 
+commands['cleanse'] = {
+  name: 'cleanse',
+  help: '`$cleanse @user` to cleanse a user of the **last** warned role he got from the `report` command. ',
+  command: async (client, message, args) => {
+    const delay = 60;
+
+    const author_member = message.guild.members.cache.get(message.author.id);
+    const has_admin_role = author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
+    if (!has_admin_role) {
+      return consume(
+        client,
+        message,
+        "Missing permissions",
+        "You don't have the sufficient role to cleanse someone",
+        'red'
+      );
+    }
+
+    let cleansed_user = null;
+    if (!args[0]) {
+      const who_answer = await prompt(
+        message,
+        `Looks like you forgot who to cleanse, who do you want to cleanse. @ him please.`,
+        delay
+      );
+
+      cleansed_user = getUserFromMention(who_answer.content);
+    }
+    else {
+      cleansed_user = getUserFromMention(args[0]);
+    }
+
+    
+
+    const cleansed_member = message.guild.members.cache.get(cleansed_user.id);
+
+    let cleanse_confirmed = false;
+    let level = 0;
+    try {
+      let confirm;
+
+      if (cleansed_member.roles.cache.has(WARNED_ROLE_1_ID)) {
+        confirm = await prompt(
+          message,
+          `Do you confirm you want to cleanse ${cleansed_user.username}, he is currently at his 1st offense and will be cleansed of all negative roles`,
+          delay
+        );
+
+        level = 1;
+      }
+      else if (cleansed_member.roles.cache.has(WARNED_ROLE_2_ID)) {
+        confirm = await prompt(
+          message,
+          `Do you confirm you want to cleanse ${cleansed_user.username}, he is currently at his 2nd offense and will be downgraded to the 1st offense`,
+          delay
+        );
+
+        level = 2;
+      }
+
+      cleanse_confirmed = confirm.content.toLowerCase().includes("yes");
+    } catch (err) {
+
+    }
+
+    if (cleanse_confirmed) {
+      message.channel.send([
+        `${cleansed_user} was cleansed`
+      ])
+      .then(() => {
+
+        if (level === 1) {
+          cleansed_member.roles.remove(WARNED_ROLE_1_ID);
+          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send('', {
+            embed: {
+              author: {
+                name: client.user.username,
+                icon_url: client.user.avatarURL
+              },
+              title: "Cleansed user",
+              description: String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now free of all the negative roles`),
+              color: 15158332,
+              timestamp: new Date(),
+              footer: {
+                icon_url: cleansed_user.avatarURL,
+                text: cleansed_user.username
+              }
+            }
+          });
+        }
+        else if (level === 2) {
+          cleansed_member.roles.add(WARNED_ROLE_1_ID);
+          cleansed_member.roles.remove(WARNED_ROLE_2_ID);
+
+          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send('', {
+            embed: {
+              author: {
+                name: client.user.username,
+                icon_url: client.user.avatarURL
+              },
+              title: "Cleansed user",
+              description: String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now back to the **warned** role.`),
+              color: 15158332,
+              timestamp: new Date(),
+              footer: {
+                icon_url: cleansed_user.avatarURL,
+                text: cleansed_user.username
+              }
+            }
+          });
+        }
+
+      })
+      .then(() => {
+        remove_waiting_answer();
+      });
+    }
+    else {
+      message.channel.send([
+        `Cleanse towards ${cleansed_user} were cancelled`
+      ])
+      .then(() => {
+        remove_waiting_answer();
+      })
+    }
+  }
+}
 
 class Mod {
   constructor(name, link, description) {
