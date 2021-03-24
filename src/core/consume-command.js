@@ -1,7 +1,11 @@
 const Discord = require('discord.js')
 
-module.exports = function consumeCommand(client, message, title, output, color = 'default') {
-  message.delete()
+module.exports = function consumeCommand(client, message, title, output, color = 'default', keep_original_message = false) {
+  const deleted_promise = keep_original_message
+    ? Promise.resolve()
+    : message.delete();
+
+  deleted_promise
   .then(msg => {
 
     let embedColor = 0

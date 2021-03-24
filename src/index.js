@@ -19,7 +19,7 @@ let waiting_answer_from = {
   waiting_promise_resolver: null
 };
 
-function prompt(message, question, delay = 60) {
+function prompt(message, question, delay = 60, keep_original_message = false) {
   return new Promise((resolve, reject) => {
     waiting_answer_from.channel = message.channel;
     waiting_answer_from.author = message.author;
@@ -35,7 +35,8 @@ function prompt(message, question, delay = 60) {
       message,
       `Please answer in less than ${delay}s`,
       question,
-      'blue'
+      'blue',
+      keep_original_message
     );
 
     setTimeout(() => {
@@ -91,7 +92,7 @@ commands['help'] = {
 
 commands['report'] = {
   name: 'report',
-  help: '`$report @user [message-id]` to report a user and optionally link to the offensive message',
+  help: '`$report @user [reason]` to report a user and optionally give the reason for the report',
   command: async (client, message, args) => {
     const delay = 60;
 
@@ -108,17 +109,19 @@ commands['report'] = {
     }
 
     let reported_user = null;
-    if (!args[0]) {
+    const [at_ping, ...reason_words]
+    if (!at_ping) {
       const who_answer = await prompt(
         message,
         `Looks like you forgot who to report, who do you want to report. @ him please.`,
-        delay
+        delay,
+        true
       );
 
       reported_user = getUserFromMention(who_answer.content);
     }
     else {
-      reported_user = getUserFromMention(args[0]);
+      reported_user = getUserFromMention(at_ping);
     }
 
     
@@ -164,6 +167,8 @@ commands['report'] = {
     }
 
     if (report_confirmed) {
+      const reason = reason_words.join(' ').trim() || '_No reason given_';
+
       message.channel.send([
         `Great.`,
         `I didn't like ${reported_user} anyway`
@@ -179,7 +184,7 @@ commands['report'] = {
                 icon_url: client.user.avatarURL
               },
               title: "Reported user",
-              description: String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **warned**. The third report results in an automatic kick from the server`),
+              description: String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **warned**. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`),
               color: 15158332,
               timestamp: new Date(),
               footer: {
@@ -192,9 +197,43 @@ commands['report'] = {
         else if (level === 2) {
           reported_member.roles.remove(WARNED_ROLE_1_ID);
           reported_member.roles.add(WARNED_ROLE_2_ID);
+
+          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send('', {
+            embed: {
+              author: {
+                name: client.user.username,
+                icon_url: client.user.avatarURL
+              },
+              title: "Reported user",
+              description: String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **flagged**, the 2nd strike. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`),
+              color: 15158332,
+              timestamp: new Date(),
+              footer: {
+                icon_url: reported_user.avatarURL,
+                text: reported_user.username
+              }
+            }
+          });
         }
         else {
-          reported_member.kick("You were kicked from the server due to repeated offenses");
+          reported_member.kick(`You were kicked from the server due to repeated offenses. Reason for the last report: ${reason}`);
+
+          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send('', {
+            embed: {
+              author: {
+                name: client.user.username,
+                icon_url: client.user.avatarURL
+              },
+              title: "Reported user",
+              description: String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **kicked**.\n\n**__The reason for the report is:__**\n${reason}`),
+              color: 15158332,
+              timestamp: new Date(),
+              footer: {
+                icon_url: reported_user.avatarURL,
+                text: reported_user.username
+              }
+            }
+          });
         }
 
       })
@@ -238,7 +277,8 @@ commands['cleanse'] = {
       const who_answer = await prompt(
         message,
         `Looks like you forgot who to cleanse, who do you want to cleanse. @ him please.`,
-        delay
+        delay,
+        true
       );
 
       cleansed_user = getUserFromMention(who_answer.content);
