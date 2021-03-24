@@ -336,7 +336,7 @@ commands['cleanse'] = {
               },
               title: "Cleansed user",
               description: String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now free of all the negative roles`),
-              color: 15158332,
+              color: 3066993,
               timestamp: new Date(),
               footer: {
                 icon_url: cleansed_user.avatarURL,
@@ -357,7 +357,7 @@ commands['cleanse'] = {
               },
               title: "Cleansed user",
               description: String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now back to the **warned** role.`),
-              color: 15158332,
+              color: 3066993,
               timestamp: new Date(),
               footer: {
                 icon_url: cleansed_user.avatarURL,
