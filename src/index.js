@@ -109,7 +109,7 @@ commands['report'] = {
     }
 
     let reported_user = null;
-    const [at_ping, ...reason_words] = arg;
+    const [at_ping, ...reason_words] = args;
     if (!at_ping) {
       const who_answer = await prompt(
         message,
