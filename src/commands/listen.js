@@ -276,7 +276,7 @@ exports.listenForMessage = function listenForMessage(message) {
 
         message_before = m.first();
 
-        return m;
+        return message_before;
       });
     }
     
