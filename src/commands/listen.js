@@ -202,9 +202,15 @@ exports.addListenCommands = function addListenCommand(commands) {
         );
       }
 
-      registered_listeners.forEach((listener, index) => {
-        message.channel.send(`**#${index}** - ${listener.matches.map(m => m.join(' ')).join(` , `)} ; ${listener.answer}`);
-      });
+      // registered_listeners.forEach((listener, index) => {
+      //   message.channel.send(`**#${index}** - ${listener.matches.map(m => m.join(' ')).join(` , `)} ; ${listener.answer}`);
+      // });
+
+      message.channel.send(
+        registered_listeners
+        .map((listener, index) => `**#${index}** - ${listener.matches.map(m => m.join(' ')).join(` , `)} ; ${listener.answer}`)
+        .join('\n')
+      );
     }
   }
 
