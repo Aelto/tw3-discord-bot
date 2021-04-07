@@ -272,7 +272,9 @@ exports.listenForMessage = function listenForMessage(message) {
     if (message_before === null) {
       return message.channel.messages.fetch({ before: message.id, limit: 1 })
       .then(m => {
-        message_before = m;
+        console.log('found ' + m.size + " messages");
+
+        message_before = m.first();
 
         return m;
       });
