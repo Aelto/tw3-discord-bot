@@ -280,7 +280,6 @@ exports.listenForMessage = function listenForMessage(message) {
     
     return Promise.resolve(message_before);
   }
-  const message_before = message.channel.messages.fetch({ before: message, limit: 1 });
 
   for (const listener of registered_listeners) {
     const should_answer = listener.matches
