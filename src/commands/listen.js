@@ -286,7 +286,7 @@ exports.listenForMessage = function listenForMessage(message) {
     const should_answer = listener.matches
       .some(m => m.every(word => content.includes(word.replace(/\$/g, ' '))));
 
-    const should_message_answer_bot = listener.matches[0] = '^';
+    const should_message_answer_bot = listener.matches[0] === '^';
 
     if (should_answer) {
       if (should_message_answer_bot) {
