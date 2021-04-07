@@ -286,20 +286,21 @@ exports.listenForMessage = function listenForMessage(message) {
     const should_answer = listener.matches
       .some(m => m.every(word => content.includes(word.replace(/\$/g, ' '))));
 
-    const should_message_answer_bot = listener.matches[0] === '^';
 
     if (should_answer) {
+      const should_message_answer_bot = listener.matches[0] === '^';
+
       if (should_message_answer_bot) {
         getMessageBefore()
         .then(before => {
-          if (before.author.username === 'The Caretaker') {
+          if (before.author.username === 'The Caretaker' && listener.answer.length) {
             message.channel.send(
               listener.answer
             );
           }
         });
       }
-      else {
+      else if (listener.answer.length) {
         message.channel.send(
           listener.answer
         );
