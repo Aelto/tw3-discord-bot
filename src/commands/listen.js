@@ -283,11 +283,12 @@ exports.listenForMessage = function listenForMessage(message) {
 
   for (const listener of registered_listeners) {
     const should_answer = listener.matches
+      .filter(m => m[0] !== '^')
       .some(m => m.every(word => content.includes(word.replace(/\$/g, ' '))));
 
 
     if (should_answer) {
-      const should_message_answer_bot = listener.matches[0] === '^';
+      const should_message_answer_bot = listener.matches[0].join('') === '^';
 
       if (should_message_answer_bot) {
         getMessageBefore()
