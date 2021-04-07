@@ -270,7 +270,7 @@ exports.listenForMessage = function listenForMessage(message) {
   // demande way too many requests.
   const getMessageBefore = () => {
     if (message_before === null) {
-      return message.channel.messages.fetch({ before: message, limit: 1 })
+      return message.channel.messages.fetch({ before: message.id, limit: 1 })
       .then(m => {
         message_before = m;
 
