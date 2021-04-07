@@ -209,7 +209,10 @@ exports.addListenCommands = function addListenCommand(commands) {
       message.channel.send(
         registered_listeners
         .map((listener, index) => `**#${index}** - ${listener.matches.map(m => m.join(' ')).join(` , `)} ; ${listener.answer}`)
-        .join('\n')
+        .join('\n'),
+        {
+          split: true
+        }
       );
     }
   }
