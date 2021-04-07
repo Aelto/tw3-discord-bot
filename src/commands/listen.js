@@ -261,14 +261,49 @@ exports.addListenCommands = function addListenCommand(commands) {
 exports.listenForMessage = function listenForMessage(message) {
   const content = ' ' + message.content.toLowerCase() + ' ';
 
+  /**
+   * @type {Discord.Message}
+   */
+  let message_before = null;
+
+  // a way to cache the message because fetching is for every listener could
+  // demande way too many requests.
+  const getMessageBefore = () => {
+    if (message_before === null) {
+      return message.channel.messages.fetch({ before: message, limit: 1 })
+      .then(m => {
+        message_before = m;
+
+        return m;
+      });
+    }
+    
+    return Promise.resolve(message_before);
+  }
+  const message_before = message.channel.messages.fetch({ before: message, limit: 1 });
+
   for (const listener of registered_listeners) {
     const should_answer = listener.matches
       .some(m => m.every(word => content.includes(word.replace(/\$/g, ' '))));
 
+    const should_message_answer_bot = listener.matches[0] = '^';
+
     if (should_answer) {
-      message.channel.send(
-        listener.answer
-      );
+      if (should_message_answer_bot) {
+        getMessageBefore()
+        .then(before => {
+          if (before.author.username === 'The Caretaker') {
+            message.channel.send(
+              listener.answer
+            );
+          }
+        });
+      }
+      else {
+        message.channel.send(
+          listener.answer
+        );
+      }
     }
   }
 }
