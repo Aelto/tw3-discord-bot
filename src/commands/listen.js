@@ -306,7 +306,23 @@ exports.listenForMessage = function listenForMessage(message) {
         .then(before => {
           if (before.author.username === 'The Caretaker' && listener.answer.length) {
             message.channel.send(
-              listener.answer
+              listener.answer,
+              {
+                components: [
+                  {
+                      "type": 1,
+                      "components": [
+                          {
+                              "type": 2,
+                              "label": "Remove",
+                              "style": 1,
+                              "custom_id": "remove_listen"
+                          }
+                      ]
+          
+                  }
+                ]
+              }
             );
           }
         });
