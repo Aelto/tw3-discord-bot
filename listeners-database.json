@@ -1,0 +1,855 @@
+{
+  "listeners": [
+    {
+      "matches": [
+        [
+          "error",
+          "mods_registry.ws",
+          "unknown",
+          "base",
+          "class",
+          "cmodfactory"
+        ],
+        [
+          "unknown",
+          "base",
+          "class",
+          "centitymod"
+        ],
+        [
+          "unknown",
+          "base",
+          "class",
+          "cmodfactory"
+        ]
+      ],
+      "answer": [
+        " Looks like you have issues installing Bootstrap. The mod comes in two parts and it seems you only have installed the registry. Please read this: https://aelto.github.io/W3_RandomEncounters_Tweaks/indepth-guide/#part-1-1 for more information. Or check the video guides at this timestamp: https://youtu.be/DJeQM6Oro4Y?t=69"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "where",
+          "get",
+          "key"
+        ],
+        [
+          "where",
+          "are",
+          "key"
+        ],
+        [
+          "where",
+          "are",
+          "chest"
+        ],
+        [
+          "chest",
+          "location",
+          "where"
+        ],
+        [
+          "how",
+          "get",
+          "item",
+          "shades"
+        ],
+        [
+          "how",
+          "get",
+          "item",
+          "soi"
+        ],
+        [
+          "how",
+          "get",
+          "item",
+          "iron"
+        ],
+        [
+          "how",
+          "get",
+          "keys"
+        ],
+        [
+          "where",
+          "collect",
+          "gear"
+        ],
+        [
+          "where",
+          "command",
+          "list"
+        ],
+        [
+          "where",
+          "find",
+          "set"
+        ]
+      ],
+      "answer": [
+        " Are you looking for more information about Shades Of Iron and its chests/keys? The Shades Of Iron page already has an article with all the information you need (https://www.nexusmods.com/witcher3/articles/217). And here is what you need to know about the chests and the keys.\n\n__**Keys**__:  On a fresh playthrough you get a new quests that will give you all the keys automatically. But if you don't want to start a new playthrough you can always use the following console command `shades_keys`. The command will give you all the keys you need to open the chests\n\n__**chests**__: There are chests all around the world with Shades items in them. You will need keys to open them, refer to the keys section to learn more about them. If you want to know where the chests are, read the article linked above.\n\n__**getting the items**__:  As said earlier, you can find the items in the chests. But if you can't wait to find the chests or just want a specific item, refer to the linked article and its list of commands to give you the items."
+      ]
+    },
+    {
+      "matches": [
+        [
+          "enum",
+          "eareaname",
+          "already",
+          "defined"
+        ],
+        [
+          "enum",
+          "edlcareaname",
+          "already",
+          "defined"
+        ]
+      ],
+      "answer": [
+        " The errors you get mean you need the mod Community Patch - Base and haven't installed it yet/correctly.\n\n**__Download__**:\nYou can download the mod here (https://www.nexusmods.com/witcher3/mods/3652)\n\n__**Installing**__: \nYou can either read the in-depth written guide and its section on Community Patch - Base (https://aelto.github.io/W3_RandomEncounters_Tweaks/indepth-guide/#part-1-3) or watch the video guide at this timestamp (https://youtu.be/DJeQM6Oro4Y?t=130)"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "bootstrap",
+          "v0.4.1",
+          "or",
+          "unmodified",
+          "worldmap"
+        ]
+      ],
+      "answer": [
+        " Hi are you wondering if you should install the simple bootstrap version or the unmodified worldmap version? You will find all the information you need with this link: https://aelto.github.io/W3_RandomEncounters_Tweaks/indepth-guide/#part-1-1"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "shades",
+          "update"
+        ],
+        [
+          "soi",
+          "update"
+        ],
+        [
+          "shades",
+          "of",
+          "iron",
+          "update"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/2VH9.gif"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "shades",
+          "ghostmode",
+          "patch"
+        ],
+        [
+          "shades",
+          "gm",
+          "patch"
+        ],
+        [
+          "soi",
+          "gm",
+          "patch"
+        ],
+        [
+          "soi",
+          "ghost",
+          "mode",
+          "patch"
+        ],
+        [
+          "shades",
+          "of",
+          "iron",
+          "gm",
+          "patch"
+        ],
+        [
+          "shades",
+          "of",
+          "iron",
+          "ghostmode",
+          "patch"
+        ],
+        [
+          "soi",
+          "ee",
+          "patch"
+        ],
+        [
+          "soi",
+          "enhanced",
+          "edition",
+          "patch"
+        ],
+        [
+          "shades",
+          "ee",
+          "patch"
+        ],
+        [
+          "shades",
+          "enhanced",
+          "edition",
+          "patch"
+        ],
+        [
+          "shades",
+          "of",
+          "iron",
+          "ee",
+          "patch"
+        ],
+        [
+          "shades",
+          "of",
+          "iron",
+          "enhanced",
+          "edition",
+          "patch"
+        ],
+        [
+          "soi",
+          "lazarus",
+          "patch"
+        ],
+        [
+          "shades",
+          "lazarus",
+          "patch"
+        ],
+        [
+          "shades",
+          "of",
+          "iron",
+          "lazarus",
+          "patch"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/xX7r.gif"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "geralt",
+          "dies"
+        ],
+        [
+          "geralt",
+          "died"
+        ]
+      ],
+      "answer": [
+        " GIT GUD <:badcat:766266900069744681>"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "stamina",
+          "based",
+          "combat"
+        ],
+        [
+          "stamina",
+          "based"
+        ]
+      ],
+      "answer": [
+        " Oooooh😍 , what a stamina <:pepepog:728034119031848971>"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "shades",
+          "fps",
+          "drop"
+        ],
+        [
+          "soi",
+          "fps",
+          "drop"
+        ],
+        [
+          "armor",
+          "fps",
+          "drop"
+        ],
+        [
+          "fps",
+          "falling"
+        ],
+        [
+          "fps",
+          "tanked"
+        ],
+        [
+          "fps",
+          "plummeted"
+        ],
+        [
+          "fps",
+          "down",
+          "the",
+          "drain"
+        ],
+        [
+          "fps",
+          "down",
+          "the",
+          "shitter"
+        ],
+        [
+          "fps",
+          "tanking"
+        ],
+        [
+          "fps",
+          "unplayable"
+        ]
+      ],
+      "answer": [
+        "  Issue has been identified , will be fixed in a future update"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$bad$bot$"
+        ],
+        [
+          "$bad$bot?$"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/grumpy-mad-angry-cat-gif-14232626"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$aye"
+        ]
+      ],
+      "answer": [
+        " https://media.discordapp.net/attachments/461738616310464532/711203425639071838/MRW_Borderlands_3_is_released_as_an_Epic_Exclusive_-_Imgur.gif"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "rtfm"
+        ]
+      ],
+      "answer": [
+        " Read The Fucking Manual"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "what",
+          "is",
+          "the",
+          "manual"
+        ]
+      ],
+      "answer": [
+        " It's the instructions on the mod page you dumdum"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$how$to$merge$"
+        ]
+      ],
+      "answer": [
+        " https://aelto.github.io/tw3-notes/misc/modding/index.html"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$bot$is$"
+        ]
+      ],
+      "answer": [
+        " No, i'm not."
+      ]
+    },
+    {
+      "matches": [
+        [
+          "^"
+        ],
+        [
+          "how",
+          "you",
+          "doing?"
+        ]
+      ],
+      "answer": [
+        " Doing fine, enjoying life, digging a hole or two. And you?"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "^"
+        ],
+        [
+          "$dig$my$grave$"
+        ]
+      ],
+      "answer": [
+        " Oh man here i come!"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "gay"
+        ],
+        [
+          "nigger"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/nah-naw-nope-drinking-red-cup-gif-6190938"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "nigga"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/nah-naw-nope-drinking-red-cup-gif-6190938"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "vortex"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/dying-monkey-dying-gif-13123180"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "wolven",
+          "workshop"
+        ]
+      ],
+      "answer": [
+        " https://i.ibb.co/1QSWwps/STANDARDS.png"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$secret.$"
+        ]
+      ],
+      "answer": [
+        " https://i.ibb.co/F8pjSFk/secret.png"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$hi",
+          "<@!775853434733199402>"
+        ],
+        [
+          "$hey",
+          "<@&775872678941687848>"
+        ]
+      ],
+      "answer": [
+        " Hi"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$walter$"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/fat-guy-shooting-gun-gun-shot-gif-15114243"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "^"
+        ],
+        [
+          "$kill$me$"
+        ]
+      ],
+      "answer": [
+        "  Oh, sure, with pleasure! <:smug:728033901750124584>"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "^"
+        ],
+        [
+          "shut"
+        ],
+        [
+          "stop"
+        ]
+      ],
+      "answer": [
+        " Alright alright..."
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$radish.$"
+        ]
+      ],
+      "answer": [
+        " https://i.ibb.co/wKrC8CB/ohno.png"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$very",
+          "nice$"
+        ]
+      ],
+      "answer": [
+        " https://i.ibb.co/wBJqgLQ/ouu.gif"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$the",
+          "immersion$"
+        ]
+      ],
+      "answer": [
+        " https://i.ibb.co/0cBdVVQ/sddefault.jpg"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$nitro$"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/money-dont-touch-mine-slap-gif-6195540"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$young",
+          "turk$"
+        ]
+      ],
+      "answer": [
+        " <@&728023691656560680> <:sus:824006699844763659>"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$doing",
+          "redcloth$"
+        ],
+        [
+          "$making",
+          "redcloth$"
+        ],
+        [
+          "$redcloth",
+          "paint"
+        ],
+        [
+          "$painting",
+          "redcloth$"
+        ],
+        [
+          "$redcloth",
+          "stuff$"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/painting-bob-ross-gif-5675661"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$vodka$"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/leonardo-dicaprio-toast-cheers-champagne-gif-12045649"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$brb",
+          "cat"
+        ]
+      ],
+      "answer": [
+        " https://i.ibb.co/R0n95Yy/IMG-20201116-164111.jpg"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$brasil",
+          "numero",
+          "uno"
+        ]
+      ],
+      "answer": [
+        " https://cdn.discordapp.com/attachments/728022549283340351/768868622557773854/chrome_Oa7rqZBWej.png"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$who",
+          "added"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/idontknow-illtellyou-noidea-gif-5915997"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$who",
+          "adds"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/view/idontknow-illtellyou-noidea-gif-5915997"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$cdpr$logic$"
+        ]
+      ],
+      "answer": [
+        " <:megabrain:728034125042286603>"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$cdpr$logic$"
+        ]
+      ],
+      "answer": [
+        " posionsous_chance"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$gdrive$supremacy.$"
+        ]
+      ],
+      "answer": [
+        " GDrive is the Caesar of cloud storage. You can just haul 15 GIGS for FREE. <:duckchamp:827908996153081908> ! You basically have infinite space if you use more than one gmail! <:megabrain:728034125042286603> ! Its interface is absolutely brilliant",
+        " simple and gets shit done. 😤 . You can organize the living hell you just uploaded so easily too! It comes with history like youtube and whatever, it's just too good in terms of accessibility. <:unbelievable:738528177219174430>  You can share your stuff with ANYONE as long as you have the link set up! You can also secure your uploads easily! Amazing! You can upload almost ALL sorts of files. Except w2anims, that shit is something else. <:mad:728034124606079127> . There's SSL encryption, access management and above all - your stuff doesn't expire! <:pepepog:728034119031848971> !! Office products are so compatible - you can do almost everything on gdrive! <:hurrr:830440602704281670>. You can get them from ANYWHERE as long as you have the link & access. You can make back-ups, updates.. it goes on. AND you can STREAM THIS SHIT? <:noway:830210313097576509> !! Bro it's literally 2 dollas to upgrade to 100 gig storage. 💰 �  !! Seriously. It doesn't ask you anything either! Just get into your mail and get shit DONE. WHAT ARE YOU WAITING FOR? CONVERT TO G-DRIVISM AND LIVE LONG & PROSPER!!! <:pepepog:728034119031848971> !!! Subscriptions for afterlife access is coming soon! 🙏 😉 🙏"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$diffuseuv$"
+        ]
+      ],
+      "answer": [
+        " jato pls help"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$hey",
+          "admins",
+          "and",
+          "mods$"
+        ]
+      ],
+      "answer": [
+        " https://youtu.be/dQw4w9WgXcQ"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$eri$"
+        ]
+      ],
+      "answer": [
+        " i give up"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$right$<@!775853434733199402>"
+        ]
+      ],
+      "answer": [
+        " Yes"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "^"
+        ],
+        [
+          "kayjay"
+        ]
+      ],
+      "answer": [
+        " I hate that dumdum"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$hey",
+          "caretaker"
+        ],
+        [
+          "coke",
+          "or",
+          "pepsi?$"
+        ]
+      ],
+      "answer": [
+        " Eh, I don't get you, One you snort and the other you drink 😉"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$e3",
+          "downgrade"
+        ],
+        [
+          "$vgx",
+          "downgrade"
+        ],
+        [
+          "$e3",
+          "animations",
+          "downgrade$"
+        ],
+        [
+          "$vgx",
+          "animations"
+        ],
+        [
+          "$vgx",
+          "lighting",
+          "downgrade"
+        ],
+        [
+          "$e3",
+          "lighting",
+          "downgrade"
+        ],
+        [
+          "$e3",
+          "2013"
+        ],
+        [
+          "$e3",
+          "2014"
+        ]
+      ],
+      "answer": [
+        " https://i.ibb.co/gm5Tc0n/Screenshot-508.png"
+      ]
+    },
+    {
+      "matches": [
+        [
+          "$e3",
+          "downgrade"
+        ],
+        [
+          "$vgx",
+          "downgrade"
+        ],
+        [
+          "$e3",
+          "animations",
+          "downgrade$"
+        ],
+        [
+          "$vgx",
+          "animations"
+        ],
+        [
+          "$vgx",
+          "lighting",
+          "downgrade"
+        ],
+        [
+          "$e3",
+          "lighting",
+          "downgrade"
+        ],
+        [
+          "$e3",
+          "2013"
+        ],
+        [
+          "$e3",
+          "2014"
+        ]
+      ],
+      "answer": [
+        " https://tenor.com/bvyPf.gif"
+      ]
+    }
+  ]
+}

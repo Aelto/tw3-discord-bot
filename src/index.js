@@ -7,6 +7,7 @@ const key = require('./key');
 const consume = require('./core/consume-command.js');
 
 const client = new Discord.Client();
+const disbut = require('discord-buttons')(client);
 client.login(key);
 
 /**
@@ -662,7 +663,7 @@ commands['modremove'] = {
   }
 }
 
-addListenCommands(commands);
+addListenCommands(commands, disbut);
 
 client.on('ready', () => console.log('The Caretaker is ready'));
 
@@ -714,7 +715,13 @@ client.on('message', message => {
    * listen if the bot can answer with a listener
    */
   if (!message.author.username.includes('Caretaker')) {
-    listenForMessage(message);
+    listenForMessage(message, disbut);
+  }
+});
+
+client.on('clickButton', async (button) => {
+  if (button.id === 'delete_listen') {
+    button.message.delete();
   }
 });
 

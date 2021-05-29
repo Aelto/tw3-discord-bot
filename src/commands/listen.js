@@ -267,7 +267,7 @@ exports.addListenCommands = function addListenCommand(commands) {
  * 
  * @param {Discord.Message} message 
  */
-exports.listenForMessage = function listenForMessage(message) {
+exports.listenForMessage = function listenForMessage(message, disbut) {
   const content = ' ' + message.content.toLowerCase() + ' ';
 
   /**
@@ -306,30 +306,20 @@ exports.listenForMessage = function listenForMessage(message) {
         .then(before => {
           if (before.author.username === 'The Caretaker' && listener.answer.length) {
             message.channel.send(
-              listener.answer,
-              {
-                components: [
-                  {
-                      "type": 1,
-                      "components": [
-                          {
-                              "type": 2,
-                              "label": "Remove",
-                              "style": 1,
-                              "custom_id": "remove_listen"
-                          }
-                      ]
-          
-                  }
-                ]
-              }
+              listener.answer
             );
           }
         });
       }
       else if (listener.answer.length) {
+        let button = new disbut.MessageButton()
+          .setStyle('gray') //default: blurple
+          .setLabel('Delete') //default: NO_LABEL_PROVIDED
+          .setID('delete_listen') //note: if you use the style "url" you must provide url using .setURL('https://example.com')
+
         message.channel.send(
-          listener.answer
+          listener.answer,
+          button
         );
       }
     }

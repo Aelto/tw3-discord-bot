@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Aelto/tw3-discord-bot#readme",
   "dependencies": {
+    "discord-buttons": "^2.4.1",
     "discord.js": "^12.4.1"
   }
 }
