@@ -28,7 +28,7 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
     // console.log(`${reaction.message.author}'s message "${reaction.message.content}" gained a reaction!`);
     // console.log(`${reaction.count} user(s) have given the same reaction to this message!`);
 
-    if (user.id === BOT_ID) {
+    if (user.id === BOT_ID || reaction.message.channel.id !== SCREENSHOT_CHANNEL_ID) {
       return;
     }
 
