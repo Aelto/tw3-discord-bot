@@ -6,7 +6,8 @@ const {
   WARNED_ROLE_1_ID,
   WARNED_ROLE_2_ID,
   MAIN_CHANNEL_ID,
-  COMMANDS_PREFIX
+  COMMANDS_PREFIX,
+  ADMIN_CHANNEL_ID
 } = require('./constants.js');
 const key = require('./key');
 
@@ -674,6 +675,12 @@ addListenCommands(commands, disbut);
 client.on('ready', () => {
   console.log('The Caretaker is ready');
   require('./screenshot_handler')(client);
+
+  const admin_channel = client.channels.cache.get(ADMIN_CHANNEL_ID);
+
+  if (admin_channel) {
+    admin_channel.send("Hello, i just restarted :wave:");
+  }
 });
 
 client.on('message', message => {
