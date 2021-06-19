@@ -1,7 +1,8 @@
 const {
   SCREENSHOT_CHANNEL_ID,
   SCREENSHOT_REPOST_CHANNEL_ID,
-  ADMIN_ROLE_ID
+  ADMIN_ROLE_ID,
+  BOT_ID
 } = require('./constants');
 const { Client } = require('discord.js');
 
@@ -14,6 +15,12 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
   const repost_channel = client.channels.cache.get(SCREENSHOT_REPOST_CHANNEL_ID);
 
   if (!channel) {
+    const admin_channel = client.channels.cache.get(ADMIN_CHANNEL_ID);
+
+    if (admin_channel) {
+      admin_channel.send("The ID of the screenshot channel that is passed is invalid and doesn't link to anything. The screenshot feature is now disabled");
+    }
+
     return;
   }
 
@@ -21,13 +28,17 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
     // console.log(`${reaction.message.author}'s message "${reaction.message.content}" gained a reaction!`);
     // console.log(`${reaction.count} user(s) have given the same reaction to this message!`);
 
+    if (user.id === BOT_ID) {
+      return;
+    }
+
     if (!repost_channel) {
       reaction.message.channel.send(`ERROR: <@&${ADMIN_ROLE_ID}>, could not get the repost channel from its id: ${SCREENSHOT_REPOST_CHANNEL_ID}`);
 
       return;
     }
 
-    if (reaction.count > 2) {
+    if (reaction.count > 0) {
       const { attachments } = reaction.message;
       const [image] = attachments.array();
       
@@ -35,11 +46,23 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
         return;
       }
 
+      const has_bot_reacted = Array.from(reaction.message.reactions.cache.values())
+        .some(reaction => reaction.users.cache.get(BOT_ID));
+
+      // to know if the image was already reposted, we make the bot react to the
+      // mesasge. And then for reaction we check if the bot already reacted,
+      // if it did we now know it was already reposted.
+      if (has_bot_reacted) {
+        return;
+      }
+
+      await reaction.message.react(reaction.emoji);
+
       repost_channel.send('', {
         embed: {
           author: {
-            name: user.username,
-            icon_url: user.avatarURL
+            name: reaction.message.author.username,
+            icon_url: reaction.message.author.avatarURL
           },
           // title: `Screenshot by ${user.username}`,
           // description: "",
@@ -47,8 +70,8 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
           image: image,
           timestamp: new Date(),
           footer: {
-            icon_url: user.avatarURL,
-            text: user.username
+            icon_url: reaction.message.author.avatarURL,
+            text: reaction.message.author.username
           }
         }
       });
