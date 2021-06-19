@@ -38,7 +38,7 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
       return;
     }
 
-    if (reaction.count > 0) {
+    if (reaction.count >= 3) {
       const { attachments } = reaction.message;
       const [image] = attachments.array();
       
