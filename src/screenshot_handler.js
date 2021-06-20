@@ -40,11 +40,6 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
 
     if (reaction.count >= 3) {
       const { attachments } = reaction.message;
-      const [image] = attachments.array();
-      
-      if (!image) {
-        return;
-      }
 
       const has_bot_reacted = Array.from(reaction.message.reactions.cache.values())
         .some(reaction => reaction.users.cache.get(BOT_ID));
@@ -58,8 +53,15 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
 
       await reaction.message.react('📸');
 
-      await repost_channel.send(`by ${reaction.message.author.username}`);
-      await repost_channel.send(image.url);
+      for (const image of attachments.array()) {
+        if (!image) {
+          continue;
+        }
+  
+        await repost_channel.send(`by ${reaction.message.author.username}`);
+        await repost_channel.send(image.url);
+      }
+      
     }
   });
 }
