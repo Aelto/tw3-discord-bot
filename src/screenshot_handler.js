@@ -56,25 +56,10 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
         return;
       }
 
-      await reaction.message.react(reaction.emoji);
+      await reaction.message.react('📸');
 
-      repost_channel.send('', {
-        embed: {
-          author: {
-            name: reaction.message.author.username,
-            icon_url: reaction.message.author.avatarURL
-          },
-          // title: `Screenshot by ${user.username}`,
-          // description: "",
-          color: 3447003, // blue
-          image: image,
-          timestamp: new Date(),
-          footer: {
-            icon_url: reaction.message.author.avatarURL,
-            text: reaction.message.author.username
-          }
-        }
-      });
+      await repost_channel.send(`by ${reaction.message.author.username}`);
+      await repost_channel.send(image.url);
     }
   });
 }
