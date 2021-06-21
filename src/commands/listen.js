@@ -317,8 +317,6 @@ exports.listenForMessage = function listenForMessage(message, disbut) {
         //   .setLabel('Delete') //default: NO_LABEL_PROVIDED
         //   .setID('delete_listen') //note: if you use the style "url" you must provide url using .setURL('https://example.com')
 
-        console.log(listener.answer.join('. '));
-
         message.channel.send({
           content: listener.answer,
           "components": [
