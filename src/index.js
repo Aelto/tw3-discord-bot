@@ -14,7 +14,9 @@ const key = require('./key');
 const consume = require('./core/consume-command.js');
 
 const client = new Discord.Client();
-const disbut = require('discord-buttons')(client);
+// const disbut = require('discord-buttons');
+// disbut(client);
+let disbut;
 client.login(key);
 
 /**
