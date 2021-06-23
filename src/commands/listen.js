@@ -312,33 +312,15 @@ exports.listenForMessage = function listenForMessage(message, disbut) {
         });
       }
       else if (listener.answer.length) {
-        // let button = new disbut.MessageButton()
-        //   .setStyle('gray') //default: blurple
-        //   .setLabel('Delete') //default: NO_LABEL_PROVIDED
-        //   .setID('delete_listen') //note: if you use the style "url" you must provide url using .setURL('https://example.com')
+        let button = new disbut.MessageButton()
+          .setStyle('gray') //default: blurple
+          .setLabel('Delete') //default: NO_LABEL_PROVIDED
+          .setID('delete_listen') //note: if you use the style "url" you must provide url using .setURL('https://example.com')
 
-        message.channel.send({
-          content: listener.answer,
-          "components": [
-            {
-                "type": 1,
-                "components": [
-                    {
-                        "type": 2,
-                        "label": "Click me!",
-                        "style": 1,
-                        "custom_id": "click_one"
-                    }
-                ]
-    
-            }
-        ]
-        });
-
-        // message.channel.send(
-        //   listener.answer,
-        //   // button
-        // );
+        message.channel.send(
+          listener.answer.join(' ').trim(),
+          button
+        );
       }
     }
   }

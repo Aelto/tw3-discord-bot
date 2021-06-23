@@ -14,9 +14,8 @@ const key = require('./key');
 const consume = require('./core/consume-command.js');
 
 const client = new Discord.Client();
-// const disbut = require('discord-buttons');
-// disbut(client);
-let disbut;
+const disbut = require('discord-buttons');
+disbut(client);
 client.login(key);
 
 /**
@@ -747,7 +746,13 @@ client.on('clickButton', async (button) => {
 
 client.on('guildBanRemove', async (guild, user) => {    
   
-  var banlana = ["**The wounds of ban can be healed, but never hidden.**","**has been unbanned. Compassion is a rarity in the fevered pitch of battle.**","**was unbanned. Patched up, if only to bleed again.**","**has been unbanned. A death denied, for now.**","**is unbanned! How quickly the tide turns!**","**has been unbanned! A moment of valor shines brightest against a backdrop of despair.**","**was unbanned. A moment of clarity in the eye of the storm.**"]
+  var banlana = ["**The wounds of ban can be healed, but never hidden.**",
+  "**has been unbanned. Compassion is a rarity in the fevered pitch of battle.**",
+  "**was unbanned. Patched up, if only to bleed again.**",
+  "**has been unbanned. A death denied, for now.**",
+  "**is unbanned! How quickly the tide turns!**",
+  "**has been unbanned! A moment of valor shines brightest against a backdrop of despair.**",
+  "**was unbanned. A moment of clarity in the eye of the storm.**"]
   
   var result = Math.floor((Math.random() * banlana.length) + 0);
   
@@ -756,9 +761,28 @@ client.on('guildBanRemove', async (guild, user) => {
 
 
 client.on('guildBanAdd', async (guild, user) => {
-  var banlana = ["**has been banned. This one has become vestigial, useless.**","**was killed by peacekeepers. Suffer not the lame horse... nor the broken man.**","**was banned. Another soul battered and broken, cast aside like a spent torch.**","**has been banned. It is done. Turn yourself now to the conditions of those poor devils who remain.**","**was dismissed. Send this one to journey elsewhere, for we have need of sterner stock.**","**has been banned. Slumped shoulders, wild eyes, and a stumbling gait - this one is no more good to us.**","**was annihilated by peacekeepers. Did he foresee his own demise? I care not, so long as he remains dead.**","**was murdered by peacekeepers. He is as grotesque in death as he was in life...**","**has been felled. Fitting, that he find his rest upon the dirt he harrowed so fruitlessly.**","**was banned! Executed, with impunity!**","**has been banned! Back to the pit!**","**has been eradicated by peacekeepers! Mortality clarified in a single strike!**","**was banned. Those who covet the ban find it in no short supply.**"]
+  const banlana = [
+    "**has been banned. This one has become mindless, useless.**",
+    "**was dispatched. Suffer not the lame horse... nor the broken man.**",
+    "**has been dismissed. Another soul battered and broken, cast aside like a spent torch.**",
+    "**has been banned. It is done. Turn yourself now to the conditions of those poor devils who rest six feet under.**",
+    "**was dismissed. Wounds to be tended; lessons to be learned.**",
+    "**has been banned. Slumped shoulders, wild eyes, and a stumbling gait - this one is no more good to us.**",
+    "**was annihilated. Did he foresee his own demise? I care not, so long as he remains as remains.**",
+    "**was dispatched. He is as grotesque in death as he was in life...**",
+    "**has been felled. Fitting, that he find his rest upon the dirt he harrowed so fruitlessly.**",
+    "**was banned! Executed, with impunity!**",
+    "**has been dismissed! To keep your feet on the ground, I place burdens upon your shoulders!**",
+    "**has been eradicated! Mortality clarified in a single strike!**",
+    "**was banned. Those who covet punishment find it in no short supply.**",
+    "**has been banned. Wounds to be tended; lessons to be learned.**",
+    "**has been dismissed. The unruly require instruction, not sympathy.**",
+    "**was banned! Value the punishment you craved!**",
+    "**was banned. As above, so below. You reap what you sow.**",
+    "**has been dismissed. The disobedient should be taught what to think, not how to think.**"
+  ]
   
-  var result = Math.floor((Math.random() * banlana.length) + 0);
+  const result = Math.floor((Math.random() * banlana.length) + 0);
   
   guild.channels.cache.get("755188754540527646").send(user.tag+ " " +banlana[result]) 
 });
@@ -766,9 +790,24 @@ client.on('guildBanAdd', async (guild, user) => {
 
 client.on("guildMemberAdd", async member  => { 
 
-  var banlana = ["**Welcome home, such as it is. This squalid hamlet, these corrupted lands, they are yours now, and you are bound to them.**","**Welcome home. Take a seat and let me share with you the terrible wonders I have come to know...**","**You answered the letter — now like me, you are part of this place...**","**is here! Fan the flames! Mold the metal! We are raising an army!**","**has arrived. She searches where others will not go... and sees what others will not see.**","**is here. A mighty sword-arm anchored by a holy purpose. A zealous warrior!**","**appears elusive, evasive, persistent. Righteous traits for a rogue!**","**will be laughing still... at the end...**","**has arrived! A sister of battle - pious and unrelenting!**","**is here. A champion marksman keen for a new kind of challenge.**","**has arrived! Towering, fierce, terrible! Nightmare made material!**","**Welcome home... Secrets and wonders can be found in the most tenebrous corners of this place.**","**has arrived! A time to perform beyond one's limits!**","**has arrived. Please remind yourself that overconfidence is a slow and insidious killer.**"]
+  const banlana = [
+    "**Welcome home, such as it is. This squalid hamlet, these corrupted lands, they are yours now, and you are bound to them.**",
+    "**Welcome home. Take a seat and let me share with you the terrible wonders I have come to know...**",
+    "**You answered the letter — now like me, you are part of this place...**",
+    "**is here! Fan the flames! Mold the metal! We are raising an army!**",
+    "**has arrived. She searches where others will not go... and sees what others will not see.**",
+    "**is here. A mighty sword-arm anchored by a holy purpose. A zealous warrior!**",
+    "**appears elusive, evasive, persistent. Righteous traits for a rogue!**",
+    "**will be laughing still... at the end...**",
+    "**has arrived! A sister of battle - pious and unrelenting!**",
+    "**is here. A champion marksman keen for a new kind of challenge.**",
+    "**has arrived! Towering, fierce, terrible! Nightmare made material!**",
+    "**Welcome home... Secrets and wonders can be found in the most tenebrous corners of this place.**",
+    "**has arrived! A time to perform beyond one's limits!**",
+    "**has arrived. Please remind yourself that overconfidence is a slow and insidious killer.**"
+  ]
   
-  var result = Math.floor((Math.random() * banlana.length) + 0);
+  const result = Math.floor((Math.random() * banlana.length) + 0);
   
   member.guild.channels.cache.get("755190155093999746").send(`${member}`+ " " +banlana[result]) 
 });
@@ -776,9 +815,19 @@ client.on("guildMemberAdd", async member  => {
 
 client.on("guildMemberRemove", async member => { 
 
-  var banlana = ["**has left. Those without the stomach for this place must move on.**","**has left the workshop. The task ahead is terrible, and weakness cannot be tolerated.**","**has retreated. A setback, but not the end of things!**","**has retreated. Wounds to be tended; lessons to be learned.**","**has left. We will endure this loss, and learn from it.**","**has left. To fall for such a little thing... a bite of bread..!**","**has left. A death by inches...**","**has left. More blood soaks the soil, feeding the evil therein...**","**has committed suicide. This is no place for the weak, or the foolhardy.**","**has fallen. More dust, more ashes, more disappointment...**","**has retreated. Wherefore, heroism?**"]
+  const banlana = ["**has left. Those without the stomach for this place must move on.**",
+  "**has left the workshop. The task ahead is terrible, and weakness cannot be tolerated.**",
+  "**has retreated. A setback, but not the end of things!**",
+  "**has retreated. Wounds to be tended; lessons to be learned.**",
+  "**has left. We will endure this loss, and learn from it.**",
+  "**has left. To fall for such a little thing... a bite of bread..!**",
+  "**has left. A death by inches...**",
+  "**has left. More blood soaks the soil, feeding the evil therein...**",
+  "**has committed suicide. This is no place for the weak, or the foolhardy.**",
+  "**has fallen. More dust, more ashes, more disappointment...**",
+  "**has retreated. Wherefore, heroism?**"]
   
-  var result = Math.floor((Math.random() * banlana.length) + 0);
+  const result = Math.floor((Math.random() * banlana.length) + 0);
   
   member.guild.channels.cache.get("755188754540527646").send(member.user.tag+ " " +banlana[result]) 
 });
