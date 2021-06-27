@@ -15,6 +15,7 @@ const consume = require('./core/consume-command.js');
 
 const client = new Discord.Client();
 const disbut = require('discord-buttons');
+const addScreenshotReactionListener = require('./screenshot_handler.js');
 disbut(client);
 client.login(key);
 
@@ -675,7 +676,6 @@ addListenCommands(commands, disbut);
 
 client.on('ready', () => {
   console.log('The Caretaker is ready');
-  require('./screenshot_handler')(client);
 
   const admin_channel = client.channels.cache.get(ADMIN_CHANNEL_ID);
 
@@ -685,6 +685,8 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
+  addScreenshotReactionListener(message);
+
   /**
    * 1. look if the message is the answer of a previously
    *    asked question
