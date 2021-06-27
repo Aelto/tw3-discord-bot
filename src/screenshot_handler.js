@@ -58,8 +58,16 @@ function setupScreenshotChannelHandler(client) { // screenshot channel reaction 
     }
 
     if (reaction.count < 3) {
-      await log(reaction, 'less than 3 reactions');
-      return;
+      await log(reaction, `less than 3 reactions ${reaction.emoji.name}, count: ${reaction.count}. Fetching message`);
+      const message = await reaction.message.fetch();
+
+      const reactions = Array.from(reaction.message.reactions.cache.values());
+      const is_there_valid_reaction = reactions.some(reaction => reaction.count >= 3);
+
+      if (!is_there_valid_reaction) {
+        await log(reaction, `after fetch: less than 3 reactions ${reaction.emoji.name}, count: ${reaction.count}.`);
+        return;
+      }
     }
 
     const { attachments } = reaction.message;
