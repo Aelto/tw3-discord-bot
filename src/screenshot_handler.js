@@ -36,10 +36,22 @@ function addScreenshotReactionListener(message) {
     return;
   }
 
-  const number_of_unique_votes = 3;
+  const number_of_unique_votes = 4;
   const inactivity_time_before_delete = one_hour * 24;
   message.awaitReactions(reactionFilter, { maxUsers: number_of_unique_votes, dispose: true, idle: inactivity_time_before_delete, errors: ['time'] })
     .then(async collected => {
+      const collected_users = Array.from(
+        new Set(
+          collected.array()
+          .map(reaction => Array.from(reaction.users.cache.values()))
+          .flatMap(user => user)
+        )
+      );
+
+      if (collected_users < number_of_unique_votes) {
+        return;
+      }
+
       const last_reaction = collected.last();
       const { message } = last_reaction;
 
