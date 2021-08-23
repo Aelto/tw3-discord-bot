@@ -48,7 +48,7 @@ function addScreenshotReactionListener(message) {
         )
       );
 
-      if (collected_users < number_of_unique_votes) {
+      if (collected_users.length < number_of_unique_votes) {
         return;
       }
 
