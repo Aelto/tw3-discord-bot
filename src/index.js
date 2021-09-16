@@ -179,10 +179,7 @@ commands['report'] = {
     if (report_confirmed) {
       const reason = reason_words.join(' ').trim() || '_No reason given_';
 
-      message.channel.send([
-        `Great.`,
-        `I didn't like ${reported_user} anyway`
-      ])
+      Promise.resolve()
       .then(() => {
 
         if (level === 1) {
