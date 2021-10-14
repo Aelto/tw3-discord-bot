@@ -28,7 +28,7 @@ const one_hour = one_minute * 60;
  * 
  * @param {Message} message 
  */
-function addScreenshotReactionListener(message) {
+function addScreenshotReactionListener(message, client) {
 
   if (message.channel.id !== SCREENSHOT_CHANNEL_ID) {
     return;
@@ -40,15 +40,15 @@ function addScreenshotReactionListener(message) {
   }
 
   if (DEBUG) {
-    const log_channel = message.client.channels.cache.get(LOG_CHANNEL_ID);
+    const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
     log_channel.send(`LOG: screenshot received, setting up the reactions collector. Found ${attachments.length} attachements.`)
       .catch(console.error);
   }
 
-  const number_of_unique_votes = 4;
+  const number_of_unique_votes = 1;
   const inactivity_time_before_delete = one_hour * 24;
-  message.awaitReactions(reactionFilter, { maxUsers: number_of_unique_votes + 1, dispose: true, idle: inactivity_time_before_delete, errors: ['time'] })
+  message.awaitReactions(reactionFilter, { maxUsers: number_of_unique_votes, dispose: true, idle: inactivity_time_before_delete, errors: ['time'] })
     .then(async collected => {
       const collected_users = Array.from(
         new Set(
@@ -59,7 +59,7 @@ function addScreenshotReactionListener(message) {
       );
 
       if (DEBUG) {
-        const log_channel = message.client.channels.cache.get(LOG_CHANNEL_ID);
+        const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
         log_channel.send(`LOG: reaction received on screenshot, unique users: ${collected_users.length}. `)
         .catch(console.error);
@@ -102,8 +102,9 @@ function addScreenshotReactionListener(message) {
     })
     .catch(error => {
       if (DEBUG) {
-        const log_channel = message.client.channels.cache.get(LOG_CHANNEL_ID);
+        const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
+        console.log(error);
         log_channel.send(`LOG: An error occured while parsing reactions on a screenshot: ${error}. `)
         .catch(console.error);
       }
