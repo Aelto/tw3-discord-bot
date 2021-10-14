@@ -42,7 +42,8 @@ function addScreenshotReactionListener(message) {
   if (DEBUG) {
     const log_channel = message.client.channels.cache.get(LOG_CHANNEL_ID);
 
-    log_channel.send(`LOG: screenshot received, setting up the reactions collector. Found ${attachments.length} attachements.`);
+    log_channel.send(`LOG: screenshot received, setting up the reactions collector. Found ${attachments.length} attachements.`)
+      .catch(console.error);
   }
 
   const number_of_unique_votes = 4;
@@ -60,7 +61,8 @@ function addScreenshotReactionListener(message) {
       if (DEBUG) {
         const log_channel = message.client.channels.cache.get(LOG_CHANNEL_ID);
 
-        log_channel.send(`LOG: reaction received on screenshot, unique users: ${collected_users.length}. `);
+        log_channel.send(`LOG: reaction received on screenshot, unique users: ${collected_users.length}. `)
+        .catch(console.error);
       }
 
       if (collected_users.length < number_of_unique_votes) {
@@ -102,7 +104,8 @@ function addScreenshotReactionListener(message) {
       if (DEBUG) {
         const log_channel = message.client.channels.cache.get(LOG_CHANNEL_ID);
 
-        log_channel.send(`LOG: An error occured while parsing reactions on a screenshot: ${error}. `);
+        log_channel.send(`LOG: An error occured while parsing reactions on a screenshot: ${error}. `)
+        .catch(console.error);
       }
     });
 }
