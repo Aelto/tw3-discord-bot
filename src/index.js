@@ -199,7 +199,7 @@ commands['report'] = {
                 text: reported_user.username
               }
             }
-          });
+          }).catch(console.error);
         }
         else if (level === 2) {
           reported_member.roles.remove(WARNED_ROLE_1_ID);
@@ -220,7 +220,7 @@ commands['report'] = {
                 text: reported_user.username
               }
             }
-          });
+          }).catch(console.error);
         }
         else {
           reported_member.kick(`You were kicked from the server due to repeated offenses. Reason for the last report: ${reason}`);
@@ -240,7 +240,7 @@ commands['report'] = {
                 text: reported_user.username
               }
             }
-          });
+          }).catch(console.error);
         }
 
       })
@@ -255,6 +255,7 @@ commands['report'] = {
       .then(() => {
         remove_waiting_answer();
       })
+      .catch(console.error);
     }
 
     
@@ -331,6 +332,7 @@ commands['cleanse'] = {
       message.channel.send([
         `${cleansed_user} was cleansed`
       ])
+      .catch(console.error)
       .then(() => {
 
         if (level === 1) {
@@ -371,7 +373,7 @@ commands['cleanse'] = {
                 text: cleansed_user.username
               }
             }
-          });
+          }).catch(console.error);
         }
 
       })
@@ -383,6 +385,7 @@ commands['cleanse'] = {
       message.channel.send([
         `Cleanse towards ${cleansed_user} were cancelled`
       ])
+      .catch(console.error)
       .then(() => {
         remove_waiting_answer();
       })
@@ -682,7 +685,7 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-  addScreenshotReactionListener(message);
+  addScreenshotReactionListener(message, client);
 
   /**
    * 1. look if the message is the answer of a previously
