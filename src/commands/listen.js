@@ -213,7 +213,7 @@ exports.addListenCommands = function addListenCommand(commands) {
         {
           split: true
         }
-      );
+      ).catch(console.error);
     }
   }
 
@@ -305,7 +305,7 @@ exports.listenForMessage = function listenForMessage(message, disbut) {
           if (before.author.username === 'The Caretaker' && listener.answer.length) {
             message.channel.send(
               listener.answer
-            );
+            ).catch(console.error);
           }
         });
       }
@@ -318,7 +318,7 @@ exports.listenForMessage = function listenForMessage(message, disbut) {
         message.channel.send(
           listener.answer.join(' ').trim(),
           button
-        );
+        ).catch(console.error);
       }
     }
   }

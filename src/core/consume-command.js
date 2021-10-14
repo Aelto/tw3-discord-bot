@@ -41,13 +41,14 @@ module.exports = function consumeCommand(client, message, title, output, color =
               text: message.author.username
             }
           }
-        })
-      : message.channel.send(title)
+        }).catch(console.error)
+      : message.channel.send(title).catch(console.error);
   })
   .then(msg => {
     setTimeout(() => {
       msg.delete()
       .catch(err => message.channel.send(err))
+      .catch(console.error);
     }, 1 * 60 * 1000)
   })
   .catch(err => {
@@ -67,6 +68,7 @@ module.exports = function consumeCommand(client, message, title, output, color =
         timestamp: new Date()
       }
     })
+    .catch(console.error)
     .then(msg => {
       setTimeout(() => {
         msg.delete()

@@ -97,7 +97,7 @@ function addScreenshotReactionListener(message) {
               text: last_reaction.message.author.username
             }
           }
-        });
+        }).catch(console.error);
       }
     })
     .catch(error => {
