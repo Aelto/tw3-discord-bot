@@ -7,6 +7,9 @@ const {
 } = require('./constants');
 const { Client, Message, MessageReaction, User } = require('discord.js');
 
+// sends log messages in the log channel if set to true
+const DEBUG = true;
+
 /**
  * 
  * @param {MessageReaction} reaction 
@@ -36,9 +39,15 @@ function addScreenshotReactionListener(message) {
     return;
   }
 
+  if (DEBUG) {
+    const log_channel = message.client.channels.cache.get(LOG_CHANNEL_ID);
+
+    log_channel.send(`LOG: screenshot received, setting up the reactions collector. Found ${attachments.length} attachements.`);
+  }
+
   const number_of_unique_votes = 4;
   const inactivity_time_before_delete = one_hour * 24;
-  message.awaitReactions(reactionFilter, { maxUsers: number_of_unique_votes, dispose: true, idle: inactivity_time_before_delete, errors: ['time'] })
+  message.awaitReactions(reactionFilter, { maxUsers: number_of_unique_votes + 1, dispose: true, idle: inactivity_time_before_delete, errors: ['time'] })
     .then(async collected => {
       const collected_users = Array.from(
         new Set(
@@ -47,6 +56,12 @@ function addScreenshotReactionListener(message) {
           .flatMap(user => user)
         )
       );
+
+      if (DEBUG) {
+        const log_channel = message.client.channels.cache.get(LOG_CHANNEL_ID);
+
+        log_channel.send(`LOG: reaction received on screenshot, unique users: ${collected_users.length}. `);
+      }
 
       if (collected_users.length < number_of_unique_votes) {
         return;
@@ -71,7 +86,6 @@ function addScreenshotReactionListener(message) {
               name: last_reaction.message.content,
               icon_url: last_reaction.message.author.avatarURL
             },
-            // title: ,
             description: `[by ${last_reaction.message.author.username}](${last_reaction.message.url})`,
             color: 3066993,
             timestamp: new Date(),
@@ -82,12 +96,15 @@ function addScreenshotReactionListener(message) {
             }
           }
         });
-
-        // await repost_channel.send(`by ${reaction.message.author.username}`);
-        // await repost_channel.send(image.url);
       }
     })
-    .catch(collected => {});
+    .catch(error => {
+      if (DEBUG) {
+        const log_channel = message.client.channels.cache.get(LOG_CHANNEL_ID);
+
+        log_channel.send(`LOG: An error occured while parsing reactions on a screenshot: ${error}. `);
+      }
+    });
 }
 
 module.exports = addScreenshotReactionListener;
