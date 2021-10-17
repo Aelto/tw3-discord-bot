@@ -50,22 +50,25 @@ function addScreenshotReactionListener(message, client) {
   const inactivity_time_before_delete = one_hour * 24;
   message.awaitReactions(reactionFilter, { maxUsers: number_of_unique_votes, dispose: true, idle: inactivity_time_before_delete, errors: ['time'] })
     .then(async collected => {
-      const collected_users = Array.from(
-        new Set(
-          collected.array()
-          .map(reaction => Array.from(reaction.users.cache.values()))
-          .flatMap(user => user)
-        )
+      const reactions_users = await Promise.all(
+        collected.array()
+        .map(reaction => reaction.users.fetch({ limit: number_of_unique_votes + 1 }))
       );
+
+      const users = reactions_users
+        .map(users_collection => users_collection.values())
+        .flatMap(user => user);
+
+      const unique_users = Array.from(new Set(users));
 
       if (DEBUG) {
         const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
-        log_channel.send(`LOG: reaction received on screenshot, unique users: ${collected_users.length}. `)
+        log_channel.send(`LOG: reaction received on screenshot, unique users: ${unique_users.length}. `)
         .catch(console.error);
       }
 
-      if (collected_users.length < number_of_unique_votes) {
+      if (unique_users.length < number_of_unique_votes) {
         return;
       }
 
