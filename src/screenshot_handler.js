@@ -42,11 +42,11 @@ function addScreenshotReactionListener(message, client) {
   if (DEBUG) {
     const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
-    log_channel.send(`LOG: screenshot received, setting up the reactions collector. Found ${attachments.length} attachements.`)
-      .catch(console.error);
+    // log_channel.send(`LOG: screenshot received, setting up the reactions collector. Found ${attachments.length} attachements.`)
+    //   .catch(console.error);
   }
 
-  const number_of_unique_votes = 4;
+  const number_of_unique_votes = 1;
   const inactivity_time_before_delete = one_hour * 24;
   message.awaitReactions(reactionFilter, { maxUsers: number_of_unique_votes, dispose: true, idle: inactivity_time_before_delete, errors: ['time'] })
     .then(async collected => {
@@ -67,8 +67,8 @@ function addScreenshotReactionListener(message, client) {
       if (DEBUG) {
         const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
-        log_channel.send(`LOG: reaction received on screenshot, unique users: ${unique_users.length}. `)
-        .catch(console.error);
+        // log_channel.send(`LOG: reaction received on screenshot, unique users: ${unique_users.length}. `)
+        // .catch(console.error);
       }
 
       if (unique_users.length < number_of_unique_votes) {
