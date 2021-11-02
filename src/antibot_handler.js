@@ -1,0 +1,43 @@
+const { Client, Message, MessageReaction, User } = require('discord.js');
+const { BASIC_ROLE, SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID } = require('./constants');
+
+/**
+ * Automatically deletes the messages of people without the basic role, then
+ * assigns the author a restricted role and DMs instructions on how to remove
+ * restrictions.
+ * @param {Message} message 
+ */
+module.exports = async function antibot_handler(message) {
+  const contains_link = message.content.includes('http://') || message.content.includes('https://');
+
+  if (contains_link) {
+    const author_member = message.guild.members.cache.get(message.author.id);
+    const has_shut_role = author_member && author_member.roles.cache.has(SHUT_ROLE);
+    const has_any_role = author_member && has_shut_role
+      ? author_member.roles.cache.size > 2
+      : author_member.roles.cache.size > 1; // 1 because there is the @everyone role
+
+    if (!has_any_role) {
+      try {
+        await author_member.roles.add(SHUT_ROLE);
+
+        if (!has_shut_role) {
+          await author_member.guild.channels.cache.get(GRAVEYARD_CHANNEL_ID).send(`
+Hi <@${message.author.id}>,
+
+This is an automated response to the message(s) you just sent in this server.
+The message contained a link, however only users with the Hunter role can send links.
+
+For this reason you are now <@&${SHUT_ROLE}> which means you will have to contact a <@&${ADMIN_ROLE_ID}> to
+gain back access to the server.
+
+Thanks for your understanding.`.trim());
+        }
+
+        await message.delete();
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+}

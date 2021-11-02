@@ -7,7 +7,8 @@ const {
   WARNED_ROLE_2_ID,
   MAIN_CHANNEL_ID,
   COMMANDS_PREFIX,
-  ADMIN_CHANNEL_ID
+  ADMIN_CHANNEL_ID,
+  BASIC_ROLE
 } = require('./constants.js');
 const key = require('./key');
 
@@ -16,6 +17,7 @@ const consume = require('./core/consume-command.js');
 const client = new Discord.Client();
 const disbut = require('discord-buttons');
 const addScreenshotReactionListener = require('./screenshot_handler.js');
+const antibot_handler = require('./antibot_handler.js');
 disbut(client);
 client.login(key);
 
@@ -686,6 +688,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
   addScreenshotReactionListener(message, client);
+  antibot_handler(message);
 
   /**
    * 1. look if the message is the answer of a previously
