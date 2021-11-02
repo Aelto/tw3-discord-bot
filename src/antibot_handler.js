@@ -1,5 +1,5 @@
 const { Client, Message, MessageReaction, User } = require('discord.js');
-const { BASIC_ROLE, SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID } = require('./constants');
+const { BASIC_ROLE, SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID, ADMIN_CHANNEL_ID } = require('./constants');
 
 /**
  * Automatically deletes the messages of people without the basic role, then
@@ -7,7 +7,7 @@ const { BASIC_ROLE, SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID } = require('
  * restrictions.
  * @param {Message} message 
  */
-module.exports = async function antibot_handler(message) {
+module.exports = async function antibot_handler(message, client) {
   const contains_link = message.content.includes('http://') || message.content.includes('https://');
 
   if (contains_link) {
@@ -17,7 +17,7 @@ module.exports = async function antibot_handler(message) {
       ? author_member.roles.cache.size > 2
       : author_member.roles.cache.size > 1; // 1 because there is the @everyone role
 
-    if (!has_any_role) {
+    if (has_shut_role || !has_any_role) {
       try {
         await author_member.roles.add(SHUT_ROLE);
 
@@ -35,8 +35,19 @@ Thanks for your understanding.`.trim());
         }
 
         await message.delete();
-      } catch (err) {
+      }
+      catch (err) {
         console.log(err);
+      }
+
+      try {
+        const log_channel = client.channels.cache.get(ADMIN_CHANNEL_ID);
+
+        log_channel.send(`<@${message.author.id}> tried to send a link which was automatically deleted: \`${message.content}\``)
+        .catch(console.error);
+      }
+      catch (err) {
+
       }
     }
   }

@@ -688,7 +688,7 @@ client.on('ready', () => {
 
 client.on('message', message => {
   addScreenshotReactionListener(message, client);
-  antibot_handler(message);
+  antibot_handler(message, client);
 
   /**
    * 1. look if the message is the answer of a previously
