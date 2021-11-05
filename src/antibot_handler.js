@@ -9,7 +9,7 @@ const { BASIC_ROLE, SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID, ADMIN_CHANNE
  * @param {Client} client
  */
 module.exports = async function antibot_handler(message, client) {
-  if (message.client.user.id === message.id) {
+  if (message.client.user.id === message.author.id) {
     return;
   }
 
