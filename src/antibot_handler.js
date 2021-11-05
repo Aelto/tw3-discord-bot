@@ -17,7 +17,9 @@ module.exports = async function antibot_handler(message, client) {
       ? author_member.roles.cache.size > 2
       : author_member.roles.cache.size > 1; // 1 because there is the @everyone role
 
-    if (has_shut_role || !has_any_role) {
+    const contains_word_nitro = message.content.includes('nitro');
+
+    if (has_shut_role || !has_any_role || contains_word_nitro) {
       try {
         await author_member.roles.add(SHUT_ROLE);
 
