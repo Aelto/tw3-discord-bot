@@ -6,8 +6,13 @@ const { BASIC_ROLE, SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID, ADMIN_CHANNE
  * assigns the author a restricted role and DMs instructions on how to remove
  * restrictions.
  * @param {Message} message 
+ * @param {Client} client
  */
 module.exports = async function antibot_handler(message, client) {
+  if (message.client.user.id !== message.id) {
+    return;
+  }
+
   const contains_link = message.content.includes('http://') || message.content.includes('https://');
 
   if (contains_link) {
