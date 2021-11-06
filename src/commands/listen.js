@@ -261,6 +261,93 @@ exports.addListenCommands = function addListenCommand(commands) {
       );
     }
   }
+
+  commands['find-listener'] = {
+    name: 'find-listener',
+    help: '`$find-listener <message that should trigger a listener>` to get a list of listeners that have reacted to the message',
+    /**
+     * 
+     * @param {Discord.Client} client 
+     * @param {Discord.Message} message 
+     * @param {string[]} args 
+     */
+    command: (client, message, args) => {
+      const listeners = new Set(getListenersForMessage(message));
+
+      const filtered_listeners = registered_listeners
+        .map((listener, index) => ({ listener, index }))
+        .filter(({ listener }) => listeners.has(listener));
+
+      message.channel.send(
+        filtered_listeners
+        .map(({ listener, index }) => `**#${index}** - ${listener.matches.map(m => m.join(' ')).join(` , `)} ; ${listener.answer}`)
+        .join('\n'),
+        {
+          split: true
+        }
+      ).catch(console.error);
+    }
+  }
+
+  commands['set-listener-answer'] = {
+    name: 'set-listener-answer',
+    help: '`$find-listener <listener-id> <the-new-answer>` to update the answer of an already existing listener',
+    /**
+     * 
+     * @param {Discord.Client} client 
+     * @param {Discord.Message} message 
+     * @param {string[]} args 
+     */
+    command: (client, message, args) => {
+      const author_member = message.guild.members.cache.get(message.author.id);
+      const has_admin_role = author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
+      if (!has_admin_role) {
+        return consume(
+          client,
+          message,
+          "Missing permissions",
+          "You don't have the sufficient role to update a listener",
+          'red'
+        );
+      }
+
+      if (args.length < 1) {
+        return consume(
+          client,
+          message,
+          "Missing parameter",
+          "Please provide the id of a listener, to get its id use the `get-listeners` command",
+          'red'
+        );
+      }
+
+      if (args.length < 2) {
+        return consume(
+          client,
+          message,
+          "Missing parameter",
+          "Please provide a message, an empty message cannot be used as a listener",
+          'red'
+        );
+      }
+
+
+      const [string_id, ...words] = args;
+      const id = Number(string_id);
+
+      getListenersDatabase();
+      registered_listeners[id].answer = words;
+      saveListenersDatabase();
+
+      return consume(
+        client,
+        message,
+        "Listener updated",
+        `Listener with id \`${id}\` was updated`,
+        'green'
+      );
+    }
+  }
 }
 
 /**
@@ -268,15 +355,13 @@ exports.addListenCommands = function addListenCommand(commands) {
  * @param {Discord.Message} message 
  */
 exports.listenForMessage = function listenForMessage(message, disbut) {
-  const content = ' ' + message.content.toLowerCase() + ' ';
-
   /**
    * @type {Discord.Message}
    */
   let message_before = null;
 
-  // a way to cache the message because fetching is for every listener could
-  // demande way too many requests.
+  // a way to cache the message because fetching for every listener could
+  // demand way too many requests.
   const getMessageBefore = () => {
     if (message_before === null) {
       return message.channel.messages.fetch({ before: message.id, limit: 1 })
@@ -290,36 +375,40 @@ exports.listenForMessage = function listenForMessage(message, disbut) {
     return Promise.resolve(message_before);
   }
 
-  for (const listener of registered_listeners) {
-    const should_answer = listener.matches
-      .filter(m => m[0] !== '^')
-      .some(m => m.every(word => content.includes(word.replace(/\$/g, ' '))));
+  for (const listener of getListenersForMessage(message)) {
+    const should_message_answer_bot = listener.matches[0].join('') === '^';
 
+    if (should_message_answer_bot) {
+      getMessageBefore()
+      .then(before => {
+        if (before.author.username === 'The Caretaker' && listener.answer.length) {
+          message.channel.send(
+            listener.answer
+          ).catch(console.error);
+        }
+      });
+    }
+    else if (listener.answer.length) {
+      let button = new disbut.MessageButton()
+        .setStyle('gray') //default: blurple
+        .setLabel('Delete') //default: NO_LABEL_PROVIDED
+        .setID('delete_listen') //note: if you use the style "url" you must provide url using .setURL('https://example.com')
 
-    if (should_answer) {
-      const should_message_answer_bot = listener.matches[0].join('') === '^';
-
-      if (should_message_answer_bot) {
-        getMessageBefore()
-        .then(before => {
-          if (before.author.username === 'The Caretaker' && listener.answer.length) {
-            message.channel.send(
-              listener.answer
-            ).catch(console.error);
-          }
-        });
-      }
-      else if (listener.answer.length) {
-        let button = new disbut.MessageButton()
-          .setStyle('gray') //default: blurple
-          .setLabel('Delete') //default: NO_LABEL_PROVIDED
-          .setID('delete_listen') //note: if you use the style "url" you must provide url using .setURL('https://example.com')
-
-        message.channel.send(
-          listener.answer.join(' ').trim(),
-          button
-        ).catch(console.error);
-      }
+      message.channel.send(
+        listener.answer.join(' ').trim(),
+        button
+      ).catch(console.error);
     }
   }
+}
+
+function getListenersForMessage(message) {
+  const content = ' ' + message.content.toLowerCase() + ' ';
+
+  return registered_listeners
+    .filter(listener =>
+      listener.matches
+      .filter(m => m[0] !== '^')
+      .some(m => m.every(word => content.includes(word.replace(/\$/g, ' '))))
+    );
 }

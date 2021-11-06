@@ -674,6 +674,48 @@ commands['modremove'] = {
   }
 }
 
+commands['say'] = {
+  name: 'say',
+  help: '`$say <channel-id> <message>`',
+  /**
+   * 
+   * @param {Discord.Client} client 
+   * @param {Discord.Message} message 
+   * @param {string[]} args 
+   * @returns 
+   */
+  command: async (client, message, args) => {
+    if (args.length < 2) {
+      return consume(
+        client,
+        message,
+        "Invalid arguments",
+        `you must provide a channel id and a message`,
+        'red'
+      );
+    }
+
+    const [channel_id, ...words] = args;
+    
+    try {
+      const channel = await client.channels.fetch(channel_id);
+      const text = words.join(' ');
+
+      message.delete();
+      channel.send(text);
+    }
+    catch (err) {
+      consume(
+        client,
+        message,
+        "Unknown channel",
+        `no channel exists with the id ${channel_id}`,
+        'red'
+      );
+    }    
+  }
+}
+
 addListenCommands(commands, disbut);
 
 client.on('ready', () => {
@@ -751,8 +793,8 @@ client.on('clickButton', async (button) => {
 
 client.on('guildBanRemove', async (guild, user) => {    
   
-  var banlana = ["**The wounds of ban can be healed, but never hidden.**",
-  "**has been unbanned. Compassion is a rarity in the fevered pitch of battle.**",
+  var banlana = ["**The wounds can be healed, but never hidden.**",
+  "**has been unbanned. Compassion is a rarity in the fevered pitch of anger.**",
   "**was unbanned. Patched up, if only to bleed again.**",
   "**has been unbanned. A death denied, for now.**",
   "**is unbanned! How quickly the tide turns!**",
@@ -767,23 +809,26 @@ client.on('guildBanRemove', async (guild, user) => {
 
 client.on('guildBanAdd', async (guild, user) => {
   const banlana = [
-    "**has been banned. This one has become mindless, useless.**",
+    "**has been banned. This one has become mindless, useless. Let them find comfort within the earth, among the worms.**",
     "**was dispatched. Suffer not the lame horse... nor the broken man.**",
     "**has been dismissed. Another soul battered and broken, cast aside like a spent torch.**",
     "**has been banned. It is done. Turn yourself now to the conditions of those poor devils who rest six feet under.**",
     "**was dismissed. Wounds to be tended; lessons to be learned.**",
-    "**has been banned. Slumped shoulders, wild eyes, and a stumbling gait - this one is no more good to us.**",
+    "**has been banned. Their flame of rot flicker, in the minds of who remains...**",
     "**was annihilated. Did he foresee his own demise? I care not, so long as he remains as remains.**",
     "**was dispatched. He is as grotesque in death as he was in life...**",
     "**has been felled. Fitting, that he find his rest upon the dirt he harrowed so fruitlessly.**",
     "**was banned! Executed, with impunity!**",
-    "**has been dismissed! To keep your feet on the ground, I place burdens upon your shoulders!**",
+    "**has been banned! Witness, their tainted blood still on the concrete stone!**",
     "**has been eradicated! Mortality clarified in a single strike!**",
     "**was banned. Those who covet punishment find it in no short supply.**",
     "**has been banned. Wounds to be tended; lessons to be learned.**",
+    "**has been banned. Worth of freedom is best taught through restriction. Now, hush.**",
     "**has been dismissed. The unruly require instruction, not sympathy.**",
-    "**was banned! Value the punishment you craved!**",
+    "**has been banned! Value the punishment you craved!**",
     "**was banned. As above, so below. You reap what you sow.**",
+    "**was banned. No gaze other than a gun's muzzle could virtue his kind.**",
+    "**was banned. A thoughtless voice among the thoughtful few. Becomes silence, his only virtue...**",
     "**has been dismissed. The disobedient should be taught what to think, not how to think.**"
   ]
   
@@ -796,20 +841,20 @@ client.on('guildBanAdd', async (guild, user) => {
 client.on("guildMemberAdd", async member  => { 
 
   const banlana = [
-    "**Welcome home, such as it is. This squalid hamlet, these corrupted lands, they are yours now, and you are bound to them.**",
-    "**Welcome home. Take a seat and let me share with you the terrible wonders I have come to know...**",
-    "**You answered the letter — now like me, you are part of this place...**",
-    "**is here! Fan the flames! Mold the metal! We are raising an army!**",
-    "**has arrived. She searches where others will not go... and sees what others will not see.**",
-    "**is here. A mighty sword-arm anchored by a holy purpose. A zealous warrior!**",
-    "**appears elusive, evasive, persistent. Righteous traits for a rogue!**",
-    "**will be laughing still... at the end...**",
-    "**has arrived! A sister of battle - pious and unrelenting!**",
-    "**is here. A champion marksman keen for a new kind of challenge.**",
-    "**has arrived! Towering, fierce, terrible! Nightmare made material!**",
-    "**Welcome home... Secrets and wonders can be found in the most tenebrous corners of this place.**",
-    "**has arrived! A time to perform beyond one's limits!**",
-    "**has arrived. Please remind yourself that overconfidence is a slow and insidious killer.**"
+    "Welcome home, such as it is. A living breathing question that you will perhaps become the answer of.",
+    "has come to join the workshop, their purpose unknown to me...",
+    "You answered the invitation - now like me, you are part of this place!",
+    "is here! Fan the flames! Mold the metal! We are raising an army!",
+    "has arrived. Searching where others will not go... and seeing what others will not see.",
+    "is here. A mighty comrade anchored by a holy purpose. A zealous fighter!",
+    "appears elusive, evasive, persistent... Righteous traits for a rogue!",
+    "has come and will be laughing still... at the end...",
+    "has arrived! Another book falls onto the table of Earth!",
+    "is here! A champion marksman keen for a new kind of challenge.",
+    "has arrived! A formidable sight keen to delve into the darkest of storms!",
+    "Welcome aboard. Secrets and wonders can be found in the most tenebrous corners of this place!",
+    "has arrived! A time to perform beyond one's limits!",
+    "has arrived. Please remind yourself that overconfidence is a slow and insidious killer."
   ]
   
   const result = Math.floor((Math.random() * banlana.length) + 0);
@@ -820,17 +865,16 @@ client.on("guildMemberAdd", async member  => {
 
 client.on("guildMemberRemove", async member => { 
 
-  const banlana = ["**has left. Those without the stomach for this place must move on.**",
-  "**has left the workshop. The task ahead is terrible, and weakness cannot be tolerated.**",
-  "**has retreated. A setback, but not the end of things!**",
-  "**has retreated. Wounds to be tended; lessons to be learned.**",
-  "**has left. We will endure this loss, and learn from it.**",
-  "**has left. To fall for such a little thing... a bite of bread..!**",
-  "**has left. A death by inches...**",
-  "**has left. More blood soaks the soil, feeding the evil therein...**",
-  "**has committed suicide. This is no place for the weak, or the foolhardy.**",
-  "**has fallen. More dust, more ashes, more disappointment...**",
-  "**has retreated. Wherefore, heroism?**"]
+  const banlana = ["has left. Those without the stomach for this place must move on.",
+  "has left the workshop, with a battered, broken tale.",
+  "has retreated. A setback, but not the end of things!",
+  "has left. We will endure this loss, and learn from it.",
+  "has left. To desert for such a little thing... a bite of bread..!",
+  "has left. A farewell so sudden...",
+  "has left. Picked by the crows like wheat.",
+  "has left. Another tale ended.",
+  "has left. More dust, more ashes, more disappointment...",
+  "has retreated. Wherefore, heroism?"]
   
   const result = Math.floor((Math.random() * banlana.length) + 0);
   
