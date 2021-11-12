@@ -716,6 +716,56 @@ commands['say'] = {
   }
 }
 
+commands['announce'] = {
+  name: 'announce',
+  help: '`$announce <channel-id> <message>`',
+  /**
+   * 
+   * @param {Discord.Client} client 
+   * @param {Discord.Message} message 
+   * @param {string[]} args 
+   * @returns 
+   */
+  command: async (client, message, args) => {
+    if (args.length < 2) {
+      return consume(
+        client,
+        message,
+        "Invalid arguments",
+        `you must provide a channel id and a message`,
+        'red'
+      );
+    }
+
+    const [channel_id, ...words] = args;
+    
+    try {
+      const channel = await client.channels.fetch(channel_id);
+      const text = words.join(' ');
+
+      message.delete();
+      channel.send('', {
+        embed: {
+          title: 'Message from the peacekeepers',
+          description: String(text),
+          color: 0, // blue
+          timestamp: new Date()
+        }
+      });
+    }
+    catch (err) {
+      consume(
+        client,
+        message,
+        "Unknown channel",
+        `no channel exists with the id ${channel_id}`,
+        'red'
+      );
+    }    
+  }
+}
+
+
 addListenCommands(commands, disbut);
 
 client.on('ready', () => {
