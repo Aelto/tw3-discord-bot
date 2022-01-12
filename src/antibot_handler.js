@@ -17,7 +17,12 @@ module.exports = async function antibot_handler(message, client) {
     'nexusmods.com',
     'imgur.com',
     'reddit.com',
-    'spotify.com'
+    'spotify.com',
+    'pastebin.com',
+    'github.com',
+    'tenor.com',
+    'youtube.com',
+    'github.io'
   ];
 
   const contains_link = (
