@@ -13,9 +13,26 @@ module.exports = async function antibot_handler(message, client) {
     return;
   }
 
-  const contains_link = message.content.includes('http://') || message.content.includes('https://');
+  const allowed_domains = [
+    'nexusmods.com',
+    'imgur.com',
+    'reddit.com',
+    'spotify.com'
+  ];
 
-  if (contains_link) {
+  const contains_link = (
+    message.content.includes('http://')
+    || message.content.includes('https://')
+  );
+
+  // NOTE: there is a flaw with this implementation that i don't think is too
+  // important for the moment, but it is worth mentioning:
+  // if a message contains two links, one is allowed and the other is not,
+  // the message will go through without any issue.
+  const contains_allowed_domain = allowed_domains
+    .some(domain => message.content.includes(domain));
+
+  if (contains_link && !contains_allowed_domain) {
     const author_member = message.guild.members.cache.get(message.author.id);
     const has_shut_role = author_member && author_member.roles.cache.has(SHUT_ROLE);
     const has_any_role = author_member && has_shut_role
