@@ -383,7 +383,7 @@ exports.listenForMessage = function listenForMessage(message, disbut) {
       .then(before => {
         if (before.author.username === 'The Caretaker' && listener.answer.length) {
           message.channel.send(
-            listener.answer
+            listener.answer.join(' ').trim()
           ).catch(console.error);
         }
       });
