@@ -750,16 +750,14 @@ commands['announce'] = {
     try {
       const channel = await client.channels.fetch(channel_id);
       const text = words.join(' ');
+      const embed = new Discord.MessageEmbed()
+        .setTitle('Message from the peacekeepers')
+        .setDescription(String(text))
+        .setColor(0)
+        .setTimestamp(new Date());
 
       message.delete();
-      channel.send('', {
-        embed: {
-          title: 'Message from the peacekeepers',
-          description: String(text),
-          color: 0, // blue
-          timestamp: new Date()
-        }
-      });
+      channel.send({ embeds: [embed] });
     }
     catch (err) {
       consume(

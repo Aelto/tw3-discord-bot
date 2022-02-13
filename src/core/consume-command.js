@@ -25,23 +25,22 @@ module.exports = function consumeCommand(client, message, title, output, color =
         break;
     }
 
+    const embed = new Discord.MessageEmbed()
+      .setColor(embedColor)
+      .setAuthor({
+        name: client.user.username,
+        icon_url: client.user.avatarURL
+      })
+      .setTitle(title)
+      .setDescription(String(output))
+      .setTimestamp(new Date())
+      .setFooter({
+        icon_url: message.author.avatarURL,
+        text: message.author.username
+      });
+
     return output
-      ? message.channel.send('', {
-          embed: {
-            author: {
-              name: client.user.username,
-              icon_url: client.user.avatarURL
-            },
-            title: title,
-            description: String(output),
-            color: embedColor,
-            timestamp: new Date(),
-            footer: {
-              icon_url: message.author.avatarURL,
-              text: message.author.username
-            }
-          }
-        }).catch(console.error)
+      ? message.channel.send({ embeds: [embed] }).catch(console.error)
       : message.channel.send(title).catch(console.error);
   })
   .then(msg => {
