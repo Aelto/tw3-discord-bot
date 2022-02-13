@@ -842,13 +842,15 @@ client.on('messageCreate', message => {
   }
 });
 
-client.on('clickButton', async (button) => {
-  if (button.id === 'delete_listen') {
-    button.message.delete();
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isButton()) {
+    return;
+  }
+
+  if (interaction.customId === 'delete_listen') {
+    interaction.message.delete();
   }
 });
-
-
 
 client.on('guildBanRemove', async (guild, user) => {    
   
