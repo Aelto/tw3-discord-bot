@@ -14,11 +14,19 @@ const key = require('./key');
 
 const consume = require('./core/consume-command.js');
 
-const client = new Discord.Client();
-const disbut = require('discord-buttons');
+const client = new Discord.Client({
+  intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MEMBERS,
+    Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  ]
+});
 const addScreenshotReactionListener = require('./screenshot_handler.js');
 const antibot_handler = require('./antibot_handler.js');
-disbut(client);
+const thread_channel_handler = require('./thread_channel_handler.js');
 client.login(key);
 
 /**
@@ -766,7 +774,7 @@ commands['announce'] = {
 }
 
 
-addListenCommands(commands, disbut);
+addListenCommands(commands);
 
 client.on('ready', () => {
   console.log('The Caretaker is ready');
@@ -778,9 +786,10 @@ client.on('ready', () => {
   }
 });
 
-client.on('message', message => {
+client.on('messageCreate', message => {
   addScreenshotReactionListener(message, client);
   antibot_handler(message, client);
+  thread_channel_handler(message, client);
 
   /**
    * 1. look if the message is the answer of a previously
@@ -829,7 +838,7 @@ client.on('message', message => {
    * listen if the bot can answer with a listener
    */
   if (!message.author.username.includes('Caretaker')) {
-    listenForMessage(message, disbut);
+    listenForMessage(message);
   }
 });
 

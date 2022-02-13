@@ -354,7 +354,7 @@ exports.addListenCommands = function addListenCommand(commands) {
  * 
  * @param {Discord.Message} message 
  */
-exports.listenForMessage = function listenForMessage(message, disbut) {
+exports.listenForMessage = function listenForMessage(message) {
   /**
    * @type {Discord.Message}
    */
@@ -389,15 +389,19 @@ exports.listenForMessage = function listenForMessage(message, disbut) {
       });
     }
     else if (listener.answer.length) {
-      let button = new disbut.MessageButton()
-        .setStyle('gray') //default: blurple
-        .setLabel('Delete') //default: NO_LABEL_PROVIDED
-        .setID('delete_listen') //note: if you use the style "url" you must provide url using .setURL('https://example.com')
 
-      message.channel.send(
-        listener.answer.join(' ').trim(),
-        button
-      ).catch(console.error);
+      const row = new Discord.MessageActionRow()
+        .addComponents(
+          new Discord.MessageButton()
+            .setCustomId('delete_listen')
+            .setLabel('Delete')
+            .setStyle('SECONDARY')
+        );
+
+      message.reply({
+        content: listener.answer.join(' ').trim(),
+        components: [row]
+      }).catch(console.error);
     }
   }
 }
