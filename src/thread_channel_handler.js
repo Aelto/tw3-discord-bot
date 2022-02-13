@@ -32,7 +32,7 @@ function defer_action(message, client) {
       const { message, client, insert_date, bot_message = null } = defer_channels.get(author_id);
 
       const one_second = 1000;
-      if (Date.now() - insert_date > one_second * 10 && !notified_authors.has(author_id)) {
+      if (Date.now() - insert_date > one_second * 30 && !notified_authors.has(author_id)) {
         const bot_message = await message.reply(`Thank you <@${author_id}>! A thread will be created automatically in 20 seconds`);
 
         notified_authors.add(author_id);
@@ -46,7 +46,7 @@ function defer_action(message, client) {
         continue;
       }
   
-      if (Date.now() - insert_date < one_second * 30) {
+      if (Date.now() - insert_date < one_second * 60) {
         continue;
       }
 
