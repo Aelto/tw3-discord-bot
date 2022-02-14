@@ -1,119 +1,88 @@
-const {
-  SCREENSHOT_CHANNEL_ID,
-  SCREENSHOT_REPOST_CHANNEL_ID,
-  ADMIN_ROLE_ID,
-  BOT_ID,
-  LOG_CHANNEL_ID
-} = require('./constants');
-const { Client, Message, MessageReaction, User } = require('discord.js');
-
-// sends log messages in the log channel if set to true
-const DEBUG = true;
+const Discord = require('discord.js');
+const { SCREENSHOT_CHANNEL_ID, SCREENSHOT_REPOST_CHANNEL_ID } = require('./constants');
 
 /**
- * 
- * @param {MessageReaction} reaction 
- * @param {User} user 
- * @returns 
+ * the amount of reactions from unique users needed for a repost
  */
-function reactionFilter(reaction, user) {
-  return !user.bot;
-}
+const number_of_unique_votes = 1;
 
-const one_second = 1000;
-const one_minute = one_second * 60;
-const one_hour = one_minute * 60;
+module.exports = function addScreenshotHandler(client) {
+  client.on('messageReactionAdd', async (reaction, _user) => {
+    // when the reaction is from the bot
+    if (reaction.me) {
+      return;
+    }
 
-/**
- * 
- * @param {Message} message 
- */
-function addScreenshotReactionListener(message, client) {
+    if (reaction.message.channel.id !== SCREENSHOT_CHANNEL_ID) {
+      return;
+    }
 
-  if (message.channel.id !== SCREENSHOT_CHANNEL_ID) {
-    return;
-  }
 
-  const attachments = message.attachments.array();
-  if (!attachments.length) {
-    return;
-  }
+    if (reaction.partial) {
+      // If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
+      try {
+        await reaction.fetch();
+      } catch (error) {
+        console.error('Something went wrong when fetching the message:', error);
 
-  if (DEBUG) {
-    const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
-
-    // log_channel.send(`LOG: screenshot received, setting up the reactions collector. Found ${attachments.length} attachements.`)
-    //   .catch(console.error);
-  }
-
-  const number_of_unique_votes = 4;
-  const inactivity_time_before_delete = one_hour * 24;
-  message.awaitReactions(reactionFilter, { maxUsers: number_of_unique_votes, dispose: true, idle: inactivity_time_before_delete, errors: ['time'] })
-    .then(async collected => {
-      const sync_users = collected.array().map(reaction => Array.from(reaction.users.cache.values()));
-      const reactions_users = await Promise.all(
-        collected.array()
-        .map(reaction => reaction.users.fetch())
-      );
-      
-      const users = reactions_users
-        .map(users_collection => Array.from(users_collection.values()))
-        .concat(sync_users)
-        .flatMap(user => user)
-        .map(user => user.id);
-
-      const unique_users = Array.from(new Set(users));
-
-      if (DEBUG) {
-        const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
-
-        // log_channel.send(`LOG: reaction received on screenshot, unique users: ${unique_users.length}. `)
-        // .catch(console.error);
-      }
-
-      if (unique_users.length < number_of_unique_votes) {
         return;
       }
+    }
 
-      const last_reaction = collected.last();
-      const { message } = last_reaction;
+    const reactions = Array.from(reaction.message.reactions.cache.values());
+    const sync_users = reactions.map((reaction) =>
+      Array.from(reaction.users.cache.values())
+    );
+    const reactions_users = await Promise.all(
+      reactions.map((reaction) => reaction.users.fetch())
+    );
 
-      await  message.react('📸');
-      const { attachments } = message;
+    const users = reactions_users
+      .map((users_collection) => Array.from(users_collection.values()))
+      .concat(sync_users)
+      .flatMap((user) => user)
+      .map((user) => user.id);
 
-      const repost_channel = message.client.channels.cache.get(SCREENSHOT_REPOST_CHANNEL_ID);
+    const unique_users = Array.from(new Set(users));
 
-      for (const image of attachments.array()) {
-        if (!image) {
-          continue;
-        }
+    if (unique_users.length < number_of_unique_votes) {
+      return;
+    }
 
-        const embed = new MessageEmbed()
-          .setAuthor({
-            name: last_reaction.message.content,
-            icon_url: last_reaction.message.author.avatarURL
-          })
-          .setDescription(`[by ${last_reaction.message.author.username}](${last_reaction.message.url})`)
-          .setColor(3066993)
-          .setTimestamp(new Date())
-          .setImage(image)
-          .setFooter({
-            icon_url: last_reaction.message.author.avatarURL,
-            text: last_reaction.message.author.username
-          });
+    const message = reaction.message;
 
-        repost_channel.send({ embeds: [embed] }).catch(console.error);
+    await message.react('📸');
+    const { attachments } = message;
+    const repost_channel = message.client.channels.cache.get(
+      SCREENSHOT_REPOST_CHANNEL_ID
+    );
+
+    for (const image of Array.from(attachments.values())) {
+      if (!image) {
+        continue;
       }
-    })
-    .catch(error => {
-      if (DEBUG) {
-        const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
-        console.log(error);
-        log_channel.send(`LOG: An error occured while parsing reactions on a screenshot: ${error}. `)
-        .catch(console.error);
+      const contains_spoiler = image.name.toLowerCase().includes('spoiler_');
+
+      if (contains_spoiler) {
+        continue;
       }
-    });
-}
 
-module.exports = addScreenshotReactionListener;
+      const embed = new Discord.MessageEmbed()
+        .setAuthor({
+          name: message.content,
+          icon_url: message.author.avatarURL,
+        })
+        .setDescription(`[by ${message.author.username}](${message.url})`)
+        .setColor(3066993)
+        .setTimestamp(new Date())
+        .setImage(image.url)
+        .setFooter({
+          icon_url: message.author.avatarURL,
+          text: message.author.username,
+        });
+
+      repost_channel.send({ embeds: [embed] }).catch(console.error);
+    }
+  });
+};

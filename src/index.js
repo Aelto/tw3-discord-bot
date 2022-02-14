@@ -9,7 +9,9 @@ const {
   COMMANDS_PREFIX,
   ADMIN_CHANNEL_ID,
   BASIC_ROLE,
-  LOG_CHANNEL_ID
+  LOG_CHANNEL_ID,
+  SCREENSHOT_CHANNEL_ID,
+  SCREENSHOT_REPOST_CHANNEL_ID
 } = require('./constants.js');
 const key = require('./key');
 
@@ -768,6 +770,7 @@ commands['announce'] = {
 
 
 addListenCommands(commands);
+addScreenshotReactionListener(client);
 
 client.on('ready', () => {
   console.log('The Caretaker is ready');
@@ -780,7 +783,6 @@ client.on('ready', () => {
 });
 
 client.on('messageCreate', message => {
-  addScreenshotReactionListener(message, client);
   antibot_handler(message, client);
   thread_channel_handler(message, client);
 
