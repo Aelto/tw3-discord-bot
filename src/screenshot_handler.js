@@ -4,7 +4,7 @@ const { SCREENSHOT_CHANNEL_ID, SCREENSHOT_REPOST_CHANNEL_ID } = require('./const
 /**
  * the amount of reactions from unique users needed for a repost
  */
-const number_of_unique_votes = 1;
+const number_of_unique_votes = 4;
 
 module.exports = function addScreenshotHandler(client) {
   client.on('messageReactionAdd', async (reaction, _user) => {
