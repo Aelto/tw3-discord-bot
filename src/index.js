@@ -8,7 +8,8 @@ const {
   MAIN_CHANNEL_ID,
   COMMANDS_PREFIX,
   ADMIN_CHANNEL_ID,
-  BASIC_ROLE
+  BASIC_ROLE,
+  LOG_CHANNEL_ID
 } = require('./constants.js');
 const key = require('./key');
 
