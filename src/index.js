@@ -771,10 +771,10 @@ addListenCommands(commands);
 client.on('ready', () => {
   console.log('The Caretaker is ready');
 
-  const admin_channel = client.channels.cache.get(ADMIN_CHANNEL_ID);
+  const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
-  if (admin_channel) {
-    // admin_channel.send("Hello, i just restarted :wave:");
+  if (log_channel) {
+    log_channel.send("Hello, i just restarted :wave:");
   }
 });
 
