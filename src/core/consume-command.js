@@ -53,20 +53,19 @@ module.exports = function consumeCommand(client, message, title, output, color =
   .catch(err => {
     const out = `[in] \`${message}\`\n${output}\nERROR, something went wrong`
 
-    console.log(err)
+    console.log(err);
 
-    message.channel.send('', {
-      embed: {
-        author: {
-          name: client.user.username,
-          icon_url: client.user.avatarURL
-        },
-        title: 'Error, something went wrong',
-        description: String(err),
-        color: 0,
-        timestamp: new Date()
-      }
-    })
+    const embed = new Discord.MessageEmbed()
+      .setAuthor({
+        name: client.user.username,
+        icon_url: client.user.avatarURL
+      })
+      .setTitle('Error, something went wrong')
+      .setDescription(String(err))
+      .setColor(0)
+      .setTimestamp(new Date());
+
+    message.channel.send({ embeds: [embed] })
     .catch(console.error)
     .then(msg => {
       setTimeout(() => {

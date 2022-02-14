@@ -194,63 +194,60 @@ commands['report'] = {
 
         if (level === 1) {
           reported_member.roles.add(WARNED_ROLE_1_ID);
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send('', {
-            embed: {
-              author: {
-                name: client.user.username,
-                icon_url: client.user.avatarURL
-              },
-              title: "Reported user",
-              description: String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **warned**. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`),
-              color: 15158332,
-              timestamp: new Date(),
-              footer: {
-                icon_url: reported_user.avatarURL,
-                text: reported_user.username
-              }
-            }
-          }).catch(console.error);
+
+          const embed = new Discord.MessageEmbed()
+            .setAuthor({
+              name: client.user.username,
+              icon_url: client.user.avatarURL
+            })
+            .setTitle("Reported user")
+            .setDescription(String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **warned**. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`))
+            .setColor(15158332)
+            .setTimestamp(new Date())
+            .setFooter({
+              icon_url: reported_user.avatarURL,
+              text: reported_user.username
+            });
+          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] }).catch(console.error);
         }
         else if (level === 2) {
           reported_member.roles.remove(WARNED_ROLE_1_ID);
           reported_member.roles.add(WARNED_ROLE_2_ID);
 
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send('', {
-            embed: {
-              author: {
-                name: client.user.username,
-                icon_url: client.user.avatarURL
-              },
-              title: "Reported user",
-              description: String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **flagged**, the 2nd strike. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`),
-              color: 15158332,
-              timestamp: new Date(),
-              footer: {
-                icon_url: reported_user.avatarURL,
-                text: reported_user.username
-              }
-            }
-          }).catch(console.error);
+          const embed = new Discord.MessageEmbed()
+            .setAuthor({
+              name: client.user.username,
+              icon_url: client.user.avatarURL
+            })
+            .setTitle("Reported user")
+            .setDescription(String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **flagged**, the 2nd strike. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`))
+            .setColor(15158332)
+            .setTimestamp(new Date())
+            .setFooter({
+              icon_url: reported_user.avatarURL,
+              text: reported_user.username
+            });
+
+          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] }).catch(console.error);
         }
         else {
           reported_member.kick(`You were kicked from the server due to repeated offenses. Reason for the last report: ${reason}`);
 
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send('', {
-            embed: {
-              author: {
-                name: client.user.username,
-                icon_url: client.user.avatarURL
-              },
-              title: "Reported user",
-              description: String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **kicked**.\n\n**__The reason for the report is:__**\n${reason}`),
-              color: 15158332,
-              timestamp: new Date(),
-              footer: {
-                icon_url: reported_user.avatarURL,
-                text: reported_user.username
-              }
-            }
-          }).catch(console.error);
+          const embed = new Discord.MessageEmbed()
+            .setAuthor({
+              name: client.user.username,
+              icon_url: client.user.avatarURL
+            })
+            .setTitle("Reported user")
+            .setDescription(String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **kicked**.\n\n**__The reason for the report is:__**\n${reason}`))
+            .setColor(15158332)
+            .setTimestamp(new Date())
+            .setFooter({
+              icon_url: reported_user.avatarURL,
+              text: reported_user.username
+            });
+
+          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] }).catch(console.error);
         }
 
       })
@@ -347,43 +344,40 @@ commands['cleanse'] = {
 
         if (level === 1) {
           cleansed_member.roles.remove(WARNED_ROLE_1_ID);
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send('', {
-            embed: {
-              author: {
-                name: client.user.username,
-                icon_url: client.user.avatarURL
-              },
-              title: "Cleansed user",
-              description: String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now free of all the negative roles`),
-              color: 3066993,
-              timestamp: new Date(),
-              footer: {
-                icon_url: cleansed_user.avatarURL,
-                text: cleansed_user.username
-              }
-            }
-          });
+
+          const embed = new Discord.MessageEmbed()
+            .setAuthor({
+              name: client.user.username,
+              icon_url: client.user.avatarURL
+            })
+            .setTitle("Cleansed user")
+            .setDescription(String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now free of all the negative roles`))
+            .setColor(3066993)
+            .setTimestamp(new Date())
+            .setFooter({
+              icon_url: reported_user.avatarURL,
+              text: reported_user.username
+            });
+          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] });
         }
         else if (level === 2) {
           cleansed_member.roles.add(WARNED_ROLE_1_ID);
           cleansed_member.roles.remove(WARNED_ROLE_2_ID);
 
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send('', {
-            embed: {
-              author: {
-                name: client.user.username,
-                icon_url: client.user.avatarURL
-              },
-              title: "Cleansed user",
-              description: String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now back to the **warned** role.`),
-              color: 3066993,
-              timestamp: new Date(),
-              footer: {
-                icon_url: cleansed_user.avatarURL,
-                text: cleansed_user.username
-              }
-            }
-          }).catch(console.error);
+          const embed = new Discord.MessageEmbed()
+            .setAuthor({
+              name: client.user.username,
+              icon_url: client.user.avatarURL
+            })
+            .setTitle("Cleansed user")
+            .setDescription(String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now back to the **warned** role.`))
+            .setColor(3066993)
+            .setTimestamp(new Date())
+            .setFooter({
+              icon_url: reported_user.avatarURL,
+              text: reported_user.username
+            });
+          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] }).catch(console.error);
         }
 
       })
@@ -780,7 +774,7 @@ client.on('ready', () => {
   const admin_channel = client.channels.cache.get(ADMIN_CHANNEL_ID);
 
   if (admin_channel) {
-    admin_channel.send("Hello, i just restarted :wave:");
+    // admin_channel.send("Hello, i just restarted :wave:");
   }
 });
 

@@ -88,22 +88,21 @@ function addScreenshotReactionListener(message, client) {
           continue;
         }
 
-        repost_channel.send('', {
-          embed: {
-            author: {
-              name: last_reaction.message.content,
-              icon_url: last_reaction.message.author.avatarURL
-            },
-            description: `[by ${last_reaction.message.author.username}](${last_reaction.message.url})`,
-            color: 3066993,
-            timestamp: new Date(),
-            image: image,
-            footer: {
-              icon_url: last_reaction.message.author.avatarURL,
-              text: last_reaction.message.author.username
-            }
-          }
-        }).catch(console.error);
+        const embed = new MessageEmbed()
+          .setAuthor({
+            name: last_reaction.message.content,
+            icon_url: last_reaction.message.author.avatarURL
+          })
+          .setDescription(`[by ${last_reaction.message.author.username}](${last_reaction.message.url})`)
+          .setColor(3066993)
+          .setTimestamp(new Date())
+          .setImage(image)
+          .setFooter({
+            icon_url: last_reaction.message.author.avatarURL,
+            text: last_reaction.message.author.username
+          });
+
+        repost_channel.send({ embeds: [embed] }).catch(console.error);
       }
     })
     .catch(error => {
