@@ -7,7 +7,11 @@ const { SCREENSHOT_CHANNEL_ID, SCREENSHOT_REPOST_CHANNEL_ID } = require('./const
 const number_of_unique_votes = 4;
 
 module.exports = function addScreenshotHandler(client) {
-  client.on('messageReactionAdd', async (reaction, _user) => {
+  /**
+   * @param {Discord.MessageReaction} reaction
+   * @param {any} _user
+   */
+  const screenshot_handler = async (reaction, _user) => {
     // when the reaction is from the bot
     if (reaction.me) {
       return;
@@ -44,6 +48,11 @@ module.exports = function addScreenshotHandler(client) {
       .map((user) => user.id);
 
     const unique_users = Array.from(new Set(users));
+
+    const already_has_bot_reaction = unique_users.some(user => user === reaction.me);
+    if (already_has_bot_reaction) {
+      return;
+    }
 
     if (unique_users.length < number_of_unique_votes) {
       return;
@@ -84,5 +93,7 @@ module.exports = function addScreenshotHandler(client) {
 
       repost_channel.send({ embeds: [embed] }).catch(console.error);
     }
-  });
+  };
+
+  client.on('messageReactionAdd', screenshot_handler);
 };
