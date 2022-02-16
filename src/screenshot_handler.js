@@ -6,6 +6,10 @@ const { SCREENSHOT_CHANNEL_ID, SCREENSHOT_REPOST_CHANNEL_ID } = require('./const
  */
 const number_of_unique_votes = 4;
 
+/**
+ * 
+ * @param {Discord.Client} client 
+ */
 module.exports = function addScreenshotHandler(client) {
   /**
    * @param {Discord.MessageReaction} reaction
@@ -49,7 +53,7 @@ module.exports = function addScreenshotHandler(client) {
 
     const unique_users = Array.from(new Set(users));
 
-    const already_has_bot_reaction = unique_users.some(user => user === reaction.me);
+    const already_has_bot_reaction = unique_users.some(user => user === client.user.id);
     if (already_has_bot_reaction) {
       return;
     }
