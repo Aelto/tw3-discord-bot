@@ -13,18 +13,17 @@ const number_of_unique_votes = 4;
 module.exports = function addScreenshotHandler(client) {
   /**
    * @param {Discord.MessageReaction} reaction
-   * @param {any} _user
+   * @param {Discord.PartialUser} user
    */
-  const screenshot_handler = async (reaction, _user) => {
+  const screenshot_handler = async (reaction, user) => {
     // when the reaction is from the bot
-    if (reaction.me) {
+    if (reaction.me || user.bot) {
       return;
     }
 
     if (reaction.message.channel.id !== SCREENSHOT_CHANNEL_ID) {
       return;
     }
-
 
     if (reaction.partial) {
       // If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
