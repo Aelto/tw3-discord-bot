@@ -1,10 +1,20 @@
 const Discord = require('discord.js');
 const { SCREENSHOT_CHANNEL_ID, SCREENSHOT_REPOST_CHANNEL_ID } = require('./constants');
+const QueueInterval = require('./queue-interval.js');
 
 /**
  * the amount of reactions from unique users needed for a repost
  */
 const number_of_unique_votes = 4;
+const processed_messages = new Set();
+
+/**
+ * setup a queue that will run on a 60 seconds interval.
+ */
+const queue_interval = new QueueInterval(10000, () => {
+  // when the queue is empty, clear the Set:
+  processed_messages.clear();
+}).start();
 
 /**
  * 
@@ -61,41 +71,49 @@ module.exports = function addScreenshotHandler(client) {
       return;
     }
 
-    const message = reaction.message;
+    queue_interval.push(async () => {
+      const message = reaction.message;
 
-    await message.react('📸');
-    const { attachments } = message;
-    const repost_channel = message.client.channels.cache.get(
-      SCREENSHOT_REPOST_CHANNEL_ID
-    );
-
-    for (const image of Array.from(attachments.values())) {
-      if (!image) {
-        continue;
+      if (processed_messages.has(message.id)) {
+        return;
       }
 
-      const contains_spoiler = image.name.toLowerCase().includes('spoiler_');
+      processed_messages.add(message.id);
 
-      if (contains_spoiler) {
-        continue;
+      await message.react('📸');
+      const { attachments } = message;
+      const repost_channel = message.client.channels.cache.get(
+        SCREENSHOT_REPOST_CHANNEL_ID
+      );
+
+      for (const image of Array.from(attachments.values())) {
+        if (!image) {
+          continue;
+        }
+
+        const contains_spoiler = image.name.toLowerCase().includes('spoiler_');
+
+        if (contains_spoiler) {
+          continue;
+        }
+
+        const embed = new Discord.MessageEmbed()
+          .setAuthor({
+            name: message.content,
+            icon_url: message.author.avatarURL,
+          })
+          .setDescription(`[by ${message.author.username}](${message.url})`)
+          .setColor(3066993)
+          .setTimestamp(new Date())
+          .setImage(image.url)
+          .setFooter({
+            icon_url: message.author.avatarURL,
+            text: message.author.username,
+          });
+
+        repost_channel.send({ embeds: [embed] }).catch(console.error);
       }
-
-      const embed = new Discord.MessageEmbed()
-        .setAuthor({
-          name: message.content,
-          icon_url: message.author.avatarURL,
-        })
-        .setDescription(`[by ${message.author.username}](${message.url})`)
-        .setColor(3066993)
-        .setTimestamp(new Date())
-        .setImage(image.url)
-        .setFooter({
-          icon_url: message.author.avatarURL,
-          text: message.author.username,
-        });
-
-      repost_channel.send({ embeds: [embed] }).catch(console.error);
-    }
+    });
   };
 
   client.on('messageReactionAdd', screenshot_handler);
