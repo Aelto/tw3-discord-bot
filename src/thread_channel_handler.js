@@ -48,7 +48,8 @@ channel.
 __If you wish your message to stay without a thread, write \`${NO_THREAD_MESSAGE}\`.__
 
 _This message will be deleted automatically during the creation of the thread_
-        `.trim());
+        `.trim()).catch(console.error);
+
         defer_channels.set(author_id, {
           message,
           client,
@@ -71,7 +72,7 @@ _This message will be deleted automatically during the creation of the thread_
           name: message.author.username,
           autoArchiveDuration: 60 * 24,
           startMessage: message
-        });
+        }).catch(console.error);
 
       if (bot_message !== null) {
         bot_message.delete()
