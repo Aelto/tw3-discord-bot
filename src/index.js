@@ -11,7 +11,7 @@ const {
   BASIC_ROLE,
   LOG_CHANNEL_ID,
   SCREENSHOT_CHANNEL_ID,
-  SCREENSHOT_REPOST_CHANNEL_ID
+  SCREENSHOT_REPOST_CHANNEL_ID,
 } = require('./constants.js');
 const key = require('./key');
 
@@ -25,7 +25,7 @@ const client = new Discord.Client({
     Discord.Intents.FLAGS.GUILD_MESSAGES,
     Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-  ]
+  ],
 });
 const addScreenshotReactionListener = require('./screenshot_handler.js');
 const antibot_handler = require('./antibot_handler.js');
@@ -39,7 +39,7 @@ client.login(key);
 let waiting_answer_from = {
   channel: null,
   author: null,
-  waiting_promise_resolver: null
+  waiting_promise_resolver: null,
 };
 
 function prompt(message, question, delay = 60, keep_original_message = false) {
@@ -47,7 +47,7 @@ function prompt(message, question, delay = 60, keep_original_message = false) {
     waiting_answer_from.channel = message.channel;
     waiting_answer_from.author = message.author;
 
-    waiting_answer_from.waiting_promise_resolver = v => {
+    waiting_answer_from.waiting_promise_resolver = (v) => {
       remove_waiting_answer();
 
       return resolve(v);
@@ -77,17 +77,17 @@ function remove_waiting_answer() {
 }
 
 function getUserFromMention(mention) {
-	if (!mention) return;
+  if (!mention) return;
 
-	if (mention.startsWith('<@') && mention.endsWith('>')) {
-		mention = mention.slice(2, -1);
+  if (mention.startsWith('<@') && mention.endsWith('>')) {
+    mention = mention.slice(2, -1);
 
-		if (mention.startsWith('!')) {
-			mention = mention.slice(1);
-		}
+    if (mention.startsWith('!')) {
+      mention = mention.slice(1);
+    }
 
-		return client.users.cache.get(mention);
-	}
+    return client.users.cache.get(mention);
+  }
 }
 
 const commands = {};
@@ -110,7 +110,7 @@ commands['help'] = {
       helpMessage,
       'blue'
     );
-  }
+  },
 };
 
 commands['report'] = {
@@ -120,12 +120,13 @@ commands['report'] = {
     const delay = 60;
 
     const author_member = message.guild.members.cache.get(message.author.id);
-    const has_admin_role = author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
+    const has_admin_role =
+      author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
     if (!has_admin_role) {
       return consume(
         client,
         message,
-        "Missing permissions",
+        'Missing permissions',
         "You don't have the sufficient role to report someone",
         'red'
       );
@@ -142,12 +143,9 @@ commands['report'] = {
       );
 
       reported_user = getUserFromMention(who_answer.content);
-    }
-    else {
+    } else {
       reported_user = getUserFromMention(at_ping);
     }
-
-    
 
     const reported_member = message.guild.members.cache.get(reported_user.id);
 
@@ -156,7 +154,10 @@ commands['report'] = {
     try {
       let confirm;
 
-      if (!reported_member.roles.cache.has(WARNED_ROLE_1_ID) && !reported_member.roles.cache.has(WARNED_ROLE_2_ID)) {
+      if (
+        !reported_member.roles.cache.has(WARNED_ROLE_1_ID) &&
+        !reported_member.roles.cache.has(WARNED_ROLE_2_ID)
+      ) {
         confirm = await prompt(
           message,
           `Do you confirm you want to report ${reported_user.username}, this will be his 1st offense`,
@@ -164,8 +165,7 @@ commands['report'] = {
         );
 
         level = 1;
-      }
-      else if (reported_member.roles.cache.has(WARNED_ROLE_1_ID)) {
+      } else if (reported_member.roles.cache.has(WARNED_ROLE_1_ID)) {
         confirm = await prompt(
           message,
           `Do you confirm you want to report ${reported_user.username}, this will be his 2nd offense`,
@@ -173,104 +173,116 @@ commands['report'] = {
         );
 
         level = 2;
-      }
-      else if (reported_member.roles.cache.has(WARNED_ROLE_2_ID)) {
+      } else if (reported_member.roles.cache.has(WARNED_ROLE_2_ID)) {
         confirm = await prompt(
           message,
           `Do you confirm you want to report ${reported_user.username}, this will be his 3nd and last offense`,
           delay
         );
 
-        level = 3
+        level = 3;
       }
 
-      report_confirmed = confirm.content.toLowerCase().includes("yes");
-    } catch (err) {
-
-    }
+      report_confirmed = confirm.content.toLowerCase().includes('yes');
+    } catch (err) {}
 
     if (report_confirmed) {
       const reason = reason_words.join(' ').trim() || '_No reason given_';
 
       Promise.resolve()
-      .then(() => {
+        .then(() => {
+          if (level === 1) {
+            reported_member.roles.add(WARNED_ROLE_1_ID);
 
-        if (level === 1) {
-          reported_member.roles.add(WARNED_ROLE_1_ID);
+            const embed = new Discord.MessageEmbed()
+              .setAuthor({
+                name: client.user.username,
+                icon_url: client.user.avatarURL,
+              })
+              .setTitle('Reported user')
+              .setDescription(
+                String(
+                  `<@${reported_user.id}> has been reported by the peacekeepers and is now **warned**. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`
+                )
+              )
+              .setColor(15158332)
+              .setTimestamp(new Date())
+              .setFooter({
+                icon_url: reported_user.avatarURL,
+                text: reported_user.username,
+              });
+            return message.guild.channels.cache
+              .get(MAIN_CHANNEL_ID)
+              .send({ embeds: [embed] })
+              .catch(console.error);
+          } else if (level === 2) {
+            reported_member.roles.remove(WARNED_ROLE_1_ID);
+            reported_member.roles.add(WARNED_ROLE_2_ID);
 
-          const embed = new Discord.MessageEmbed()
-            .setAuthor({
-              name: client.user.username,
-              icon_url: client.user.avatarURL
-            })
-            .setTitle("Reported user")
-            .setDescription(String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **warned**. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`))
-            .setColor(15158332)
-            .setTimestamp(new Date())
-            .setFooter({
-              icon_url: reported_user.avatarURL,
-              text: reported_user.username
-            });
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] }).catch(console.error);
-        }
-        else if (level === 2) {
-          reported_member.roles.remove(WARNED_ROLE_1_ID);
-          reported_member.roles.add(WARNED_ROLE_2_ID);
+            const embed = new Discord.MessageEmbed()
+              .setAuthor({
+                name: client.user.username,
+                icon_url: client.user.avatarURL,
+              })
+              .setTitle('Reported user')
+              .setDescription(
+                String(
+                  `<@${reported_user.id}> has been reported by the peacekeepers and is now **flagged**, the 2nd strike. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`
+                )
+              )
+              .setColor(15158332)
+              .setTimestamp(new Date())
+              .setFooter({
+                icon_url: reported_user.avatarURL,
+                text: reported_user.username,
+              });
 
-          const embed = new Discord.MessageEmbed()
-            .setAuthor({
-              name: client.user.username,
-              icon_url: client.user.avatarURL
-            })
-            .setTitle("Reported user")
-            .setDescription(String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **flagged**, the 2nd strike. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`))
-            .setColor(15158332)
-            .setTimestamp(new Date())
-            .setFooter({
-              icon_url: reported_user.avatarURL,
-              text: reported_user.username
-            });
+            return message.guild.channels.cache
+              .get(MAIN_CHANNEL_ID)
+              .send({ embeds: [embed] })
+              .catch(console.error);
+          } else {
+            reported_member.kick(
+              `You were kicked from the server due to repeated offenses. Reason for the last report: ${reason}`
+            );
 
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] }).catch(console.error);
-        }
-        else {
-          reported_member.kick(`You were kicked from the server due to repeated offenses. Reason for the last report: ${reason}`);
+            const embed = new Discord.MessageEmbed()
+              .setAuthor({
+                name: client.user.username,
+                icon_url: client.user.avatarURL,
+              })
+              .setTitle('Reported user')
+              .setDescription(
+                String(
+                  `<@${reported_user.id}> has been reported by the peacekeepers and is now **kicked**.\n\n**__The reason for the report is:__**\n${reason}`
+                )
+              )
+              .setColor(15158332)
+              .setTimestamp(new Date())
+              .setFooter({
+                icon_url: reported_user.avatarURL,
+                text: reported_user.username,
+              });
 
-          const embed = new Discord.MessageEmbed()
-            .setAuthor({
-              name: client.user.username,
-              icon_url: client.user.avatarURL
-            })
-            .setTitle("Reported user")
-            .setDescription(String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **kicked**.\n\n**__The reason for the report is:__**\n${reason}`))
-            .setColor(15158332)
-            .setTimestamp(new Date())
-            .setFooter({
-              icon_url: reported_user.avatarURL,
-              text: reported_user.username
-            });
-
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] }).catch(console.error);
-        }
-
-      })
-      .then(() => {
-        remove_waiting_answer();
-      });
+            return message.guild.channels.cache
+              .get(MAIN_CHANNEL_ID)
+              .send({ embeds: [embed] })
+              .catch(console.error);
+          }
+        })
+        .then(() => {
+          remove_waiting_answer();
+        });
+    } else {
+      message.channel
+        .send([`Reports towards ${reported_user} were cancelled`])
+        .then(() => {
+          remove_waiting_answer();
+        })
+        .catch(console.error);
     }
-    else {
-      message.channel.send([
-        `Reports towards ${reported_user} were cancelled`
-      ])
-      .then(() => {
-        remove_waiting_answer();
-      })
-      .catch(console.error);
-    }
-
-    
-  }
-}
+  },
+};
 
 commands['cleanse'] = {
   name: 'cleanse',
@@ -279,12 +291,13 @@ commands['cleanse'] = {
     const delay = 60;
 
     const author_member = message.guild.members.cache.get(message.author.id);
-    const has_admin_role = author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
+    const has_admin_role =
+      author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
     if (!has_admin_role) {
       return consume(
         client,
         message,
-        "Missing permissions",
+        'Missing permissions',
         "You don't have the sufficient role to cleanse someone",
         'red'
       );
@@ -300,12 +313,9 @@ commands['cleanse'] = {
       );
 
       cleansed_user = getUserFromMention(who_answer.content);
-    }
-    else {
+    } else {
       cleansed_user = getUserFromMention(args[0]);
     }
-
-    
 
     const cleansed_member = message.guild.members.cache.get(cleansed_user.id);
 
@@ -322,8 +332,7 @@ commands['cleanse'] = {
         );
 
         level = 1;
-      }
-      else if (cleansed_member.roles.cache.has(WARNED_ROLE_2_ID)) {
+      } else if (cleansed_member.roles.cache.has(WARNED_ROLE_2_ID)) {
         confirm = await prompt(
           message,
           `Do you confirm you want to cleanse ${cleansed_user.username}, he is currently at his 2nd offense and will be downgraded to the 1st offense`,
@@ -333,72 +342,77 @@ commands['cleanse'] = {
         level = 2;
       }
 
-      cleanse_confirmed = confirm.content.toLowerCase().includes("yes");
-    } catch (err) {
-
-    }
+      cleanse_confirmed = confirm.content.toLowerCase().includes('yes');
+    } catch (err) {}
 
     if (cleanse_confirmed) {
-      message.channel.send([
-        `${cleansed_user} was cleansed`
-      ])
-      .catch(console.error)
-      .then(() => {
+      message.channel
+        .send([`${cleansed_user} was cleansed`])
+        .catch(console.error)
+        .then(() => {
+          if (level === 1) {
+            cleansed_member.roles.remove(WARNED_ROLE_1_ID);
 
-        if (level === 1) {
-          cleansed_member.roles.remove(WARNED_ROLE_1_ID);
+            const embed = new Discord.MessageEmbed()
+              .setAuthor({
+                name: client.user.username,
+                icon_url: client.user.avatarURL,
+              })
+              .setTitle('Cleansed user')
+              .setDescription(
+                String(
+                  `<@${cleansed_user.id}> was cleansed by the peacekeepers and is now free of all the negative roles`
+                )
+              )
+              .setColor(3066993)
+              .setTimestamp(new Date())
+              .setFooter({
+                icon_url: reported_user.avatarURL,
+                text: reported_user.username,
+              });
+            return message.guild.channels.cache
+              .get(MAIN_CHANNEL_ID)
+              .send({ embeds: [embed] });
+          } else if (level === 2) {
+            cleansed_member.roles.add(WARNED_ROLE_1_ID);
+            cleansed_member.roles.remove(WARNED_ROLE_2_ID);
 
-          const embed = new Discord.MessageEmbed()
-            .setAuthor({
-              name: client.user.username,
-              icon_url: client.user.avatarURL
-            })
-            .setTitle("Cleansed user")
-            .setDescription(String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now free of all the negative roles`))
-            .setColor(3066993)
-            .setTimestamp(new Date())
-            .setFooter({
-              icon_url: reported_user.avatarURL,
-              text: reported_user.username
-            });
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] });
-        }
-        else if (level === 2) {
-          cleansed_member.roles.add(WARNED_ROLE_1_ID);
-          cleansed_member.roles.remove(WARNED_ROLE_2_ID);
-
-          const embed = new Discord.MessageEmbed()
-            .setAuthor({
-              name: client.user.username,
-              icon_url: client.user.avatarURL
-            })
-            .setTitle("Cleansed user")
-            .setDescription(String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now back to the **warned** role.`))
-            .setColor(3066993)
-            .setTimestamp(new Date())
-            .setFooter({
-              icon_url: reported_user.avatarURL,
-              text: reported_user.username
-            });
-          return message.guild.channels.cache.get(MAIN_CHANNEL_ID).send({ embeds: [embed] }).catch(console.error);
-        }
-
-      })
-      .then(() => {
-        remove_waiting_answer();
-      });
+            const embed = new Discord.MessageEmbed()
+              .setAuthor({
+                name: client.user.username,
+                icon_url: client.user.avatarURL,
+              })
+              .setTitle('Cleansed user')
+              .setDescription(
+                String(
+                  `<@${cleansed_user.id}> was cleansed by the peacekeepers and is now back to the **warned** role.`
+                )
+              )
+              .setColor(3066993)
+              .setTimestamp(new Date())
+              .setFooter({
+                icon_url: reported_user.avatarURL,
+                text: reported_user.username,
+              });
+            return message.guild.channels.cache
+              .get(MAIN_CHANNEL_ID)
+              .send({ embeds: [embed] })
+              .catch(console.error);
+          }
+        })
+        .then(() => {
+          remove_waiting_answer();
+        });
+    } else {
+      message.channel
+        .send([`Cleanse towards ${cleansed_user} were cancelled`])
+        .catch(console.error)
+        .then(() => {
+          remove_waiting_answer();
+        });
     }
-    else {
-      message.channel.send([
-        `Cleanse towards ${cleansed_user} were cancelled`
-      ])
-      .catch(console.error)
-      .then(() => {
-        remove_waiting_answer();
-      })
-    }
-  }
-}
+  },
+};
 
 class Mod {
   constructor(name, link, description) {
@@ -426,10 +440,12 @@ function saveModDatabase() {
 
   const content = {
     mods,
-    requests
+    requests,
   };
 
-  fs.writeFileSync('mods-database.json', JSON.stringify(content, null, '  '), { encoding: 'utf-8' });
+  fs.writeFileSync('mods-database.json', JSON.stringify(content, null, '  '), {
+    encoding: 'utf-8',
+  });
 }
 
 function getModDatabase() {
@@ -472,28 +488,30 @@ commands['modregister'] = {
       `<@${message.author.id}> has registered the mod ${args[0]}. It will be added to the database after a Peacekeeper has validater the request`,
       'blue'
     );
-  }
-}
+  },
+};
 
 commands['modrequests'] = {
   name: 'modrequests',
   help: '`$modrequests [id] [yes/no]` to get the pending requests & to accept/deny a specific request',
   command: (client, message, args) => {
     const author_member = message.guild.members.cache.get(message.author.id);
-    const has_admin_role = author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
+    const has_admin_role =
+      author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
     if (!has_admin_role) {
       return consume(
         client,
         message,
-        "Missing permissions",
+        'Missing permissions',
         "You don't have the sufficient role to view the pending requests",
         'red'
       );
     }
 
     if (!args.length) {
-      const pending_requests = Array.from(mod_requests.entries())
-        .map(([name, {link}]) => `**${name}**: ${link}`);
+      const pending_requests = Array.from(mod_requests.entries()).map(
+        ([name, { link }]) => `**${name}**: ${link}`
+      );
 
       if (!pending_requests.length) {
         return consume(
@@ -512,9 +530,8 @@ commands['modrequests'] = {
         pending_requests.join('\n') || '',
         'green'
       );
-    }
-    else if (args.length == 1) {
-      const pending_request = mod_requests.get(args[0])
+    } else if (args.length == 1) {
+      const pending_request = mod_requests.get(args[0]);
 
       consume(
         client,
@@ -523,12 +540,11 @@ commands['modrequests'] = {
         [
           `**name**: ${pending_request.name}`,
           `**link**: ${pending_request.link}`,
-          `**description**: ${pending_request.description}`
+          `**description**: ${pending_request.description}`,
         ].join('\n'),
         'green'
       );
-    }
-    else {
+    } else {
       const pending_request = mod_requests.get(args[0]);
       const is_accepted = String(args[1]).toLowerCase() === 'yes';
 
@@ -541,14 +557,13 @@ commands['modrequests'] = {
           'red'
         );
       }
-      
+
       mod_requests.delete(args[0]);
       saveModDatabase();
-      
+
       if (is_accepted) {
         registered_mods.set(args[0], pending_request);
         saveModDatabase();
-
 
         return consume(
           client,
@@ -567,8 +582,8 @@ commands['modrequests'] = {
         'red'
       );
     }
-  }
-}
+  },
+};
 
 commands['mods'] = {
   name: 'mods',
@@ -590,7 +605,7 @@ commands['mods'] = {
       const mod = registered_mods.get(search.join(' ').trim());
       const mod_information = [
         `**__${mod.name}__** - ${mod.link}`,
-        mod.description
+        mod.description,
       ].join('\n');
 
       consume(
@@ -600,10 +615,11 @@ commands['mods'] = {
         mod_information,
         'green'
       );
-    }
-    else if (arg === 'search') {
-      const mods = Array.from(registered_mods)
-        .filter(([name, { link, description }]) => search.some(s => name.includes(s) || description.includes(s)));
+    } else if (arg === 'search') {
+      const mods = Array.from(registered_mods).filter(
+        ([name, { link, description }]) =>
+          search.some((s) => name.includes(s) || description.includes(s))
+      );
 
       consume(
         client,
@@ -612,8 +628,7 @@ commands['mods'] = {
         mods.map(([_, mod]) => `**__${mod.name}__** - ${mod.link}`).join('\n'),
         'green'
       );
-    }
-    else {
+    } else {
       const mods = Array.from(registered_mods);
 
       if (!mods.length) {
@@ -634,20 +649,21 @@ commands['mods'] = {
         'green'
       );
     }
-  }
-}
+  },
+};
 
 commands['modremove'] = {
   name: 'modremove',
   help: '`$modremove <name>` to remove a mod from the database',
   command: (client, message, args) => {
     const author_member = message.guild.members.cache.get(message.author.id);
-    const has_admin_role = author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
+    const has_admin_role =
+      author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
     if (!has_admin_role) {
       return consume(
         client,
         message,
-        "Missing permissions",
+        'Missing permissions',
         "You don't have the sufficient role to remove a mod",
         'red'
       );
@@ -659,7 +675,7 @@ commands['modremove'] = {
       return consume(
         client,
         message,
-        "No mod found",
+        'No mod found',
         `No mod found with the name ${name}`,
         'red'
       );
@@ -672,78 +688,77 @@ commands['modremove'] = {
     return consume(
       client,
       message,
-      "Mod removed",
+      'Mod removed',
       `the mod **${name}** was removed from the database`,
       'green'
     );
-  }
-}
+  },
+};
 
 commands['say'] = {
   name: 'say',
   help: '`$say <channel-id> <message>`',
   /**
-   * 
-   * @param {Discord.Client} client 
-   * @param {Discord.Message} message 
-   * @param {string[]} args 
-   * @returns 
+   *
+   * @param {Discord.Client} client
+   * @param {Discord.Message} message
+   * @param {string[]} args
+   * @returns
    */
   command: async (client, message, args) => {
     if (args.length < 2) {
       return consume(
         client,
         message,
-        "Invalid arguments",
+        'Invalid arguments',
         `you must provide a channel id and a message`,
         'red'
       );
     }
 
     const [channel_id, ...words] = args;
-    
+
     try {
       const channel = await client.channels.fetch(channel_id);
       const text = words.join(' ');
 
       message.delete();
       channel.send(text);
-    }
-    catch (err) {
+    } catch (err) {
       consume(
         client,
         message,
-        "Unknown channel",
+        'Unknown channel',
         `no channel exists with the id ${channel_id}`,
         'red'
       );
-    }    
-  }
-}
+    }
+  },
+};
 
 commands['announce'] = {
   name: 'announce',
   help: '`$announce <channel-id> <message>`',
   /**
-   * 
-   * @param {Discord.Client} client 
-   * @param {Discord.Message} message 
-   * @param {string[]} args 
-   * @returns 
+   *
+   * @param {Discord.Client} client
+   * @param {Discord.Message} message
+   * @param {string[]} args
+   * @returns
    */
   command: async (client, message, args) => {
     if (args.length < 2) {
       return consume(
         client,
         message,
-        "Invalid arguments",
+        'Invalid arguments',
         `you must provide a channel id and a message`,
         'red'
       );
     }
 
     const [channel_id, ...words] = args;
-    
+
     try {
       const channel = await client.channels.fetch(channel_id);
       const text = words.join(' ');
@@ -755,19 +770,192 @@ commands['announce'] = {
 
       message.delete();
       channel.send({ embeds: [embed] });
-    }
-    catch (err) {
+    } catch (err) {
       consume(
         client,
         message,
-        "Unknown channel",
+        'Unknown channel',
         `no channel exists with the id ${channel_id}`,
         'red'
       );
-    }    
-  }
-}
+    }
+  },
+};
 
+commands['poll'] = {
+  name: 'poll',
+  help: `tells the bot to write the lines in the given channel so people can react to each individual line`,
+  /**
+   *
+   * @param {Discord.Client} client
+   * @param {Discord.Message} message
+   * @param {string[]} args
+   * @returns
+   */
+  command: async (client, message, args) => {
+    if (args.length < 2) {
+      return consume(
+        client,
+        message,
+        'Invalid arguments',
+        `you must provide a channel id and a message`,
+        'red'
+      );
+    }
+
+    const [channel_id, ...words] = args;
+
+    try {
+      const channel = await client.channels.fetch(channel_id);
+      const lines = words.join(' ').split('\n');
+
+      for (const line of lines) {
+        if (line.trim().length <= 0) {
+          continue;
+        }
+
+        channel.send(line);
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      message.delete();
+      channel.send({ embeds: [embed] });
+    } catch (err) {
+      consume(
+        client,
+        message,
+        'Unknown channel',
+        `no channel exists with the id ${channel_id}`,
+        'red'
+      );
+    }
+  },
+};
+
+commands['order66'] = {
+  name: 'order66',
+  help: [
+    '`$order66 <channel-id> <start-message-id> [<end-message-id>]`, to delete,',
+    ' in the given channel, the messages starting from `start-message-id`',
+    ' until the end message or the end of the channel. **Important**: The first',
+    ' message is not deleted, it is not included in the range',
+  ].join(''),
+  /**
+   *
+   * @param {Discord.Client} client
+   * @param {Discord.Message} message
+   * @param {string[]} args
+   * @returns
+   */
+  command: async (client, message, args) => {
+    const author_member = message.guild.members.cache.get(message.author.id);
+    const has_admin_role =
+      author_member && author_member.roles.cache.has(ADMIN_ROLE_ID);
+    if (!has_admin_role) {
+      return consume(
+        client,
+        message,
+        'Missing permissions',
+        "You don't have the sufficient role to remove a mod",
+        'red'
+      );
+    }
+
+    const [channel_id, start_message_id, end_message_id] = args;
+
+    if (!start_message_id) {
+      return consume(
+        client,
+        message,
+        'Missing parameter',
+        'You must pass as a second parameter the ID of the starting point for the deletion',
+        'red'
+      );
+    }
+
+    const channel =
+      channel_id.trim().toLowerCase() === 'here'
+        ? message.channel
+        : await client.channels
+            .fetch(channel_id)
+            .catch(() =>
+              consume(
+                client,
+                message,
+                'Unknown channel',
+                `no channel exists with the id ${channel_id}`,
+                'red'
+              )
+            );
+
+    const gif_message = await channel
+      .send(
+        'https://tenor.com/view/execute-order66-order66-66-palpatine-star-wars-gif-20468321'
+      )
+      .catch((e) =>
+        consume(
+          client,
+          message,
+          'Error while sending a funny gif message',
+          e,
+          'red'
+        )
+      );
+
+    const end_message_param = Boolean(end_message_id)
+      ? { before: end_message_id }
+      : {};
+
+    const messages = await channel.messages
+      .fetch({
+        after: start_message_id,
+        cache: false,
+        ...end_message_param,
+      })
+      .catch((e) =>
+        consume(client, message, 'Error while fetching the messages', e, 'red')
+      );
+
+    if (end_message_id) {
+      messages.sweep((message) => message.id > end_message_id);
+    }
+
+    // wait 3 seconds
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    channel.bulkDelete(messages).catch((e) => {
+      console.log(e);
+      consume(client, message, 'Error while deleting the messages', e, 'red');
+    });
+
+    if (end_message_id) {
+      gif_message
+        .delete()
+        .catch((e) =>
+          consume(
+            client,
+            message,
+            'Error while deleting the gif message',
+            e,
+            'red'
+          )
+        );
+
+      await message
+        .delete()
+        .catch((e) =>
+          consume(
+            client,
+            message,
+            'Error while deleting the command message',
+            e,
+            'red'
+          )
+        );
+    }
+  },
+};
 
 addListenCommands(commands);
 addScreenshotReactionListener(client);
@@ -778,11 +966,11 @@ client.on('ready', () => {
   const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
   if (log_channel) {
-    log_channel.send("Hello, i just restarted :wave:");
+    log_channel.send('Hello, i just restarted :wave:');
   }
 });
 
-client.on('messageCreate', message => {
+client.on('messageCreate', (message) => {
   antibot_handler(message, client);
   thread_channel_handler(message, client);
 
@@ -808,18 +996,17 @@ client.on('messageCreate', message => {
     if (command in commands) {
       try {
         return commands[command].command(client, message, argv);
-      }
-      catch (err) {
+      } catch (err) {
         return consume(
           client,
           message,
           'Error',
           `error when running command \`${command}\`: ${err}`,
           'red'
-        );    
+        );
       }
     }
-    
+
     return consume(
       client,
       message,
@@ -847,92 +1034,98 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-client.on('guildBanRemove', async (guild, user) => {    
-  
-  var banlana = ["**The wounds can be healed, but never hidden.**",
-  "**has been unbanned. Compassion is a rarity in the fevered pitch of anger.**",
-  "**was unbanned. Patched up, if only to bleed again.**",
-  "**has been unbanned. A death denied, for now.**",
-  "**is unbanned! How quickly the tide turns!**",
-  "**has been unbanned! A moment of valor shines brightest against a backdrop of despair.**",
-  "**was unbanned. A moment of clarity in the eye of the storm.**"]
-  
-  var result = Math.floor((Math.random() * banlana.length) + 0);
-  
-  guild.channels.cache.get("755190155093999746").send(user.tag+ " " +banlana[result]) 
-});
+client.on('guildBanRemove', async (guild, user) => {
+  var banlana = [
+    '**The wounds can be healed, but never hidden.**',
+    '**has been unbanned. Compassion is a rarity in the fevered pitch of anger.**',
+    '**was unbanned. Patched up, if only to bleed again.**',
+    '**has been unbanned. A death denied, for now.**',
+    '**is unbanned! How quickly the tide turns!**',
+    '**has been unbanned! A moment of valor shines brightest against a backdrop of despair.**',
+    '**was unbanned. A moment of clarity in the eye of the storm.**',
+  ];
 
+  var result = Math.floor(Math.random() * banlana.length + 0);
+
+  guild.channels.cache
+    .get('755190155093999746')
+    .send(user.tag + ' ' + banlana[result]);
+});
 
 client.on('guildBanAdd', async (guild, user) => {
   const banlana = [
-    "**has been banned. This one has become mindless, useless. Let them find comfort within the earth, among the worms.**",
-    "**was dispatched. Suffer not the lame horse... nor the broken man.**",
-    "**has been dismissed. Another soul battered and broken, cast aside like a spent torch.**",
-    "**has been banned. It is done. Turn yourself now to the conditions of those poor devils who rest six feet under.**",
-    "**was dismissed. Wounds to be tended; lessons to be learned.**",
-    "**has been banned. Their flame of rot flicker, in the minds of who remains...**",
-    "**was annihilated. Did he foresee his own demise? I care not, so long as he remains as remains.**",
-    "**was dispatched. He is as grotesque in death as he was in life...**",
-    "**has been felled. Fitting, that he find his rest upon the dirt he harrowed so fruitlessly.**",
-    "**was banned! Executed, with impunity!**",
-    "**has been banned! Witness, their tainted blood still on the concrete stone!**",
-    "**has been eradicated! Mortality clarified in a single strike!**",
-    "**was banned. Those who covet punishment find it in no short supply.**",
-    "**has been banned. Wounds to be tended; lessons to be learned.**",
-    "**has been banned. Worth of freedom is best taught through restriction. Now, hush.**",
-    "**has been dismissed. The unruly require instruction, not sympathy.**",
-    "**has been banned! Value the punishment you craved!**",
-    "**was banned. As above, so below. You reap what you sow.**",
+    '**has been banned. This one has become mindless, useless. Let them find comfort within the earth, among the worms.**',
+    '**was dispatched. Suffer not the lame horse... nor the broken man.**',
+    '**has been dismissed. Another soul battered and broken, cast aside like a spent torch.**',
+    '**has been banned. It is done. Turn yourself now to the conditions of those poor devils who rest six feet under.**',
+    '**was dismissed. Wounds to be tended; lessons to be learned.**',
+    '**has been banned. Their flame of rot flicker, in the minds of who remains...**',
+    '**was annihilated. Did he foresee his own demise? I care not, so long as he remains as remains.**',
+    '**was dispatched. He is as grotesque in death as he was in life...**',
+    '**has been felled. Fitting, that he find his rest upon the dirt he harrowed so fruitlessly.**',
+    '**was banned! Executed, with impunity!**',
+    '**has been banned! Witness, their tainted blood still on the concrete stone!**',
+    '**has been eradicated! Mortality clarified in a single strike!**',
+    '**was banned. Those who covet punishment find it in no short supply.**',
+    '**has been banned. Wounds to be tended; lessons to be learned.**',
+    '**has been banned. Worth of freedom is best taught through restriction. Now, hush.**',
+    '**has been dismissed. The unruly require instruction, not sympathy.**',
+    '**has been banned! Value the punishment you craved!**',
+    '**was banned. As above, so below. You reap what you sow.**',
     "**was banned. No gaze other than a gun's muzzle could virtue his kind.**",
-    "**was banned. A thoughtless voice among the thoughtful few. Becomes silence, his only virtue...**",
-    "**has been dismissed. The disobedient should be taught what to think, not how to think.**"
-  ]
-  
-  const result = Math.floor((Math.random() * banlana.length) + 0);
-  
-  guild.channels.cache.get("755188754540527646").send(user.tag+ " " +banlana[result]) 
+    '**was banned. A thoughtless voice among the thoughtful few. Becomes silence, his only virtue...**',
+    '**has been dismissed. The disobedient should be taught what to think, not how to think.**',
+  ];
+
+  const result = Math.floor(Math.random() * banlana.length + 0);
+
+  guild.channels.cache
+    .get('755188754540527646')
+    .send(user.tag + ' ' + banlana[result]);
 });
 
-
-client.on("guildMemberAdd", async member  => { 
-
+client.on('guildMemberAdd', async (member) => {
   const banlana = [
-    "Welcome home, such as it is. A living breathing question that you will perhaps become the answer of.",
-    "has come to join the workshop, their purpose unknown to me...",
-    "You answered the invitation - now like me, you are part of this place!",
-    "is here! Fan the flames! Mold the metal! We are raising an army!",
-    "has arrived. Searching where others will not go... and seeing what others will not see.",
-    "is here. A mighty comrade anchored by a holy purpose. A zealous fighter!",
-    "appears elusive, evasive, persistent... Righteous traits for a rogue!",
-    "has come and will be laughing still... at the end...",
-    "has arrived! Another book falls onto the table of Earth!",
-    "is here! A champion marksman keen for a new kind of challenge.",
-    "has arrived! A formidable sight keen to delve into the darkest of storms!",
-    "Welcome aboard. Secrets and wonders can be found in the most tenebrous corners of this place!",
+    'Welcome home, such as it is. A living breathing question that you will perhaps become the answer of.',
+    'has come to join the workshop, their purpose unknown to me...',
+    'You answered the invitation - now like me, you are part of this place!',
+    'is here! Fan the flames! Mold the metal! We are raising an army!',
+    'has arrived. Searching where others will not go... and seeing what others will not see.',
+    'is here. A mighty comrade anchored by a holy purpose. A zealous fighter!',
+    'appears elusive, evasive, persistent... Righteous traits for a rogue!',
+    'has come and will be laughing still... at the end...',
+    'has arrived! Another book falls onto the table of Earth!',
+    'is here! A champion marksman keen for a new kind of challenge.',
+    'has arrived! A formidable sight keen to delve into the darkest of storms!',
+    'Welcome aboard. Secrets and wonders can be found in the most tenebrous corners of this place!',
     "has arrived! A time to perform beyond one's limits!",
-    "has arrived. Please remind yourself that overconfidence is a slow and insidious killer."
-  ]
-  
-  const result = Math.floor((Math.random() * banlana.length) + 0);
-  
-  member.guild.channels.cache.get("755190155093999746").send(`${member}`+ " " +banlana[result]) 
+    'has arrived. Please remind yourself that overconfidence is a slow and insidious killer.',
+  ];
+
+  const result = Math.floor(Math.random() * banlana.length + 0);
+
+  member.guild.channels.cache
+    .get('755190155093999746')
+    .send(`${member}` + ' ' + banlana[result]);
 });
 
+client.on('guildMemberRemove', async (member) => {
+  const banlana = [
+    'has left. Those without the stomach for this place must move on.',
+    'has left the workshop, with a battered, broken tale.',
+    'has retreated. A setback, but not the end of things!',
+    'has left. We will endure this loss, and learn from it.',
+    'has left. To desert for such a little thing... a bite of bread..!',
+    'has left. A farewell so sudden...',
+    'has left. Picked by the crows like wheat.',
+    'has left. Another tale ended.',
+    'has left. More dust, more ashes, more disappointment...',
+    'has retreated. Wherefore, heroism?',
+  ];
 
-client.on("guildMemberRemove", async member => { 
+  const result = Math.floor(Math.random() * banlana.length + 0);
 
-  const banlana = ["has left. Those without the stomach for this place must move on.",
-  "has left the workshop, with a battered, broken tale.",
-  "has retreated. A setback, but not the end of things!",
-  "has left. We will endure this loss, and learn from it.",
-  "has left. To desert for such a little thing... a bite of bread..!",
-  "has left. A farewell so sudden...",
-  "has left. Picked by the crows like wheat.",
-  "has left. Another tale ended.",
-  "has left. More dust, more ashes, more disappointment...",
-  "has retreated. Wherefore, heroism?"]
-  
-  const result = Math.floor((Math.random() * banlana.length) + 0);
-  
-  member.guild.channels.cache.get("755188754540527646").send(member.user.tag+ " " +banlana[result]) 
+  member.guild.channels.cache
+    .get('755188754540527646')
+    .send(member.user.tag + ' ' + banlana[result]);
 });
