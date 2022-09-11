@@ -120,14 +120,7 @@ exports.addListenCommands = function addListenCommand(commands) {
 
   commands['listen'] = {
     name: 'listen',
-    help: [
-      '`$listen { matches: [<match_1>, <match_2>, ..., <match_n>], probability: 1, answers: ["Answer one", "Answer two", ...], only_direct_conversation: false }`',
-      '\n  - Where a match can either be a regex `/my(regex)?/` or a series of word that must all be found in the message and where `$`',
-      'can be used to express a space: `["rer$bible", "/my(regex)?(example)+/"`, "all of these words must be found but in any order"]',
-      '\n  - Where `probability` can be any number between 0 and 1, where 0 means 0% chance and 1 means 100% chance for the listener to trigger in case of a successful match',
-      '\n  - Where `answers` is a list of all the messages that will be sent if the listener matches',
-      "\n  - Where `only_direct_conversation` is a boolean that once set to true indicates the listener should match only if the message follows one of the bot's message",
-    ].join(''),
+    help: '`$listen` and answer the questions.',
     command: async (client, message, args) => {
       const author_member = message.guild.members.cache.get(message.author.id);
       const has_admin_role =
