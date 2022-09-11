@@ -380,6 +380,11 @@ exports.listenForMessage = async function listenForMessage(message) {
   )) {
     const should_message_answer_bot = listener.only_direct_conversation;
 
+    const probability = listener.probability || 1;
+    if (probability < 1 && Math.random() > probability) {
+      continue;
+    }
+
     if (should_message_answer_bot) {
       getMessageBefore().then((before) => {
         if (
