@@ -935,7 +935,7 @@ client.on('ready', () => {
   const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
   if (log_channel) {
-    // log_channel.send('Hello, i just restarted :wave:');
+    log_channel.send('Hello, i just restarted :wave:');
   }
 });
 
