@@ -18,7 +18,7 @@ class ListenersDatabase {
   }
 
   getListenersThatMatch(message) {
-    let formatted_message = message.toLowerCase();
+    let formatted_message = ` ${message.toLowerCase().trim()} `;
 
     return this.listeners.filter((listener) =>
       listener.doesMatch(formatted_message)
@@ -63,7 +63,7 @@ class Match {
     } else {
       this.cached_words = this.match_string
         .split(' ')
-        .map((word) => word.replace(/\$/, ' '));
+        .map((word) => word.replace(/\$/g, ' '));
     }
   }
 
@@ -329,27 +329,29 @@ exports.addListenCommands = function addListenCommand(commands) {
         listeners_database.getListenersThatMatch(message.content)
       );
 
-      const filtered_listeers = listeners_database.listeners
+      const filtered_listeners = listeners_database.listeners
         .map((listener, index) => ({ listener, index }))
         .filter(({ listener }) => listeners.has(listener));
 
-      message.channel
-        .send(
-          filtered_listeers
-            .map(
-              ({ listener, index }) =>
-                `**#${index}**:\n\`\`\`${JSON.stringify(
-                  listener,
-                  null,
-                  ' '
-                )}\`\`\``
-            )
-            .join('\n'),
-          {
-            split: true,
-          }
-        )
-        .catch(console.error);
+      if (filtered_listeners.length > 0) {
+        message.channel
+          .send(
+            filtered_listeners
+              .map(
+                ({ listener, index }) =>
+                  `**#${index}**:\n\`\`\`${JSON.stringify(
+                    listener,
+                    null,
+                    ' '
+                  )}\`\`\``
+              )
+              .join('\n'),
+            {
+              split: true,
+            }
+          )
+          .catch(console.error);
+      }
     },
   };
 };
