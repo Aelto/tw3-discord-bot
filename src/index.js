@@ -32,49 +32,11 @@ const antibot_handler = require('./antibot_handler.js');
 const thread_channel_handler = require('./thread_channel_handler.js');
 client.login(key);
 
-/**
- * if set to a value, the next message received from `author`
- * in the specific `channel` will be used to resolve `waiting_promise`
- */
-let waiting_answer_from = {
-  channel: null,
-  author: null,
-  waiting_promise_resolver: null,
-};
-
-function prompt(message, question, delay = 60, keep_original_message = false) {
-  return new Promise((resolve, reject) => {
-    waiting_answer_from.channel = message.channel;
-    waiting_answer_from.author = message.author;
-
-    waiting_answer_from.waiting_promise_resolver = (v) => {
-      remove_waiting_answer();
-
-      return resolve(v);
-    };
-
-    consume(
-      client,
-      message,
-      `Please answer in less than ${delay}s`,
-      question,
-      'blue',
-      keep_original_message
-    );
-
-    setTimeout(() => {
-      remove_waiting_answer();
-
-      reject('timeout');
-    }, delay * 1000);
-  });
-}
-
-function remove_waiting_answer() {
-  waiting_answer_from.channel = null;
-  waiting_answer_from.author = null;
-  waiting_answer_from.waiting_promise_resolver = null;
-}
+const {
+  prompt,
+  prompt_handler,
+  remove_waiting_answer,
+} = require('./core/prompt.js');
 
 function getUserFromMention(mention) {
   if (!mention) return;
@@ -136,6 +98,7 @@ commands['report'] = {
     const [at_ping, ...reason_words] = args;
     if (!at_ping) {
       const who_answer = await prompt(
+        client,
         message,
         `Looks like you forgot who to report, who do you want to report. @ him please.`,
         delay,
@@ -159,6 +122,7 @@ commands['report'] = {
         !reported_member.roles.cache.has(WARNED_ROLE_2_ID)
       ) {
         confirm = await prompt(
+          client,
           message,
           `Do you confirm you want to report ${reported_user.username}, this will be his 1st offense`,
           delay
@@ -167,6 +131,7 @@ commands['report'] = {
         level = 1;
       } else if (reported_member.roles.cache.has(WARNED_ROLE_1_ID)) {
         confirm = await prompt(
+          client,
           message,
           `Do you confirm you want to report ${reported_user.username}, this will be his 2nd offense`,
           delay
@@ -175,6 +140,7 @@ commands['report'] = {
         level = 2;
       } else if (reported_member.roles.cache.has(WARNED_ROLE_2_ID)) {
         confirm = await prompt(
+          client,
           message,
           `Do you confirm you want to report ${reported_user.username}, this will be his 3nd and last offense`,
           delay
@@ -306,6 +272,7 @@ commands['cleanse'] = {
     let cleansed_user = null;
     if (!args[0]) {
       const who_answer = await prompt(
+        client,
         message,
         `Looks like you forgot who to cleanse, who do you want to cleanse. @ him please.`,
         delay,
@@ -326,6 +293,7 @@ commands['cleanse'] = {
 
       if (cleansed_member.roles.cache.has(WARNED_ROLE_1_ID)) {
         confirm = await prompt(
+          client,
           message,
           `Do you confirm you want to cleanse ${cleansed_user.username}, he is currently at his 1st offense and will be cleansed of all negative roles`,
           delay
@@ -334,6 +302,7 @@ commands['cleanse'] = {
         level = 1;
       } else if (cleansed_member.roles.cache.has(WARNED_ROLE_2_ID)) {
         confirm = await prompt(
+          client,
           message,
           `Do you confirm you want to cleanse ${cleansed_user.username}, he is currently at his 2nd offense and will be downgraded to the 1st offense`,
           delay
@@ -966,28 +935,14 @@ client.on('ready', () => {
   const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
   if (log_channel) {
-    log_channel.send('Hello, i just restarted :wave:');
+    // log_channel.send('Hello, i just restarted :wave:');
   }
 });
 
 client.on('messageCreate', (message) => {
   antibot_handler(message, client);
   thread_channel_handler(message, client);
-
-  /**
-   * 1. look if the message is the answer of a previously
-   *    asked question
-   */
-  if (
-    waiting_answer_from.author !== null &&
-    waiting_answer_from.channel !== null
-  ) {
-    const { author, channel } = waiting_answer_from;
-
-    if (message.author === author && message.channel.id === channel.id) {
-      return waiting_answer_from.waiting_promise_resolver(message);
-    }
-  }
+  prompt_handler(message, client);
 
   if (message.content.startsWith(COMMANDS_PREFIX)) {
     const args = message.content.replace(/[$][ ]*/, '').split(' ');
