@@ -3,6 +3,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const consume = require('../core/consume-command');
 const { prompt } = require('../core/prompt.js');
+const PRNG = require('../core/prng.js');
 
 class ListenersDatabase {
   constructor({ listeners = [] }) {
@@ -381,7 +382,7 @@ exports.listenForMessage = async function listenForMessage(message) {
     const should_message_answer_bot = listener.only_direct_conversation;
 
     const probability = listener.probability || 1;
-    if (probability < 1 && Math.random() > probability) {
+    if (!PRNG.nextProc(probability)) {
       continue;
     }
 
