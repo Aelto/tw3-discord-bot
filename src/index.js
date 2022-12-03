@@ -30,6 +30,7 @@ const client = new Discord.Client({
 const addScreenshotReactionListener = require("./screenshot_handler.js");
 const antibot_handler = require("./antibot_handler.js");
 const thread_channel_handler = require("./thread_channel_handler.js");
+const helpme_channel_handler = require("./helpme_handler");
 client.login(key);
 
 const {
@@ -985,7 +986,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.customId === "delete_listen") {
-    interaction.message.delete();
+    interaction.message.delete().catch((e) => console.error(e));
   }
 });
 
