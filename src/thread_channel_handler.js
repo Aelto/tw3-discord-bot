@@ -76,8 +76,8 @@ _This message will be deleted automatically during the creation of the thread_
         continue;
       }
 
-      defer_channels.delete(author_id).catch(console.error);
-      notified_authors.delete(author_id).catch(console.error);
+      defer_channels.delete(author_id);
+      notified_authors.delete(author_id);
 
       await message.channel.threads
         .create({
