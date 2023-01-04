@@ -387,12 +387,23 @@ exports.listenForMessage = async function listenForMessage(message) {
     }
 
     if (should_message_answer_bot) {
-      getMessageBefore().then((before) => {
+      getMessageBefore().then(async (before) => {
+        if (!before) {
+          return;
+        }
+
         if (
-          before.author.username === 'The Caretaker' &&
-          listener.answer.length
+          before.author.username === "The Caretaker" &&
+          listener.answers.length
         ) {
-          message.channel.send(listener.answers).catch(console.error);
+          for (const answer of listener.answers) {
+            await message
+              .reply({
+                content: answer,
+                components: [row],
+              })
+              .catch(console.error);
+          }
         }
       });
     } else if (listener.answers.length) {

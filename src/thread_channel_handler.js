@@ -127,13 +127,17 @@ module.exports = async function thread_channel_handler(message, client) {
       .includes(NO_THREAD_MESSAGE.toLocaleLowerCase())
   ) {
     const author_id = message.author.id;
-    const { bot_message = null } = defer_channels.get(author_id);
+    const some_defered_channel = defer_channels.get(author_id);
 
-    defer_channels.delete(author_id).catch(console.error);
-    notified_authors.delete(author_id).catch(console.error);
+    defer_channels.delete(author_id);
+    notified_authors.delete(author_id);
 
-    if (bot_message !== null) {
-      bot_message.delete().catch(console.error);
+    if (some_defered_channel) {
+      const { bot_message = null } = defer_channels.get(author_id);
+
+      if (bot_message !== null) {
+        bot_message.delete().catch(console.error);
+      }
     }
 
     return;
