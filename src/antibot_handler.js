@@ -28,6 +28,9 @@ module.exports = async function antibot_handler(message, client) {
     "github.com",
     "tenor.com",
     "youtube.com",
+    "youtu.be",
+    "discordapp.com/attachments",
+    "discordapp.net/attachments",
     "github.io",
     "ibb.co",
   ];
@@ -68,8 +71,7 @@ Hi <@${message.author.id}>,
 This is an automated response to the message(s) you just sent in this server.
 The message contained a link, however only users with the Hunter role can send links.
 
-For this reason you are now <@&${SHUT_ROLE}> which means you will have to contact a <@&${ADMIN_ROLE_ID}> to
-gain back access to the server.
+For this reason you are now <@&${SHUT_ROLE}> which means you will have to contact a <@&${ADMIN_ROLE_ID}> to gain back access to the server.
 
 Thanks for your understanding.`.trim()
             );
