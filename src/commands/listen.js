@@ -327,10 +327,8 @@ exports.addListenCommands = function addListenCommand(commands) {
      * @param {string[]} args
      */
     command: (client, message, args) => {
-      const [command, ...rest] = args;
-
       const listeners = new Set(
-        listeners_database.getListenersThatMatch(rest.join(" "))
+        listeners_database.getListenersThatMatch(args.join(" "))
       );
 
       const filtered_listeners = listeners_database.listeners
