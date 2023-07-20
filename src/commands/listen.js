@@ -23,7 +23,7 @@ class ListenersDatabase {
     let formatted_message = ` ${message.toLowerCase().trim()} `;
 
     return this.listeners.filter((listener) =>
-      listener.doesMatch(formatted_message)
+      listener.doesMatch(formatted_message, formatted_message.trim())
     );
   }
 
@@ -51,8 +51,10 @@ class Listener {
    * returns whether the given messages matches with this listener.
    * @param {String} message
    */
-  doesMatch(message) {
-    return this.matches.some((match) => match.matches(message));
+  doesMatch(formatted_message, message) {
+    return this.matches.some((match) =>
+      match.matches(formatted_message, message)
+    );
   }
 }
 
@@ -69,11 +71,13 @@ class Match {
     }
   }
 
-  matches(message) {
+  matches(formatted_message, message) {
     if (this.cached_regex) {
       return this.cached_regex.test(message);
     } else {
-      return this.cached_words.every((word) => message.includes(word));
+      return this.cached_words.every((word) =>
+        formatted_message.includes(word)
+      );
     }
   }
 
