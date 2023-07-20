@@ -1,9 +1,10 @@
-const { ADMIN_ROLE_ID } = require('../constants');
-const fs = require('fs');
-const Discord = require('discord.js');
-const consume = require('../core/consume-command');
-const { prompt } = require('../core/prompt.js');
-const PRNG = require('../core/prng.js');
+const { ADMIN_ROLE_ID } = require("../constants");
+const fs = require("fs");
+const Discord = require("discord.js");
+const consume = require("../core/consume-command");
+const { prompt } = require("../core/prompt.js");
+const PRNG = require("../core/prng.js");
+const path = require("path");
 
 class ListenersDatabase {
   constructor({ listeners = [] }) {
@@ -59,12 +60,12 @@ class Match {
   constructor(match_string) {
     this.match_string = match_string.toLowerCase();
 
-    if (match_string.startsWith('/') && match_string.endsWith('/')) {
+    if (match_string.startsWith("/") && match_string.endsWith("/")) {
       this.cached_regex = new RegExp(match_string.slice(1, -1));
     } else {
       this.cached_words = this.match_string
-        .split(' ')
-        .map((word) => word.replace(/\$/g, ' '));
+        .split(" ")
+        .map((word) => word.replace(/\$/g, " "));
     }
   }
 
@@ -85,9 +86,9 @@ let listeners_database = new ListenersDatabase({});
 
 function saveListenersDatabase() {
   fs.writeFileSync(
-    'listeners-database.json',
-    JSON.stringify(listeners_database, null, '  '),
-    { encoding: 'utf-8' }
+    "listeners-database.json",
+    JSON.stringify(listeners_database, null, "  "),
+    { encoding: "utf-8" }
   );
 }
 
@@ -97,12 +98,12 @@ function getListenersDatabase() {
    */
   listeners_database = new Array();
 
-  if (!fs.existsSync('listeners-database.json')) {
+  if (!fs.existsSync("listeners-database.json")) {
     return;
   }
 
   const content = JSON.parse(
-    fs.readFileSync('listeners-database.json', 'utf-8')
+    fs.readFileSync("listeners-database.json", "utf-8")
   );
 
   listeners_database = new ListenersDatabase({
@@ -119,9 +120,9 @@ function getListenersDatabase() {
 exports.addListenCommands = function addListenCommand(commands) {
   getListenersDatabase();
 
-  commands['listen'] = {
-    name: 'listen',
-    help: '`$listen` and answer the questions.',
+  commands["listen"] = {
+    name: "listen",
+    help: "`$listen` and answer the questions.",
     command: async (client, message, args) => {
       const author_member = message.guild.members.cache.get(message.author.id);
       const has_admin_role =
@@ -130,9 +131,9 @@ exports.addListenCommands = function addListenCommand(commands) {
         return consume(
           client,
           message,
-          'Missing permissions',
+          "Missing permissions",
           "You don't have the sufficient role to add a listener",
-          'red'
+          "red"
         );
       }
 
@@ -145,14 +146,14 @@ exports.addListenCommands = function addListenCommand(commands) {
 
       if (args.length) {
         try {
-          listener_object = JSON.parse(args.join(' '));
+          listener_object = JSON.parse(args.join(" "));
         } catch (err) {
           return consume(
             client,
             message,
-            'Incorrect parameters',
-            'The JSON object you passed appears to be incorrect',
-            'red'
+            "Incorrect parameters",
+            `The JSON object you passed appears to be incorrect:\n\`\`\`${err}\`\`\``,
+            "red"
           );
         }
       } else {
@@ -177,7 +178,7 @@ exports.addListenCommands = function addListenCommand(commands) {
               true
             );
 
-            if (!yes_or_no.content.toLowerCase().startsWith('y')) {
+            if (!yes_or_no.content.toLowerCase().startsWith("y")) {
               break;
             }
           }
@@ -188,7 +189,7 @@ exports.addListenCommands = function addListenCommand(commands) {
               client,
               message,
               `Please provide a match for the listener. You have 300 seconds to answer. Examples:\n` +
-                '`rer bible` or even a regex `/rer.*bible/`',
+                "`rer bible` or even a regex `/rer.*bible/`",
               300,
               true
             );
@@ -203,7 +204,7 @@ exports.addListenCommands = function addListenCommand(commands) {
               true
             );
 
-            if (!yes_or_no.content.toLowerCase().startsWith('y')) {
+            if (!yes_or_no.content.toLowerCase().startsWith("y")) {
               break;
             }
           }
@@ -234,10 +235,10 @@ exports.addListenCommands = function addListenCommand(commands) {
 
             listener_object.only_direct_conversation = answer.content
               .toLowerCase()
-              .startsWith('y');
+              .startsWith("y");
           }
         } catch (err) {
-          consume(client, message, 'Timeout', `Your request was cancelled`);
+          consume(client, message, "Timeout", `Your request was cancelled`);
         }
       }
 
@@ -255,17 +256,17 @@ exports.addListenCommands = function addListenCommand(commands) {
       consume(
         client,
         message,
-        'Listener added',
+        "Listener added",
         `A listener was created with the following matches:\n - ${listener_object.matches
           .map((m) => `\`${m}\``)
-          .join('\n - ')}`
+          .join("\n - ")}`
       );
     },
   };
 
-  commands['remove-listener'] = {
-    name: 'remove-listener',
-    help: '`$remove-listener <id>` remove a listener with the supplied `id`',
+  commands["remove-listener"] = {
+    name: "remove-listener",
+    help: "`$remove-listener <id>` remove a listener with the supplied `id`",
     /**
      * @param {Discord.Message} message
      */
@@ -277,9 +278,9 @@ exports.addListenCommands = function addListenCommand(commands) {
         return consume(
           client,
           message,
-          'Missing permissions',
+          "Missing permissions",
           "You don't have the sufficient role to remove a listener",
-          'red'
+          "red"
         );
       }
 
@@ -287,9 +288,9 @@ exports.addListenCommands = function addListenCommand(commands) {
         return consume(
           client,
           message,
-          'Missing parameter',
-          'Please provide the id of a listener, to get its id use the `find-listeners` command',
-          'red'
+          "Missing parameter",
+          "Please provide the id of a listener, to get its id use the `find-listeners` command",
+          "red"
         );
       }
 
@@ -302,16 +303,16 @@ exports.addListenCommands = function addListenCommand(commands) {
       return consume(
         client,
         message,
-        'Listener removed',
+        "Listener removed",
         `Listener with previous id \`${id}\` was removed`,
-        'green'
+        "green"
       );
     },
   };
 
-  commands['find-listener'] = {
-    name: 'find-listener',
-    help: '`$find-listener <message that should trigger a listener>` to get a list of listeners that have reacted to the message',
+  commands["find-listener"] = {
+    name: "find-listener",
+    help: "`$find-listener <message that should trigger a listener>` to get a list of listeners that have reacted to the message",
     /**
      *
      * @param {Discord.Client} client
@@ -336,10 +337,10 @@ exports.addListenCommands = function addListenCommand(commands) {
                   `**#${index}**:\n\`\`\`${JSON.stringify(
                     listener,
                     null,
-                    ' '
+                    " "
                   )}\`\`\``
               )
-              .join('\n'),
+              .join("\n"),
             {
               split: true,
             }
@@ -409,9 +410,9 @@ exports.listenForMessage = async function listenForMessage(message) {
     } else if (listener.answers.length) {
       const row = new Discord.MessageActionRow().addComponents(
         new Discord.MessageButton()
-          .setCustomId('delete_listen')
-          .setLabel('Delete')
-          .setStyle('SECONDARY')
+          .setCustomId("delete_listen")
+          .setLabel("Delete")
+          .setStyle("SECONDARY")
       );
 
       for (const answer of listener.answers) {
