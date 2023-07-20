@@ -4,7 +4,6 @@ const Discord = require("discord.js");
 const consume = require("../core/consume-command");
 const { prompt } = require("../core/prompt.js");
 const PRNG = require("../core/prng.js");
-const path = require("path");
 
 class ListenersDatabase {
   constructor({ listeners = [] }) {
@@ -19,6 +18,10 @@ class ListenersDatabase {
     this.listeners = this.listeners.filter((l, i) => i != index);
   }
 
+  /**
+   *
+   * @param {string} message
+   */
   getListenersThatMatch(message) {
     let formatted_message = ` ${message.toLowerCase().trim()} `;
 
@@ -324,8 +327,10 @@ exports.addListenCommands = function addListenCommand(commands) {
      * @param {string[]} args
      */
     command: (client, message, args) => {
+      const [command, ...rest] = args;
+
       const listeners = new Set(
-        listeners_database.getListenersThatMatch(message.content)
+        listeners_database.getListenersThatMatch(rest.join(" "))
       );
 
       const filtered_listeners = listeners_database.listeners
