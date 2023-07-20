@@ -49,12 +49,9 @@ function defer_action(message, client) {
           .reply(
             `
 Thank you <@${author_id}>! A thread will be created automatically in 60 seconds.
-Note that any new message you will post before the thread is created will be
-used for the thread instead of the original one.
+Note that any new message you will post before the thread is created will be used for the thread instead of the original one.
 
-If you are wondering what this is all about, please read the description of the
-channel.
-
+If you are wondering what this is all about, please read the description of the channel.
 __If you wish your message to stay without a thread, write \`${NO_THREAD_MESSAGE}\`.__
 
 _This message will be deleted automatically during the creation of the thread_
