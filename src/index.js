@@ -28,7 +28,10 @@ const client = new Discord.Client({
   ],
 });
 const addScreenshotReactionListener = require("./screenshot_handler.js");
-const antibot_handler = require("./antibot_handler.js");
+const {
+  antibot_handler,
+  antibot_interaction_handler,
+} = require("./antibot_handler");
 const thread_channel_handler = require("./thread_channel_handler.js");
 const helpme_channel_handler = require("./helpme_handler");
 client.login(key);
@@ -988,6 +991,8 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.customId === "delete_listen") {
     interaction.message.delete().catch((e) => console.error(e));
   }
+
+  antibot_interaction_handler(interaction, client);
 });
 
 client.on("guildBanRemove", async (guild, user) => {

@@ -1,0 +1,15 @@
+module.exports = [
+  "nexusmods.com",
+  "imgur.com",
+  "reddit.com",
+  "spotify.com",
+  "pastebin.com",
+  "github.com",
+  "tenor.com",
+  "youtube.com",
+  "youtu.be",
+  "discordapp.com/attachments",
+  "discordapp.net/attachments",
+  "github.io",
+  "ibb.co",
+];

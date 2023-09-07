@@ -404,6 +404,13 @@ exports.listenForMessage = async function listenForMessage(message) {
           before.author.username === "The Caretaker" &&
           listener.answers.length
         ) {
+          const row = new Discord.MessageActionRow().addComponents(
+            new Discord.MessageButton()
+              .setCustomId("delete_listen")
+              .setLabel("Delete")
+              .setStyle("SECONDARY")
+          );
+
           for (const answer of listener.answers) {
             await message
               .reply({
