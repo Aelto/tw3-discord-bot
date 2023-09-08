@@ -39,7 +39,7 @@ function defer_action(message, client) {
 
       const one_second = 1000;
       if (
-        Date.now() - insert_date > one_second * 5 &&
+        Date.now() - insert_date > one_second * 60 &&
         !notified_authors.has(author_id)
       ) {
         notified_authors.add(author_id);
