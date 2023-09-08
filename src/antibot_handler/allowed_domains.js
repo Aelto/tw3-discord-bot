@@ -12,4 +12,7 @@ module.exports = [
   "discordapp.net/attachments",
   "github.io",
   "ibb.co",
+  "sites.google.com/view/project-crimson-witcher-guide",
+  "sites.google.com/view/caerme-the-w3-guide",
+  "sites.google.com/view/lune-the-w3-guide",
 ];

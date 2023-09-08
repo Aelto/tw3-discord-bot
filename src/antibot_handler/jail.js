@@ -1,5 +1,7 @@
 const Discord = require("discord.js");
+
 const RestrictedUser = require("./restricted_user");
+const allowed_domains = require("./allowed_domains");
 
 /**
  * Holds the recently restricted users so the bot can perform actions on them
