@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "npx tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,5 +21,8 @@
   "dependencies": {
     "discord-buttons": "4.0.0-deprecated",
     "discord.js": "13.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
   }
 }
