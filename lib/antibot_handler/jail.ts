@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 const Discord = require("discord.js");
 
 const RestrictedUser = require("./restricted_user");
@@ -19,11 +21,7 @@ class Jail {
     this.jail = new Map();
   }
 
-  /**
-   *
-   * @param {Discord.message} message
-   */
-  should_restrict(message) {
+  should_restrict(message: Message) {
     const contains_link =
       message.content.includes("http://") ||
       message.content.includes("https://");
@@ -44,7 +42,7 @@ class Jail {
       return false;
     }
 
-    const author_member = message.guild.members.cache.get(message.author.id);
+    const author_member = message.member || message.guild.members.cache.get(message.author.id);
     const has_shut_role =
       author_member && author_member.roles.cache.has(SHUT_ROLE);
 
