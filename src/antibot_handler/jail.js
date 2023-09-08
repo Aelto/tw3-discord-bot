@@ -34,7 +34,7 @@ class Jail {
     // important for the moment, but it is worth mentioning:
     // if a message contains two links, one is allowed and the other is not,
     // the message will go through without any issue.
-    const contains_allowed_domains = allowed_domains.all((domain) =>
+    const contains_allowed_domains = allowed_domains.every((domain) =>
       message.content.includes(domain)
     );
 
