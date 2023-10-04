@@ -18,25 +18,19 @@ class Jail {
     constructor() {
         this.jail = new Map();
     }
-    /**
-     *
-     * @param {Discord.message} message
-     */
     should_restrict(message) {
         const contains_link = message.content.includes("http://") ||
             message.content.includes("https://");
         if (!contains_link) {
             return false;
         }
-        // NOTE: there is a flaw with this implementation that i don't think is too
-        // important for the moment, but it is worth mentioning:
-        // if a message contains two links, one is allowed and the other is not,
-        // the message will go through without any issue.
-        const contains_allowed_domains = allowed_domains.every((domain) => message.content.includes(domain));
+        const slice = " " + message.content.replace('http://', 'https://') + " ";
+        const urls = [...slice.matchAll(/https?:\/\/.*?\s/g)];
+        const contains_allowed_domains = urls.map(([url]) => allowed_domains.some(domain => url.includes(domain)));
         if (contains_allowed_domains) {
             return false;
         }
-        const author_member = message.guild.members.cache.get(message.author.id);
+        const author_member = message.member || message.guild.members.cache.get(message.author.id);
         const has_shut_role = author_member && author_member.roles.cache.has(SHUT_ROLE);
         const has_any_role = author_member && has_shut_role
             ? author_member.roles.cache.size > 2
