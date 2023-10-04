@@ -3,7 +3,7 @@ import { Message } from "discord.js";
 const Discord = require("discord.js");
 
 const RestrictedUser = require("./restricted_user");
-const allowed_domains = require("./allowed_domains");
+const allowed_domains: string[] = require("./allowed_domains");
 const { SHUT_ROLE } = require("../constants");
 
 /**
@@ -30,13 +30,9 @@ class Jail {
       return false;
     }
 
-    // NOTE: there is a flaw with this implementation that i don't think is too
-    // important for the moment, but it is worth mentioning:
-    // if a message contains two links, one is allowed and the other is not,
-    // the message will go through without any issue.
-    const contains_allowed_domains = allowed_domains.every((domain) =>
-      message.content.includes(domain)
-    );
+    const slice = " "+ message.content.replace('http://', 'https://') + " ";
+    const urls = [...slice.matchAll(/https?:\/\/.*?\s/g)];
+    const contains_allowed_domains = urls.map(([url]) => allowed_domains.some(domain => url.includes(domain)));
 
     if (contains_allowed_domains) {
       return false;
