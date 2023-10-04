@@ -46,7 +46,8 @@ module.exports = class RestrictedUser {
 
   delete_logging_message() {
     if (this.logging_message) {
-      this.logging_message.delete().catch(console.error);
+      // no longer remove the message to keep an history:
+      // this.logging_message.delete().catch(console.error);
     }
   }
 
