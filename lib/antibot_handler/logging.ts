@@ -51,3 +51,28 @@ exports.log_allow = function (client, member) {
     .send(`<@${member.id}> was previously restricted but is now free.`)
     .catch(console.error);
 };
+
+export async function log_new_active_user(client, id: string) {
+  const row = new Discord.MessageActionRow().addComponents(
+    new Discord.MessageButton()
+      .setCustomId(`active_user_allow;${id}`)
+      .setLabel("Give role")
+      .setStyle("SUCCESS"),
+    new Discord.MessageButton()
+      .setCustomId(`active_user_postpone;${id}`)
+      .setLabel("Wait 3 more messages")
+      .setStyle("SECONDARY")
+  );
+
+  await get_channel(client)
+    .send({
+      content: `<@${id}> has no role yet and has just recently starting posting messages. What would you like to do?`,
+      components: [row],
+    })
+    .catch(console.error);
+}
+
+export async function log_new_active_user_allowed(client, id: string) {
+  get_channel(client)
+    .send(`<@${id}> has been given his role`)
+}

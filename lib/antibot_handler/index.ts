@@ -1,3 +1,5 @@
+import { cacheNewActiveUser, isNewActiveUser } from "./active_users";
+
 const { Client, Message, Interaction } = require("discord.js");
 const {
   SHUT_ROLE,
@@ -35,6 +37,10 @@ Thanks for your understanding.`.trim()
 
     log_restrict(client, restricted_user);
   }
+
+  if (isNewActiveUser(message)) {
+    cacheNewActiveUser(message, client);
+  }
 };
 
 /**
@@ -42,14 +48,14 @@ Thanks for your understanding.`.trim()
  * @param {Interaction} interaction
  */
 exports.antibot_interaction_handler = async function (interaction, client) {
-  if (interaction.customId.startsWith("allow_user")) {
+  if (interaction.customId.startsWith("allow_user;")) {
     const [id, uuid] = interaction.customId.split(";");
 
     const restricted = JAIL.allow_user(uuid);
     if (restricted) {
       log_allow(client, restricted.user);
     }
-  } else if (interaction.customId.startsWith("ban_user")) {
+  } else if (interaction.customId.startsWith("ban_user;")) {
     const [id, uuid] = interaction.customId.split(";");
 
     const restricted = JAIL.ban_user(uuid);
