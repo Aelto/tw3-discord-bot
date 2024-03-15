@@ -1,8 +1,12 @@
 const Discord = require("discord.js");
-const { ADMIN_CHANNEL_ID } = require("../constants");
+const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
 
 function get_channel(client) {
   return client.channels.cache.get(ADMIN_CHANNEL_ID);
+}
+
+function get_channel_log(client) {
+  return client.channels.cache.get(LOG_CHANNEL_ID);
 }
 
 /**
@@ -63,7 +67,7 @@ export async function log_new_active_user(client, id: string) {
       .setStyle("SECONDARY")
   );
 
-  await get_channel(client)
+  await get_channel_log(client)
     .send({
       content: `<@${id}> has no role yet and has just recently started posting messages. What would you like to do?`,
       components: [row],
@@ -72,5 +76,5 @@ export async function log_new_active_user(client, id: string) {
 }
 
 export async function log_new_active_user_allowed(client, id: string) {
-  get_channel(client).send(`<@${id}> has been given his role`);
+  get_channel_log(client).send(`<@${id}> has been given his role`);
 }
