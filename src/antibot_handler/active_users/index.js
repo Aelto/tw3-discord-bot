@@ -4,11 +4,13 @@ exports.activeUserInteractionHandler = exports.cacheNewActiveUser = exports.isNe
 const cache_1 = require("./cache");
 const active_user_1 = require("./active_user");
 const logging_1 = require("../logging");
+const { WELCOME_CHANNEL_ID } = require("../../constants");
 function isNewActiveUser(message) {
     const author_member = message.member || message.guild.members.cache.get(message.author.id);
-    // TODO: remove it
-    return true;
-    return author_member.roles.cache.size <= 1; // because there is the @everyone role
+    return (
+    // exclude messages from the welcome channel
+    message.channelId !== WELCOME_CHANNEL_ID &&
+        author_member.roles.cache.size <= 1); // because there is the @everyone role
 }
 exports.isNewActiveUser = isNewActiveUser;
 function cacheNewActiveUser(message, client) {

@@ -2,10 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.log_new_active_user_allowed = exports.log_new_active_user = void 0;
 const Discord = require("discord.js");
-const RestrictedUser = require("./restricted_user");
-const { ADMIN_CHANNEL_ID } = require("../constants");
+const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
 function get_channel(client) {
     return client.channels.cache.get(ADMIN_CHANNEL_ID);
+}
+function get_channel_log(client) {
+    return client.channels.cache.get(LOG_CHANNEL_ID);
 }
 /**
  *
@@ -53,16 +55,15 @@ async function log_new_active_user(client, id) {
         .setCustomId(`active_user_postpone;${id}`)
         .setLabel("Wait 3 more messages")
         .setStyle("SECONDARY"));
-    await get_channel(client)
+    await get_channel_log(client)
         .send({
-        content: `<@${id}> has no role yet and has just recently starting posting messages. What would you like to do?`,
+        content: `<@${id}> has no role yet and has just recently started posting messages. What would you like to do?`,
         components: [row],
     })
         .catch(console.error);
 }
 exports.log_new_active_user = log_new_active_user;
 async function log_new_active_user_allowed(client, id) {
-    get_channel(client)
-        .send(`<@${id}> has been given his role`);
+    get_channel_log(client).send(`<@${id}> has been given his role`);
 }
 exports.log_new_active_user_allowed = log_new_active_user_allowed;
