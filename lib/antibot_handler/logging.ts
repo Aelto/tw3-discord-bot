@@ -65,7 +65,7 @@ export async function log_new_active_user(client, id: string) {
 
   await get_channel(client)
     .send({
-      content: `<@${id}> has no role yet and has just recently starting posting messages. What would you like to do?`,
+      content: `<@${id}> has no role yet and has just recently started posting messages. What would you like to do?`,
       components: [row],
     })
     .catch(console.error);
