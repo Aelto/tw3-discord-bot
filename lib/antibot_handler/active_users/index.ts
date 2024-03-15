@@ -2,12 +2,17 @@ import { Message } from "discord.js";
 import CACHE from "./cache";
 import { NewActiveUser } from "./active_user";
 import { log_new_active_user_allowed } from "../logging";
+const { WELCOME_CHANNEL_ID } = require("../../constants");
 
 export function isNewActiveUser(message: Message) {
   const author_member =
     message.member || message.guild.members.cache.get(message.author.id);
 
-  return author_member.roles.cache.size <= 1; // because there is the @everyone role
+  return (
+    // exclude messages from the welcome channel
+    message.channelId !== WELCOME_CHANNEL_ID &&
+    author_member.roles.cache.size <= 1
+  ); // because there is the @everyone role
 }
 
 export function cacheNewActiveUser(message: Message, client) {
