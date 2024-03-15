@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Discord = require("discord.js");
 const RestrictedUser = require("./restricted_user");
 const allowed_domains = require("./allowed_domains");
-const { SHUT_ROLE } = require("../constants");
+const { SHUT_ROLE, ADMIN_ROLE_ID } = require("../constants");
 /**
  * Holds the recently restricted users so the bot can perform actions on them
  * based on events fired by the administrators.
@@ -24,9 +24,9 @@ class Jail {
         if (!contains_link) {
             return false;
         }
-        const slice = " " + message.content.replace('http://', 'https://') + " ";
+        const slice = " " + message.content.replace("http://", "https://") + " ";
         const urls = [...slice.matchAll(/https?:\/\/.*?\s/g)];
-        const contains_allowed_domains = urls.map(([url]) => allowed_domains.some(domain => url.includes(domain)));
+        const contains_allowed_domains = urls.map(([url]) => allowed_domains.some((domain) => url.includes(domain)));
         if (contains_allowed_domains) {
             return false;
         }
@@ -36,7 +36,12 @@ class Jail {
             ? author_member.roles.cache.size > 2
             : author_member.roles.cache.size > 1; // 1 because there is the @everyone role
         const contains_word_nitro = message.content.includes("nitro");
-        return has_shut_role || !has_any_role || contains_word_nitro;
+        const pinged_everyone = message.content.includes("@everyone");
+        const is_admin = author_member.roles.cache.has(ADMIN_ROLE_ID);
+        return (has_shut_role ||
+            !has_any_role ||
+            contains_word_nitro ||
+            (pinged_everyone && !is_admin));
     }
     /**
      *

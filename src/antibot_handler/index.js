@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const active_users_1 = require("./active_users");
 const { Client, Message, Interaction } = require("discord.js");
 const { SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID, ADMIN_CHANNEL_ID, } = require("../constants");
 const JAIL = require("./jail.js");
@@ -25,20 +26,23 @@ This is an automated response to the message(s) you just sent in this server. Th
 Thanks for your understanding.`.trim());
         log_restrict(client, restricted_user);
     }
+    if ((0, active_users_1.isNewActiveUser)(message)) {
+        (0, active_users_1.cacheNewActiveUser)(message, client);
+    }
 };
 /**
  *
  * @param {Interaction} interaction
  */
 exports.antibot_interaction_handler = async function (interaction, client) {
-    if (interaction.customId.startsWith("allow_user")) {
+    if (interaction.customId.startsWith("allow_user;")) {
         const [id, uuid] = interaction.customId.split(";");
         const restricted = JAIL.allow_user(uuid);
         if (restricted) {
             log_allow(client, restricted.user);
         }
     }
-    else if (interaction.customId.startsWith("ban_user")) {
+    else if (interaction.customId.startsWith("ban_user;")) {
         const [id, uuid] = interaction.customId.split(";");
         const restricted = JAIL.ban_user(uuid);
         if (restricted) {

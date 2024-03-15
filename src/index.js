@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const active_users_1 = require("./antibot_handler/active_users");
 const Discord = require("discord.js");
 const fs = require("fs");
 const { listenForMessage, addListenCommands } = require("./commands/listen.js");
@@ -593,6 +594,7 @@ client.on("interactionCreate", async (interaction) => {
         interaction.message.delete().catch((e) => console.error(e));
     }
     antibot_interaction_handler(interaction, client);
+    (0, active_users_1.activeUserInteractionHandler)(interaction, client);
 });
 client.on("guildBanRemove", async (guild, user) => {
     var banlana = [

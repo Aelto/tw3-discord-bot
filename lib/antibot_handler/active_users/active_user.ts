@@ -19,7 +19,7 @@ export class NewActiveUser {
   private hit_goal: number;
 
   constructor(member: GuildMember, client) {
-    this.id = this.member.id;
+    this.id = member.id;
     this.creation_date = Date.now();
     this.member = member;
     this.hit = 0;
@@ -41,7 +41,7 @@ export class NewActiveUser {
     this.checkHitGoal(client);
   }
 
-  private checkHitGoal(client){
+  private checkHitGoal(client) {
     if (this.hit >= this.hit_goal) {
       this.onHitGoalAchieved(client);
     }
@@ -55,5 +55,3 @@ export class NewActiveUser {
     this.member.roles.add(BASIC_ROLE).catch(console.error);
   }
 }
-
-

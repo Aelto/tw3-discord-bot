@@ -1,5 +1,4 @@
 const Discord = require("discord.js");
-const RestrictedUser = require("./restricted_user");
 const { ADMIN_CHANNEL_ID } = require("../constants");
 
 function get_channel(client) {
@@ -73,6 +72,5 @@ export async function log_new_active_user(client, id: string) {
 }
 
 export async function log_new_active_user_allowed(client, id: string) {
-  get_channel(client)
-    .send(`<@${id}> has been given his role`)
+  get_channel(client).send(`<@${id}> has been given his role`);
 }
