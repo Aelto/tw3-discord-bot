@@ -4,20 +4,26 @@ import { NewActiveUser } from "./active_user";
 import { log_new_active_user_allowed } from "../logging";
 const { WELCOME_CHANNEL_ID } = require("../../constants");
 
-export function isNewActiveUser(message: Message) {
+export function isNewActiveUser(message: Message): boolean {
+  // exclude messages from the welcome channel
+  if (message.channelId === WELCOME_CHANNEL_ID) {
+    return false;
+  }
+
   const author_member =
     message.member || message.guild.members.cache.get(message.author.id);
 
-  return (
-    // exclude messages from the welcome channel
-    message.channelId !== WELCOME_CHANNEL_ID &&
-    author_member.roles.cache.size <= 1
-  ); // because there is the @everyone role
+  // because there is the @everyone role
+  return author_member.roles.cache.size <= 1;
 }
 
 export function cacheNewActiveUser(message: Message, client) {
   const author_member =
     message.member || message.guild.members.cache.get(message.author.id);
+
+  if (!author_member) {
+    return;
+  }
 
   if (!CACHE.increaseMemberHit(author_member, client)) {
     const active_user = new NewActiveUser(author_member, client);
