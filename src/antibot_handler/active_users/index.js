@@ -6,15 +6,20 @@ const active_user_1 = require("./active_user");
 const logging_1 = require("../logging");
 const { WELCOME_CHANNEL_ID } = require("../../constants");
 function isNewActiveUser(message) {
-    const author_member = message.member || message.guild.members.cache.get(message.author.id);
-    return (
     // exclude messages from the welcome channel
-    message.channelId !== WELCOME_CHANNEL_ID &&
-        author_member.roles.cache.size <= 1); // because there is the @everyone role
+    if (message.channelId === WELCOME_CHANNEL_ID) {
+        return false;
+    }
+    const author_member = message.member || message.guild.members.cache.get(message.author.id);
+    // because there is the @everyone role
+    return author_member.roles.cache.size <= 1;
 }
 exports.isNewActiveUser = isNewActiveUser;
 function cacheNewActiveUser(message, client) {
     const author_member = message.member || message.guild.members.cache.get(message.author.id);
+    if (!author_member) {
+        return;
+    }
     if (!cache_1.default.increaseMemberHit(author_member, client)) {
         const active_user = new active_user_1.NewActiveUser(author_member, client);
         cache_1.default.addMember(active_user);
