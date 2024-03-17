@@ -110,7 +110,7 @@ function calculateReputation(message) {
     if (same_channel && !same_content) {
         current.reputation += 1;
     }
-    current.tendency = previous.reputation - current.reputation;
+    current.tendency = current.reputation - previous.reputation;
     return current;
 }
 async function handleNewReputation(client, jail, author, message, antispam) {
