@@ -67,8 +67,8 @@ async function log_new_active_user_allowed(client, id) {
     get_channel_log(client).send(`<@${id}> has been given his role`);
 }
 exports.log_new_active_user_allowed = log_new_active_user_allowed;
-async function log_reputation(client, author, reputation) {
-    get_channel_log(client).send(`<@${author.id}> reputation: ${reputation}`);
+async function log_reputation(client, author, message) {
+    get_channel_log(client).send(`<@${author.id}> reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
 exports.log_reputation = log_reputation;
 async function log_reputation_message_deleted(client, author, message) {

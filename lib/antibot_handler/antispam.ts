@@ -6,9 +6,9 @@ import {
 } from "./logging";
 import { Jail } from "./jail";
 
-const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
+const { BOT_ID, ADMIN_ROLE_ID, VERBOSE_BOT_ROLE } = require("../constants.js");
 
-interface AntispamMessage {
+export interface AntispamMessage {
   channel_id: string;
   content: string;
   timestamp: number;
@@ -189,7 +189,9 @@ async function handleNewReputation(
 
   ANTISPAM_MESSAGES.set(author.id, antispam);
 
-  // log_reputation(client, author, antispam.reputation);
+  if (antispam.tendency < 0) {
+    log_reputation(client, author, antispam);
+  }
 
   if (antispam.reputation > 0) {
     if (antispam.tendency < -3) {

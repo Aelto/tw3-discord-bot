@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.antiSpamOnMessage = void 0;
 const logging_1 = require("./logging");
-const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
+const { BOT_ID, ADMIN_ROLE_ID, VERBOSE_BOT_ROLE } = require("../constants.js");
 /**
  * stores the last message posted by people with information about the message
  * itself, like its content and when it was posted.
@@ -118,7 +118,9 @@ async function handleNewReputation(client, jail, author, message, antispam) {
         return;
     }
     ANTISPAM_MESSAGES.set(author.id, antispam);
-    // log_reputation(client, author, antispam.reputation);
+    if (antispam.tendency < 0) {
+        (0, logging_1.log_reputation)(client, author, antispam);
+    }
     if (antispam.reputation > 0) {
         if (antispam.tendency < -3) {
             message.delete().catch(console.error);

@@ -1,4 +1,5 @@
 import { Client, GuildMember, Message } from "discord.js";
+import { AntispamMessage } from "./antispam";
 
 const Discord = require("discord.js");
 const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
@@ -84,9 +85,11 @@ export async function log_new_active_user_allowed(client, id: string) {
 export async function log_reputation(
   client: Client,
   author: GuildMember,
-  reputation: number
+  message: AntispamMessage
 ) {
-  get_channel_log(client).send(`<@${author.id}> reputation: ${reputation}`);
+  get_channel_log(client).send(
+    `<@${author.id}> reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+  );
 }
 
 export async function log_reputation_message_deleted(
