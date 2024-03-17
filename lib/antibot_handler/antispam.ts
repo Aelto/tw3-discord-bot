@@ -172,7 +172,7 @@ function calculateReputation(message: Message): AntispamMessage {
     current.reputation += 1;
   }
 
-  current.tendency = previous.reputation - current.reputation;
+  current.tendency = current.reputation - previous.reputation;
   return current;
 }
 
