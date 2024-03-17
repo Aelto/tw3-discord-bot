@@ -1,7 +1,7 @@
 import { Message, User, TextChannel, GuildMember } from "discord.js";
 const { SHUT_ROLE, BASIC_ROLE } = require("../constants");
 
-module.exports = class RestrictedUser {
+export class RestrictedUser {
   original_message: Message;
   original_text_message: string;
   message_channel: TextChannel;
@@ -77,4 +77,4 @@ ${this.original_text_message}`.trim()
 
     this.delete_logging_message();
   }
-};
+}

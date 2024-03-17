@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.JAIL = exports.Jail = void 0;
+const restricted_user_1 = require("./restricted_user");
 const Discord = require("discord.js");
-const RestrictedUser = require("./restricted_user");
 const allowed_domains = require("./allowed_domains");
 const { SHUT_ROLE, ADMIN_ROLE_ID } = require("../constants");
 /**
@@ -43,12 +44,8 @@ class Jail {
             contains_word_nitro ||
             (pinged_everyone && !is_admin));
     }
-    /**
-     *
-     * @param {Discord.Message} message
-     */
     restrict_message(message) {
-        const restricted = new RestrictedUser(message);
+        const restricted = new restricted_user_1.RestrictedUser(message);
         const uuid = restricted.get_unique_id();
         this.jail.set(uuid, restricted);
         return restricted;
@@ -77,4 +74,5 @@ class Jail {
         this.jail.clear();
     }
 }
-module.exports = new Jail();
+exports.Jail = Jail;
+exports.JAIL = new Jail();

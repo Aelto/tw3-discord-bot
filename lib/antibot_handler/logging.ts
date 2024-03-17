@@ -1,3 +1,5 @@
+import { Client, GuildMember, Message } from "discord.js";
+
 const Discord = require("discord.js");
 const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
 
@@ -77,4 +79,32 @@ export async function log_new_active_user(client, id: string) {
 
 export async function log_new_active_user_allowed(client, id: string) {
   get_channel_log(client).send(`<@${id}> has been given his role`);
+}
+
+export async function log_reputation(
+  client: Client,
+  author: GuildMember,
+  reputation: number
+) {
+  get_channel_log(client).send(`<@${author.id}> reputation: ${reputation}`);
+}
+
+export async function log_reputation_message_deleted(
+  client: Client,
+  author: GuildMember,
+  message: Message
+) {
+  get_channel_log(client).send(
+    `A recent message from <@${author.id}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+  );
+}
+
+export async function log_reputation_user_shutdown(
+  client: Client,
+  author: GuildMember,
+  message: Message
+) {
+  get_channel_log(client).send(
+    `A recent message from <@${author.id}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+  );
 }

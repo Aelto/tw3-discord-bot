@@ -1,8 +1,8 @@
 import { Message } from "discord.js";
+import { RestrictedUser } from "./restricted_user";
 
 const Discord = require("discord.js");
 
-const RestrictedUser = require("./restricted_user");
 const allowed_domains: string[] = require("./allowed_domains");
 const { SHUT_ROLE, ADMIN_ROLE_ID } = require("../constants");
 
@@ -10,13 +10,13 @@ const { SHUT_ROLE, ADMIN_ROLE_ID } = require("../constants");
  * Holds the recently restricted users so the bot can perform actions on them
  * based on events fired by the administrators.
  */
-class Jail {
+export class Jail {
   /**
    * A collection of restricted users paired with a unique ID that corresponds
    * to the user and the restricted message.
    * @type {}
    */
-  jail: Map<string, typeof RestrictedUser>;
+  jail: Map<string, RestrictedUser>;
   constructor() {
     this.jail = new Map();
   }
@@ -63,11 +63,7 @@ class Jail {
     );
   }
 
-  /**
-   *
-   * @param {Discord.Message} message
-   */
-  restrict_message(message) {
+  restrict_message(message: Message) {
     const restricted = new RestrictedUser(message);
     const uuid = restricted.get_unique_id();
 
@@ -107,4 +103,4 @@ class Jail {
   }
 }
 
-module.exports = new Jail();
+export const JAIL = new Jail();

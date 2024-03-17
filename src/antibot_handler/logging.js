@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.log_new_active_user_allowed = exports.log_new_active_user = void 0;
+exports.log_reputation_user_shutdown = exports.log_reputation_message_deleted = exports.log_reputation = exports.log_new_active_user_allowed = exports.log_new_active_user = void 0;
 const Discord = require("discord.js");
 const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
 function get_channel(client) {
@@ -67,3 +67,15 @@ async function log_new_active_user_allowed(client, id) {
     get_channel_log(client).send(`<@${id}> has been given his role`);
 }
 exports.log_new_active_user_allowed = log_new_active_user_allowed;
+async function log_reputation(client, author, reputation) {
+    get_channel_log(client).send(`<@${author.id}> reputation: ${reputation}`);
+}
+exports.log_reputation = log_reputation;
+async function log_reputation_message_deleted(client, author, message) {
+    get_channel_log(client).send(`A recent message from <@${author.id}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+}
+exports.log_reputation_message_deleted = log_reputation_message_deleted;
+async function log_reputation_user_shutdown(client, author, message) {
+    get_channel_log(client).send(`A recent message from <@${author.id}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+}
+exports.log_reputation_user_shutdown = log_reputation_user_shutdown;

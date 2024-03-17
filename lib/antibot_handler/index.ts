@@ -1,20 +1,21 @@
 import { cacheNewActiveUser, isNewActiveUser } from "./active_users";
+import { antiSpamOnMessage } from "./antispam";
+import { JAIL } from "./jail";
 
-const { Client, Message, Interaction } = require("discord.js");
 const {
   SHUT_ROLE,
   GRAVEYARD_CHANNEL_ID,
   ADMIN_ROLE_ID,
-  ADMIN_CHANNEL_ID,
 } = require("../constants");
 
-const JAIL = require("./jail.js");
 const { log_allow, log_ban, log_restrict } = require("./logging");
 
 /**
  * Automatically deletes the messages of people without the basic role, then
  * assigns the author a restricted role and DMs instructions on how to remove
  * restrictions.
+ * @todo A good improvement could be to migrate the JAIL.should_restrict logic
+ * to the reputation system used by the anti-spam.
  * @param {Message} message
  * @param {Client} client
  */
@@ -37,6 +38,8 @@ Thanks for your understanding.`.trim()
 
     log_restrict(client, restricted_user);
   }
+
+  await antiSpamOnMessage(client, JAIL, message);
 
   if (isNewActiveUser(message)) {
     cacheNewActiveUser(message, client);

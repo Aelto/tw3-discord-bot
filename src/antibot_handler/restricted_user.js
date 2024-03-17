@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RestrictedUser = void 0;
 const { SHUT_ROLE, BASIC_ROLE } = require("../constants");
-module.exports = class RestrictedUser {
+class RestrictedUser {
     original_message;
     original_text_message;
     message_channel;
@@ -62,4 +63,5 @@ ${this.original_text_message}`.trim())
         this.user.ban().catch(console.error);
         this.delete_logging_message();
     }
-};
+}
+exports.RestrictedUser = RestrictedUser;
