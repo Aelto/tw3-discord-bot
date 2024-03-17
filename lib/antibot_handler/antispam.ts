@@ -91,14 +91,21 @@ function calculateReputation(message: Message): AntispamMessage {
 
   const same_content = previous.content === current.content;
   const same_channel = previous.channel_id === current.channel_id;
+  const has_link =
+    current.content.includes("http://") || current.content.includes("https://");
 
   const one_second = 1000;
   const one_minute = 60 * one_second;
 
+  const is_delta_normal = delta < one_minute;
+  const is_delta_small = delta < 30 * one_second;
+  const is_delta_small_very = delta < 10 * one_second;
+  const is_delta_tiny = one_second;
+
   if (same_content) {
     // the person is copy/pasting the same message:
     // -> not a big offense, but not great either
-    current.reputation -= 2;
+    current.reputation -= 1;
 
     if (!same_channel) {
       // copy/pasting but also accross multiple channels
@@ -106,24 +113,16 @@ function calculateReputation(message: Message): AntispamMessage {
       current.reputation -= 2;
 
       // without even waiting a bit between each copy
-      if (delta < 10 * one_minute) {
-        current.reputation -= 2;
-      }
-
-      if (delta < 5 * one_minute) {
-        current.reputation -= 2;
-      }
-
-      if (delta < one_minute) {
+      if (is_delta_normal) {
         current.reputation -= 2;
       }
 
       // faster than a few seconds are certainly from bots:
-      if (delta < 10 * one_second) {
+      if (is_delta_small_very) {
         current.reputation -= 10;
       }
 
-      if (delta < one_second) {
+      if (is_delta_tiny) {
         current.reputation -= 100;
       }
     }
@@ -137,38 +136,37 @@ function calculateReputation(message: Message): AntispamMessage {
     }
   }
 
-  // this case is not copy pasted comments but still across multiple channels
-  if (!same_channel) {
+  if (!same_channel && has_link) {
     current.reputation -= 1;
 
-    if (message.mentions.users.size > 0) {
+    if (same_content) {
+      current.reputation -= 1;
+    }
+  }
+
+  if (!same_channel && is_delta_small) {
+    current.reputation -= 1;
+
+    if (is_delta_small_very) {
       current.reputation -= 2;
 
-      if (delta < one_minute) {
+      if (is_delta_tiny) {
         current.reputation -= 3;
       }
     }
 
-    if (current.content.includes("http://")) {
-      current.reputation -= 2;
-    }
-
-    if (current.content.includes("https://")) {
+    if (message.mentions.users.size > 0) {
       current.reputation -= 1;
-    }
 
-    // faster than a few seconds are certainly from bots:
-    if (delta < 5 * one_second) {
-      current.reputation -= 4;
-    }
-
-    if (delta < one_second) {
-      current.reputation -= 6;
+      // punish repetitive pings even more if previous message was already bad
+      if (previous.tendency < 0) {
+        current.reputation -= 1;
+      }
     }
   }
 
-  // restore a bit of reputation on varied messages in same channels
   if (same_channel && !same_content) {
+    // restore a bit of reputation on varied messages in same channels
     current.reputation += 1;
   }
 
