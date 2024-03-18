@@ -54,7 +54,7 @@ function calculateReputation(message) {
     const is_delta_normal = delta < one_minute;
     const is_delta_small = delta < 30 * one_second;
     const is_delta_small_very = delta < 10 * one_second;
-    const is_delta_tiny = one_second;
+    const is_delta_tiny = delta < one_second;
     if (same_content) {
         // the person is copy/pasting the same message:
         // -> not a big offense, but not great either
@@ -108,6 +108,12 @@ function calculateReputation(message) {
         // restore a bit of reputation on varied messages in same channels
         current.reputation += 1;
     }
+    if (!same_content && is_delta_normal) {
+        current.reputation += 1;
+        if (same_channel) {
+            current.reputation += 1;
+        }
+    }
     current.tendency = current.reputation - previous.reputation;
     return current;
 }
@@ -129,6 +135,7 @@ async function handleNewReputation(client, jail, author, message, antispam) {
     if (antispam.reputation < 0) {
         jail.restrict_message(message);
         (0, logging_1.log_reputation_user_shutdown)(client, author, message);
+        ANTISPAM_MESSAGES.delete(author.id);
     }
 }
 function cleanupAntispamMessages() {
