@@ -170,6 +170,14 @@ function calculateReputation(message: Message): AntispamMessage {
     current.reputation += 1;
   }
 
+  if (!same_content && is_delta_normal) {
+    current.reputation += 1;
+
+    if (same_channel) {
+      current.reputation += 1;
+    }
+  }
+
   current.tendency = current.reputation - previous.reputation;
   return current;
 }
