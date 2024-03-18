@@ -100,7 +100,7 @@ function calculateReputation(message: Message): AntispamMessage {
   const is_delta_normal = delta < one_minute;
   const is_delta_small = delta < 30 * one_second;
   const is_delta_small_very = delta < 10 * one_second;
-  const is_delta_tiny = one_second;
+  const is_delta_tiny = delta < one_second;
 
   if (same_content) {
     // the person is copy/pasting the same message:
