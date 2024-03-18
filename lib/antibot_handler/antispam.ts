@@ -203,6 +203,7 @@ async function handleNewReputation(
   if (antispam.reputation < 0) {
     jail.restrict_message(message);
     log_reputation_user_shutdown(client, author, message);
+    ANTISPAM_MESSAGES.delete(author.id);
   }
 }
 
