@@ -14,7 +14,7 @@ export function isNewActiveUser(message: Message): boolean {
     message.member || message.guild.members.cache.get(message.author.id);
 
   // because there is the @everyone role
-  return author_member.roles.cache.size <= 1;
+  return (author_member?.roles?.cache?.size ?? 2) <= 1;
 }
 
 export function cacheNewActiveUser(message: Message, client) {
