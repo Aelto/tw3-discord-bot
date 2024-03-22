@@ -121,8 +121,10 @@ async function handleNewReputation(client, jail, author, message, antispam) {
     if (!author.id) {
         return;
     }
+    const previous = ANTISPAM_MESSAGES.get(author.id);
+    const previous_tendency = previous?.tendency ?? 0;
     ANTISPAM_MESSAGES.set(author.id, antispam);
-    if (antispam.tendency < 0) {
+    if (previous_tendency < 0 && antispam.tendency < 0) {
         (0, logging_1.log_reputation)(client, author, antispam);
     }
     if (antispam.reputation > 0) {
