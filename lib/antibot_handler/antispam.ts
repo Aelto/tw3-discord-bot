@@ -195,6 +195,12 @@ async function handleNewReputation(
 
   const previous = ANTISPAM_MESSAGES.get(author.id);
   const previous_tendency = previous?.tendency ?? 0;
+  const previous_reputation = previous?.reputation ?? 10;
+
+  if (previous_reputation < 0) {
+    message.delete().catch(console.error);
+    return;
+  }
 
   ANTISPAM_MESSAGES.set(author.id, antispam);
 
@@ -214,7 +220,6 @@ async function handleNewReputation(
   if (antispam.reputation < 0) {
     jail.restrict_message(message);
     log_reputation_user_shutdown(client, author, message);
-    ANTISPAM_MESSAGES.delete(author.id);
   }
 }
 
