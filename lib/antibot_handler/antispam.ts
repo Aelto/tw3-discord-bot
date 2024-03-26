@@ -5,8 +5,9 @@ import {
   log_reputation_user_shutdown,
 } from "./logging";
 import { Jail } from "./jail";
+import { FifoQueue } from "../datatypes/fifo-queue";
 
-const { BOT_ID, ADMIN_ROLE_ID, VERBOSE_BOT_ROLE } = require("../constants.js");
+const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
 
 export interface AntispamMessage {
   channel_id: string;
@@ -34,6 +35,8 @@ export interface AntispamMessage {
 const ANTISPAM_MESSAGES: Map<Message["author"]["id"], AntispamMessage> =
   new Map();
 
+const RECENT_MESSAGES: FifoQueue<Message> = new FifoQueue(20);
+
 let last_cleanup = Date.now();
 
 export async function antiSpamOnMessage(
@@ -58,6 +61,8 @@ export async function antiSpamOnMessage(
   ) {
     return;
   }
+
+  RECENT_MESSAGES.insert(message);
 
   const reputation = calculateReputation(message);
   handleNewReputation(client, jail, author_member, message, reputation);
@@ -220,6 +225,21 @@ async function handleNewReputation(
   if (antispam.reputation < 0) {
     jail.restrict_message(message);
     log_reputation_user_shutdown(client, author, message);
+    deleteRecentMessagesFromUser(author.id);
+  }
+}
+
+function deleteRecentMessagesFromUser(id: GuildMember["id"]) {
+  const messages_by_user = RECENT_MESSAGES.all().filter(
+    (m) => m?.author?.id === id
+  );
+
+  for (const message of messages_by_user) {
+    if (!message) {
+      continue;
+    }
+
+    message.delete().catch(console.error);
   }
 }
 

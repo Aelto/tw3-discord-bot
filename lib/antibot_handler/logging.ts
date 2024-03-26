@@ -1,4 +1,4 @@
-import { Client, GuildMember, Message } from "discord.js";
+import { Client, GuildMember, Message, User } from "discord.js";
 import { AntispamMessage } from "./antispam";
 
 const Discord = require("discord.js");
@@ -58,7 +58,7 @@ exports.log_allow = function (client, member) {
     .catch(console.error);
 };
 
-export async function log_new_active_user(client, id: string) {
+export async function log_new_active_user(client: Client, id: string) {
   const row = new Discord.MessageActionRow().addComponents(
     new Discord.MessageButton()
       .setCustomId(`active_user_allow;${id}`)

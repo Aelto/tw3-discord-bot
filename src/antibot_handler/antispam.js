@@ -2,12 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.antiSpamOnMessage = void 0;
 const logging_1 = require("./logging");
-const { BOT_ID, ADMIN_ROLE_ID, VERBOSE_BOT_ROLE } = require("../constants.js");
+const fifo_queue_1 = require("../datatypes/fifo-queue");
+const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
 /**
  * stores the last message posted by people with information about the message
  * itself, like its content and when it was posted.
  */
 const ANTISPAM_MESSAGES = new Map();
+const RECENT_MESSAGES = new fifo_queue_1.FifoQueue(20);
 let last_cleanup = Date.now();
 async function antiSpamOnMessage(client, jail, message) {
     const now = Date.now();
@@ -22,6 +24,7 @@ async function antiSpamOnMessage(client, jail, message) {
         author_member.roles.cache.has(ADMIN_ROLE_ID)) {
         return;
     }
+    RECENT_MESSAGES.insert(message);
     const reputation = calculateReputation(message);
     handleNewReputation(client, jail, author_member, message, reputation);
 }
@@ -142,6 +145,16 @@ async function handleNewReputation(client, jail, author, message, antispam) {
     if (antispam.reputation < 0) {
         jail.restrict_message(message);
         (0, logging_1.log_reputation_user_shutdown)(client, author, message);
+        deleteRecentMessagesFromUser(author.id);
+    }
+}
+function deleteRecentMessagesFromUser(id) {
+    const messages_by_user = RECENT_MESSAGES.all().filter((m) => m?.author?.id === id);
+    for (const message of messages_by_user) {
+        if (!message) {
+            continue;
+        }
+        message.delete().catch(console.error);
     }
 }
 function cleanupAntispamMessages() {
