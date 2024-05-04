@@ -6,7 +6,7 @@ import {
 } from "../logging";
 import { Jail } from "../jail";
 import { AntispamMessage, messageToAntiSpamMessage } from "./types";
-import { ANTISPAM_MESSAGES, RECENT_MESSAGES, cleanupAntispamMessages } from "./caches";
+import { ANTISPAM_MESSAGES, RECENT_MESSAGES, cleanupAntispamMessages, getAntispamMessageByAuthorId } from "./caches";
 
 const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
 
@@ -45,7 +45,7 @@ function calculateReputation(message: Message): AntispamMessage {
     return messageToAntiSpamMessage(message);
   }
 
-  const previous = ANTISPAM_MESSAGES.get(author);
+  const previous = getAntispamMessageByAuthorId(author);
 
   if (!previous) {
     return messageToAntiSpamMessage(message);

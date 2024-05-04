@@ -36,3 +36,7 @@ export function cleanupAntispamMessages() {
     }
   }
 }
+
+export function getAntispamMessageByAuthorId(id: Message["author"]["id"]): AntispamMessage | null {
+  return ANTISPAM_MESSAGES.get(id) || null;
+}
