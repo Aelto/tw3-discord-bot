@@ -3,52 +3,19 @@ import {
   log_reputation,
   log_reputation_message_deleted,
   log_reputation_user_shutdown,
-} from "./logging";
-import { Jail } from "./jail";
-import { FifoQueue } from "../datatypes/fifo-queue";
+} from "../logging";
+import { Jail } from "../jail";
+import { AntispamMessage, messageToAntiSpamMessage } from "./types";
+import { ANTISPAM_MESSAGES, RECENT_MESSAGES, cleanupAntispamMessages } from "./caches";
 
 const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
-
-export interface AntispamMessage {
-  channel_id: string;
-  content: string;
-  timestamp: number;
-
-  /**
-   * A number above 0 for good reputation, below 0 for bad reputation.
-   *
-   * A bad reputation usually result in the user being restricted to prevent
-   * further spam.
-   */
-  reputation: number;
-
-  /**
-   * stores how much the reputation has changed compared to the previous message
-   */
-  tendency: number;
-}
-
-/**
- * stores the last message posted by people with information about the message
- * itself, like its content and when it was posted.
- */
-const ANTISPAM_MESSAGES: Map<Message["author"]["id"], AntispamMessage> =
-  new Map();
-
-const RECENT_MESSAGES: FifoQueue<Message> = new FifoQueue(20);
-
-let last_cleanup = Date.now();
 
 export async function antiSpamOnMessage(
   client: Client,
   jail: Jail,
   message: Message
 ) {
-  const now = Date.now();
-  if (now - last_cleanup > 1000 * 60) {
-    last_cleanup = now;
-    cleanupAntispamMessages();
-  }
+  cleanupAntispamMessages();
 
   const author_member =
     message.member || message.guild.members.cache.get(message.author.id);
@@ -243,35 +210,5 @@ function deleteRecentMessagesFromUser(id: GuildMember["id"]) {
   }
 }
 
-function cleanupAntispamMessages() {
-  const keys = ANTISPAM_MESSAGES.keys();
-  const now = Date.now();
-  const one_second = 1000;
-  const one_minute = 60 * one_second;
 
-  for (const key of keys) {
-    const message = ANTISPAM_MESSAGES.get(key);
 
-    if (!message) {
-      continue;
-    }
-
-    const delta = now - message.timestamp;
-    if (delta > one_minute * 10) {
-      ANTISPAM_MESSAGES.delete(key);
-    }
-  }
-}
-
-function messageToAntiSpamMessage(
-  message: Message,
-  reputation: number = 10
-): AntispamMessage {
-  return {
-    content: message.content,
-    timestamp: Date.now(),
-    channel_id: message.channelId,
-    reputation,
-    tendency: 0,
-  };
-}
