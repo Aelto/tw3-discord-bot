@@ -47,7 +47,7 @@ exports.log_allow = function (client, member) {
         .send(`<@${member.id}> was previously restricted but is now free.`)
         .catch(console.error);
 };
-async function log_new_active_user(client, id) {
+async function log_new_active_user(client, id, last_message_sent) {
     const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
         .setCustomId(`active_user_allow;${id}`)
         .setLabel("Give role")
@@ -57,7 +57,7 @@ async function log_new_active_user(client, id) {
         .setStyle("SECONDARY"));
     await get_channel_log(client)
         .send({
-        content: `<@${id}> has no role yet and has just recently started posting messages. What would you like to do?`,
+        content: `<@${id}> has no role yet and has just recently started posting messages. What would you like to do?\n\n__**Last message sent**__:\`\`\`${last_message_sent}\`\`\``,
         components: [row],
     })
         .catch(console.error);

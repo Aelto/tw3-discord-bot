@@ -1,4 +1,4 @@
-import { Message, User, TextChannel, GuildMember } from "discord.js";
+import { Message, TextChannel, GuildMember } from "discord.js";
 const { SHUT_ROLE, BASIC_ROLE } = require("../constants");
 
 export class RestrictedUser {

@@ -1,4 +1,4 @@
-import { cacheNewActiveUser, isNewActiveUser } from "./active_users";
+import { activeUserDetectionOnMessage } from "./active_users";
 import { antiSpamOnMessage } from "./antispam";
 import { JAIL } from "./jail";
 
@@ -24,26 +24,8 @@ exports.antibot_handler = async function (message, client) {
     return;
   }
 
-  if (JAIL.should_restrict(message)) {
-    const restricted_user = JAIL.restrict_message(message);
-
-    await message.guild.channels.cache.get(GRAVEYARD_CHANNEL_ID).send(
-      `
-Hi <@${message.author.id}>,
-
-This is an automated response to the message(s) you just sent in this server. The message contained a link, however only users with the Hunter role can send links. For this reason you are now <@&${SHUT_ROLE}> which means you will have to contact a <@&${ADMIN_ROLE_ID}> to gain back access to the server.
-
-Thanks for your understanding.`.trim()
-    );
-
-    log_restrict(client, restricted_user);
-  }
-
   await antiSpamOnMessage(client, JAIL, message);
-
-  if (isNewActiveUser(message)) {
-    cacheNewActiveUser(message, client);
-  }
+  activeUserDetectionOnMessage(message, client);
 };
 
 /**

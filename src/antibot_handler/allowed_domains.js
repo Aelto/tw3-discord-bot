@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-module.exports = [
+exports.allowed_domains = void 0;
+exports.allowed_domains = [
     "nexusmods.com",
     "imgur.com",
     "reddit.com",

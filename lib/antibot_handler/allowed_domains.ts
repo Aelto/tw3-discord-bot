@@ -1,4 +1,4 @@
-module.exports = [
+export const allowed_domains = [
   "nexusmods.com",
   "imgur.com",
   "reddit.com",

@@ -1,9 +1,9 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, Message } from "discord.js";
 import { NewActiveUser } from "./active_user";
 
 class ActiveUserCache {
   private members: Map<string, NewActiveUser>;
-  
+
   constructor() {
     this.members = new Map();
   }
@@ -52,6 +52,14 @@ class ActiveUserCache {
     user.increaseHit(client);
 
     return true;
+  }
+
+  setLastMessageSent(member: GuildMember, message: Message) {
+    const user = this.getMember(member.id);
+
+    if (user) {
+      user.setLastMessageSent(message.content);
+    }
   }
 }
 const CACHE = new ActiveUserCache();

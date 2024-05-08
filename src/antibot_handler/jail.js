@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JAIL = exports.Jail = void 0;
 const restricted_user_1 = require("./restricted_user");
-const Discord = require("discord.js");
 const allowed_domains = require("./allowed_domains");
 const { SHUT_ROLE, ADMIN_ROLE_ID } = require("../constants");
 /**

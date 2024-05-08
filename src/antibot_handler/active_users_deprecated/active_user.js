@@ -11,7 +11,6 @@ class NewActiveUser {
     id;
     creation_date;
     member;
-    last_message_sent;
     /**
      * represents the amount of messages since the member has been created noticed
      */
@@ -41,13 +40,10 @@ class NewActiveUser {
         }
     }
     onHitGoalAchieved(client) {
-        (0, logging_1.log_new_active_user)(client, this.member.id, this.last_message_sent);
+        (0, logging_1.log_new_active_user)(client, this.member.id);
     }
     allow_user() {
         this.member.roles.add(BASIC_ROLE).catch(console.error);
-    }
-    setLastMessageSent(content) {
-        this.last_message_sent = content;
     }
 }
 exports.NewActiveUser = NewActiveUser;

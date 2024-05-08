@@ -2,24 +2,29 @@ import { Message } from "discord.js";
 import CACHE from "./cache";
 import { NewActiveUser } from "./active_user";
 import { log_new_active_user_allowed } from "../logging";
+import { guildMemberFromMessage } from "../../discord_utils";
 const { WELCOME_CHANNEL_ID } = require("../../constants");
 
-export function isNewActiveUser(message: Message): boolean {
+export function activeUserDetectionOnMessage(message: Message, client) {
+  if (isNewActiveUser(message)) {
+    onNewActiveUser(message, client);
+  }
+}
+
+function isNewActiveUser(message: Message): boolean {
   // exclude messages from the welcome channel
   if (message.channelId === WELCOME_CHANNEL_ID) {
     return false;
   }
 
-  const author_member =
-    message.member || message.guild.members.cache.get(message.author.id);
+  const author_member = guildMemberFromMessage(message);
 
   // because there is the @everyone role
   return (author_member?.roles?.cache?.size ?? 2) <= 1;
 }
 
-export function cacheNewActiveUser(message: Message, client) {
-  const author_member =
-    message.member || message.guild.members.cache.get(message.author.id);
+function onNewActiveUser(message: Message, client) {
+  const author_member = guildMemberFromMessage(message);
 
   if (!author_member) {
     return;
@@ -29,6 +34,8 @@ export function cacheNewActiveUser(message: Message, client) {
     const active_user = new NewActiveUser(author_member, client);
     CACHE.addMember(active_user);
   }
+
+  CACHE.setLastMessageSent(author_member, message);
 }
 
 export async function activeUserInteractionHandler(interaction, client) {

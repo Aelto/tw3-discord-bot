@@ -1,5 +1,5 @@
 import { Client, GuildMember, Message, User } from "discord.js";
-import { AntispamMessage } from "./antispam";
+import { AntispamMessage } from "./antispam/types";
 
 const Discord = require("discord.js");
 const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
@@ -58,7 +58,11 @@ exports.log_allow = function (client, member) {
     .catch(console.error);
 };
 
-export async function log_new_active_user(client: Client, id: string) {
+export async function log_new_active_user(
+  client: Client,
+  id: string,
+  last_message_sent: string
+) {
   const row = new Discord.MessageActionRow().addComponents(
     new Discord.MessageButton()
       .setCustomId(`active_user_allow;${id}`)
@@ -72,7 +76,7 @@ export async function log_new_active_user(client: Client, id: string) {
 
   await get_channel_log(client)
     .send({
-      content: `<@${id}> has no role yet and has just recently started posting messages. What would you like to do?`,
+      content: `<@${id}> has no role yet and has just recently started posting messages. What would you like to do?\n\n__**Last message sent**__:\`\`\`${last_message_sent}\`\`\``,
       components: [row],
     })
     .catch(console.error);

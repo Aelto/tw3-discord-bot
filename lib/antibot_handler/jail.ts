@@ -1,8 +1,6 @@
 import { Message } from "discord.js";
 import { RestrictedUser } from "./restricted_user";
 
-const Discord = require("discord.js");
-
 const allowed_domains: string[] = require("./allowed_domains");
 const { SHUT_ROLE, ADMIN_ROLE_ID } = require("../constants");
 

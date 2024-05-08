@@ -40,12 +40,6 @@ class ActiveUserCache {
         user.increaseHit(client);
         return true;
     }
-    setLastMessageSent(member, message) {
-        const user = this.getMember(member.id);
-        if (user) {
-            user.setLastMessageSent(message.content);
-        }
-    }
 }
 const CACHE = new ActiveUserCache();
 exports.default = CACHE;
