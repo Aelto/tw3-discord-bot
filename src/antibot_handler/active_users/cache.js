@@ -11,6 +11,9 @@ class ActiveUserCache {
     deleteMember(id) {
         this.members.delete(id);
     }
+    hasMember(id) {
+        return this.members.has(id);
+    }
     addMember(user) {
         this.members.set(user.id, user);
         if (this.members.size >= 10) {
@@ -32,19 +35,14 @@ class ActiveUserCache {
             this.deleteMember(oldest.id);
         }
     }
-    increaseMemberHit(member, client) {
+    increaseMemberHit(member, message, client) {
         const user = this.getMember(member.id);
         if (!user) {
             return false;
         }
+        user.setLastMessageSent(message.content);
         user.increaseHit(client);
         return true;
-    }
-    setLastMessageSent(member, message) {
-        const user = this.getMember(member.id);
-        if (user) {
-            user.setLastMessageSent(message.content);
-        }
     }
 }
 const CACHE = new ActiveUserCache();

@@ -16,6 +16,10 @@ class ActiveUserCache {
     this.members.delete(id);
   }
 
+  hasMember(id: string) {
+    return this.members.has(id);
+  }
+
   addMember(user: NewActiveUser) {
     this.members.set(user.id, user);
 
@@ -42,24 +46,17 @@ class ActiveUserCache {
     }
   }
 
-  increaseMemberHit(member: GuildMember, client): boolean {
+  increaseMemberHit(member: GuildMember, message: Message, client): boolean {
     const user = this.getMember(member.id);
 
     if (!user) {
       return false;
     }
 
+    user.setLastMessageSent(message.content);
     user.increaseHit(client);
 
     return true;
-  }
-
-  setLastMessageSent(member: GuildMember, message: Message) {
-    const user = this.getMember(member.id);
-
-    if (user) {
-      user.setLastMessageSent(message.content);
-    }
   }
 }
 const CACHE = new ActiveUserCache();

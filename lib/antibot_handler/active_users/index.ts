@@ -6,9 +6,18 @@ import { guildMemberFromMessage } from "../../discord_utils";
 const { WELCOME_CHANNEL_ID } = require("../../constants");
 
 export function activeUserDetectionOnMessage(message: Message, client) {
-  if (isNewActiveUser(message)) {
-    onNewActiveUser(message, client);
+  if (!isNewActiveUser(message)) {
+    return;
   }
+
+  const author_member = guildMemberFromMessage(message);
+
+  if (!CACHE.hasMember(author_member.id)) {
+    const active_user = new NewActiveUser(author_member, client);
+    CACHE.addMember(active_user);
+  }
+
+  CACHE.increaseMemberHit(author_member, message, client);
 }
 
 function isNewActiveUser(message: Message): boolean {
@@ -21,21 +30,6 @@ function isNewActiveUser(message: Message): boolean {
 
   // because there is the @everyone role
   return (author_member?.roles?.cache?.size ?? 2) <= 1;
-}
-
-function onNewActiveUser(message: Message, client) {
-  const author_member = guildMemberFromMessage(message);
-
-  if (!author_member) {
-    return;
-  }
-
-  if (!CACHE.increaseMemberHit(author_member, client)) {
-    const active_user = new NewActiveUser(author_member, client);
-    CACHE.addMember(active_user);
-  }
-
-  CACHE.setLastMessageSent(author_member, message);
 }
 
 export async function activeUserInteractionHandler(interaction, client) {
