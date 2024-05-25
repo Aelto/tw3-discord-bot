@@ -41,7 +41,9 @@ class NewActiveUser {
         }
     }
     onHitGoalAchieved(client) {
-        (0, logging_1.log_new_active_user)(client, this.member.id, this.last_message_sent);
+        if (this.last_message_sent) {
+            (0, logging_1.log_new_active_user)(client, this.member.id, this.last_message_sent);
+        }
     }
     allow_user() {
         this.member.roles.add(BASIC_ROLE).catch(console.error);

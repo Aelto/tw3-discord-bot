@@ -49,7 +49,9 @@ export class NewActiveUser {
   }
 
   onHitGoalAchieved(client) {
-    log_new_active_user(client, this.member.id, this.last_message_sent);
+    if (this.last_message_sent) {
+      log_new_active_user(client, this.member.id, this.last_message_sent);
+    }
   }
 
   allow_user() {

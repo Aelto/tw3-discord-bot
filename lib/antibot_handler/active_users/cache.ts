@@ -53,6 +53,10 @@ class ActiveUserCache {
       return false;
     }
 
+    if (!message.content) {
+      return false;
+    }
+
     user.setLastMessageSent(message.content);
     user.increaseHit(client);
 
