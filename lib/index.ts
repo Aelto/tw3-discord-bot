@@ -1,3 +1,4 @@
+import { Client, Message, MessageAttachment } from "discord.js";
 import { activeUserInteractionHandler } from "./antibot_handler/active_users";
 
 const Discord = require("discord.js");
@@ -927,6 +928,18 @@ commands["order66"] = {
           )
         );
     }
+  },
+};
+
+commands["test"] = {
+  name: "test",
+  help: "`$test `",
+  command: async (client: Client, message: Message, args: string[]) => {
+    const path = require("path");
+
+    message.channel.send({
+      files: [path.join(__dirname, "..", "assets", "wild_hunt_shock_01.wav")],
+    });
   },
 };
 

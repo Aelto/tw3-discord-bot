@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const listener_answer_1 = require("./listener_answer");
 const { ADMIN_ROLE_ID } = require("../constants");
 const fs = require("fs");
 const Discord = require("discord.js");
@@ -39,7 +40,7 @@ class Listener {
         this.matches = matches;
         this.probability = probability;
         this.only_direct_conversation = only_direct_conversation;
-        this.answers = answers;
+        this.answers = new listener_answer_1.ListenerAnswers(answers);
     }
     /**
      * returns whether the given messages matches with this listener.
@@ -251,35 +252,13 @@ exports.listenForMessage = async function listenForMessage(message) {
                     return;
                 }
                 if (before.author.username === "The Caretaker" &&
-                    listener.answers.length) {
-                    const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
-                        .setCustomId("delete_listen")
-                        .setLabel("Delete")
-                        .setStyle("SECONDARY"));
-                    for (const answer of listener.answers) {
-                        await message
-                            .reply({
-                            content: answer,
-                            components: [row],
-                        })
-                            .catch(console.error);
-                    }
+                    listener.answers.canSend()) {
+                    await listener.answers.sendReplies(message);
                 }
             });
         }
-        else if (listener.answers.length) {
-            const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
-                .setCustomId("delete_listen")
-                .setLabel("Delete")
-                .setStyle("SECONDARY"));
-            for (const answer of listener.answers) {
-                await message
-                    .reply({
-                    content: answer,
-                    components: [row],
-                })
-                    .catch(console.error);
-            }
+        else if (listener.answers.canSend()) {
+            await listener.answers.sendReplies(message);
         }
     }
 };

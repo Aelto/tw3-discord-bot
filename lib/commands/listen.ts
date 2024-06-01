@@ -1,3 +1,5 @@
+import { ListenerAnswers } from "./listener_answer";
+
 const { ADMIN_ROLE_ID } = require("../constants");
 const fs = require("fs");
 const Discord = require("discord.js");
@@ -42,7 +44,7 @@ class Listener {
   matches: any[];
   probability: number;
   only_direct_conversation: boolean;
-  answers: any[];
+  answers: ListenerAnswers;
   constructor({
     matches = [],
     probability = 1,
@@ -52,7 +54,7 @@ class Listener {
     this.matches = matches;
     this.probability = probability;
     this.only_direct_conversation = only_direct_conversation;
-    this.answers = answers;
+    this.answers = new ListenerAnswers(answers);
   }
 
   /**
@@ -407,41 +409,13 @@ exports.listenForMessage = async function listenForMessage(message) {
 
         if (
           before.author.username === "The Caretaker" &&
-          listener.answers.length
+          listener.answers.canSend()
         ) {
-          const row = new Discord.MessageActionRow().addComponents(
-            new Discord.MessageButton()
-              .setCustomId("delete_listen")
-              .setLabel("Delete")
-              .setStyle("SECONDARY")
-          );
-
-          for (const answer of listener.answers) {
-            await message
-              .reply({
-                content: answer,
-                components: [row],
-              })
-              .catch(console.error);
-          }
+          await listener.answers.sendReplies(message);
         }
       });
-    } else if (listener.answers.length) {
-      const row = new Discord.MessageActionRow().addComponents(
-        new Discord.MessageButton()
-          .setCustomId("delete_listen")
-          .setLabel("Delete")
-          .setStyle("SECONDARY")
-      );
-
-      for (const answer of listener.answers) {
-        await message
-          .reply({
-            content: answer,
-            components: [row],
-          })
-          .catch(console.error);
-      }
+    } else if (listener.answers.canSend()) {
+      await listener.answers.sendReplies(message);
     }
   }
 };

@@ -553,6 +553,16 @@ commands["order66"] = {
         }
     },
 };
+commands["test"] = {
+    name: "test",
+    help: "`$test `",
+    command: async (client, message, args) => {
+        const path = require("path");
+        message.channel.send({
+            files: [path.join(__dirname, "..", "assets", "wild_hunt_shock_01.wav")],
+        });
+    },
+};
 addListenCommands(commands);
 addScreenshotReactionListener(client);
 client.on("ready", () => {
