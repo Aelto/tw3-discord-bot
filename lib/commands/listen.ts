@@ -1,103 +1,15 @@
+import { Message } from "discord.js";
+import { Listener } from "./listener";
 import { ListenerAnswers } from "./listener_answer";
+import { ListenersDatabase } from "./listener_database";
+import { Match } from "./listener_match";
+import { prng } from "../core/prng";
 
 const { ADMIN_ROLE_ID } = require("../constants");
 const fs = require("fs");
 const Discord = require("discord.js");
 const consume = require("../core/consume-command");
 const { prompt } = require("../core/prompt.js");
-const PRNG = require("../core/prng.js");
-
-class ListenersDatabase {
-  listeners: Listener[];
-  constructor({ listeners = [] }) {
-    this.listeners = listeners;
-  }
-
-  push(listener) {
-    this.listeners.push(listener);
-  }
-
-  remove(index) {
-    this.listeners = this.listeners.filter((l, i) => i != index);
-  }
-
-  /**
-   *
-   * @param {string} message
-   */
-  getListenersThatMatch(message) {
-    let formatted_message = ` ${message.toLowerCase().trim()} `;
-
-    return this.listeners.filter((listener) =>
-      listener.doesMatch(formatted_message, formatted_message.trim())
-    );
-  }
-
-  getAnswersForMessage(message) {
-    const listeners = this.getListenersThatMatch(message);
-
-    return listeners.flatMap((listener) => listener.answers);
-  }
-}
-
-class Listener {
-  matches: any[];
-  probability: number;
-  only_direct_conversation: boolean;
-  answers: ListenerAnswers;
-  constructor({
-    matches = [],
-    probability = 1,
-    answers = [],
-    only_direct_conversation = false,
-  }) {
-    this.matches = matches;
-    this.probability = probability;
-    this.only_direct_conversation = only_direct_conversation;
-    this.answers = new ListenerAnswers(answers);
-  }
-
-  /**
-   * returns whether the given messages matches with this listener.
-   * @param {String} message
-   */
-  doesMatch(formatted_message, message) {
-    return this.matches.some((match) =>
-      match.matches(formatted_message, message)
-    );
-  }
-}
-
-class Match {
-  match_string: string;
-  cached_regex: RegExp;
-  cached_words: string[];
-  constructor(match_string) {
-    this.match_string = match_string.toLowerCase();
-
-    if (match_string.startsWith("/") && match_string.endsWith("/")) {
-      this.cached_regex = new RegExp(match_string.slice(1, -1));
-    } else {
-      this.cached_words = this.match_string
-        .split(" ")
-        .map((word) => word.replace(/\$/g, " "));
-    }
-  }
-
-  matches(formatted_message, message) {
-    if (this.cached_regex) {
-      return this.cached_regex.test(message);
-    } else {
-      return this.cached_words.every((word) =>
-        formatted_message.includes(word)
-      );
-    }
-  }
-
-  toJSON() {
-    return this.match_string;
-  }
-}
 
 let listeners_database = new ListenersDatabase({});
 
@@ -120,18 +32,10 @@ function getListenersDatabase() {
     fs.readFileSync("listeners-database.json", "utf-8")
   );
 
-  listeners_database = new ListenersDatabase({
-    listeners: content.listeners.map(
-      (listener) =>
-        new Listener({
-          ...listener,
-          matches: listener.matches.map((match) => new Match(match)),
-        })
-    ),
-  });
+  listeners_database = ListenersDatabase.fromJson(content);
 }
 
-exports.addListenCommands = function addListenCommand(commands) {
+export function addListenCommands(commands) {
   getListenersDatabase();
 
   commands["listen"] = {
@@ -258,10 +162,7 @@ exports.addListenCommands = function addListenCommand(commands) {
 
       getListenersDatabase();
 
-      const listener = new Listener({
-        ...listener_object,
-        matches: listener_object.matches.map((m) => new Match(m)),
-      });
+      const listener = Listener.fromJson(listener_object);
 
       listeners_database.push(listener);
 
@@ -363,17 +264,10 @@ exports.addListenCommands = function addListenCommand(commands) {
       }
     },
   };
-};
+}
 
-/**
- *
- * @param {Discord.Message} message
- */
-exports.listenForMessage = async function listenForMessage(message) {
-  /**
-   * @type {Discord.Message}
-   */
-  let message_before = null;
+export async function listenForMessage(message: Message) {
+  let message_before: Message = null;
 
   // a way to cache the message because fetching for every listener could
   // demand way too many requests.
@@ -391,13 +285,15 @@ exports.listenForMessage = async function listenForMessage(message) {
     return Promise.resolve(message_before);
   };
 
-  for (const listener of listeners_database.getListenersThatMatch(
+  const found_listeners = listeners_database.getListenersThatMatch(
     message.content
-  )) {
+  );
+
+  for (const listener of found_listeners) {
     const should_message_answer_bot = listener.only_direct_conversation;
 
     const probability = listener.probability || 1;
-    if (!PRNG.nextProc(probability)) {
+    if (!prng.nextProc(probability)) {
       continue;
     }
 
@@ -418,4 +314,4 @@ exports.listenForMessage = async function listenForMessage(message) {
       await listener.answers.sendReplies(message);
     }
   }
-};
+}

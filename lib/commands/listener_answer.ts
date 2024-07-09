@@ -8,6 +8,18 @@ export class ListenerAnswers {
     this.answers = answers;
   }
 
+  public static fromJson(json: any) {
+    if ("answers" in json) {
+      return ListenerAnswers.fromJson(json.answers);
+    }
+
+    return new ListenerAnswers(json);
+  }
+
+  public toJSON() {
+    return this.answers;
+  }
+
   public canSend() {
     return this.answers.length > 0;
   }

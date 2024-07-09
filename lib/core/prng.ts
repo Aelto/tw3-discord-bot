@@ -31,4 +31,4 @@ class PRNG {
   }
 }
 
-module.exports = new PRNG();
+export const prng = new PRNG();

@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const active_users_1 = require("./antibot_handler/active_users");
+const listen_1 = require("./commands/listen");
 const Discord = require("discord.js");
 const fs = require("fs");
-const { listenForMessage, addListenCommands } = require("./commands/listen.js");
 const { ADMIN_ROLE_ID, WARNED_ROLE_1_ID, WARNED_ROLE_2_ID, MAIN_CHANNEL_ID, COMMANDS_PREFIX, LOG_CHANNEL_ID, } = require("./constants.js");
 const key = require("./key");
 const consume = require("./core/consume-command.js");
@@ -563,13 +563,13 @@ commands["test"] = {
         });
     },
 };
-addListenCommands(commands);
+(0, listen_1.addListenCommands)(commands);
 addScreenshotReactionListener(client);
 client.on("ready", () => {
     console.log("The Caretaker is ready");
     const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
     if (log_channel) {
-        log_channel.send("Hello, i just restarted :wave:").catch(console.error);
+        // log_channel.send("Hello, i just restarted :wave:").catch(console.error);
     }
 });
 client.on("messageCreate", (message) => {
@@ -593,7 +593,7 @@ client.on("messageCreate", (message) => {
      * listen if the bot can answer with a listener
      */
     if (!message.author.username.includes("Caretaker")) {
-        listenForMessage(message);
+        (0, listen_1.listenForMessage)(message);
     }
 });
 client.on("interactionCreate", async (interaction) => {

@@ -8,6 +8,15 @@ class ListenerAnswers {
     constructor(answers) {
         this.answers = answers;
     }
+    static fromJson(json) {
+        if ("answers" in json) {
+            return ListenerAnswers.fromJson(json.answers);
+        }
+        return new ListenerAnswers(json);
+    }
+    toJSON() {
+        return this.answers;
+    }
     canSend() {
         return this.answers.length > 0;
     }

@@ -1,100 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const listener_answer_1 = require("./listener_answer");
+exports.listenForMessage = exports.addListenCommands = void 0;
+const listener_1 = require("./listener");
+const listener_database_1 = require("./listener_database");
+const prng_1 = require("../core/prng");
 const { ADMIN_ROLE_ID } = require("../constants");
 const fs = require("fs");
 const Discord = require("discord.js");
 const consume = require("../core/consume-command");
 const { prompt } = require("../core/prompt.js");
-const PRNG = require("../core/prng.js");
-class ListenersDatabase {
-    listeners;
-    constructor({ listeners = [] }) {
-        this.listeners = listeners;
-    }
-    push(listener) {
-        this.listeners.push(listener);
-    }
-    remove(index) {
-        this.listeners = this.listeners.filter((l, i) => i != index);
-    }
-    /**
-     *
-     * @param {string} message
-     */
-    getListenersThatMatch(message) {
-        let formatted_message = ` ${message.toLowerCase().trim()} `;
-        return this.listeners.filter((listener) => listener.doesMatch(formatted_message, formatted_message.trim()));
-    }
-    getAnswersForMessage(message) {
-        const listeners = this.getListenersThatMatch(message);
-        return listeners.flatMap((listener) => listener.answers);
-    }
-}
-class Listener {
-    matches;
-    probability;
-    only_direct_conversation;
-    answers;
-    constructor({ matches = [], probability = 1, answers = [], only_direct_conversation = false, }) {
-        this.matches = matches;
-        this.probability = probability;
-        this.only_direct_conversation = only_direct_conversation;
-        this.answers = new listener_answer_1.ListenerAnswers(answers);
-    }
-    /**
-     * returns whether the given messages matches with this listener.
-     * @param {String} message
-     */
-    doesMatch(formatted_message, message) {
-        return this.matches.some((match) => match.matches(formatted_message, message));
-    }
-}
-class Match {
-    match_string;
-    cached_regex;
-    cached_words;
-    constructor(match_string) {
-        this.match_string = match_string.toLowerCase();
-        if (match_string.startsWith("/") && match_string.endsWith("/")) {
-            this.cached_regex = new RegExp(match_string.slice(1, -1));
-        }
-        else {
-            this.cached_words = this.match_string
-                .split(" ")
-                .map((word) => word.replace(/\$/g, " "));
-        }
-    }
-    matches(formatted_message, message) {
-        if (this.cached_regex) {
-            return this.cached_regex.test(message);
-        }
-        else {
-            return this.cached_words.every((word) => formatted_message.includes(word));
-        }
-    }
-    toJSON() {
-        return this.match_string;
-    }
-}
-let listeners_database = new ListenersDatabase({});
+let listeners_database = new listener_database_1.ListenersDatabase({});
 function saveListenersDatabase() {
     fs.writeFileSync("listeners-database.json", JSON.stringify(listeners_database, null, "  "), { encoding: "utf-8" });
 }
 function getListenersDatabase() {
-    listeners_database = new ListenersDatabase({});
+    listeners_database = new listener_database_1.ListenersDatabase({});
     if (!fs.existsSync("listeners-database.json")) {
         return;
     }
     const content = JSON.parse(fs.readFileSync("listeners-database.json", "utf-8"));
-    listeners_database = new ListenersDatabase({
-        listeners: content.listeners.map((listener) => new Listener({
-            ...listener,
-            matches: listener.matches.map((match) => new Match(match)),
-        })),
-    });
+    listeners_database = listener_database_1.ListenersDatabase.fromJson(content);
 }
-exports.addListenCommands = function addListenCommand(commands) {
+function addListenCommands(commands) {
     getListenersDatabase();
     commands["listen"] = {
         name: "listen",
@@ -159,10 +86,7 @@ exports.addListenCommands = function addListenCommand(commands) {
                 }
             }
             getListenersDatabase();
-            const listener = new Listener({
-                ...listener_object,
-                matches: listener_object.matches.map((m) => new Match(m)),
-            });
+            const listener = listener_1.Listener.fromJson(listener_object);
             listeners_database.push(listener);
             saveListenersDatabase();
             consume(client, message, "Listener added", `A listener was created with the following matches:\n - ${listener_object.matches
@@ -217,15 +141,9 @@ exports.addListenCommands = function addListenCommand(commands) {
             }
         },
     };
-};
-/**
- *
- * @param {Discord.Message} message
- */
-exports.listenForMessage = async function listenForMessage(message) {
-    /**
-     * @type {Discord.Message}
-     */
+}
+exports.addListenCommands = addListenCommands;
+async function listenForMessage(message) {
     let message_before = null;
     // a way to cache the message because fetching for every listener could
     // demand way too many requests.
@@ -240,10 +158,11 @@ exports.listenForMessage = async function listenForMessage(message) {
         }
         return Promise.resolve(message_before);
     };
-    for (const listener of listeners_database.getListenersThatMatch(message.content)) {
+    const found_listeners = listeners_database.getListenersThatMatch(message.content);
+    for (const listener of found_listeners) {
         const should_message_answer_bot = listener.only_direct_conversation;
         const probability = listener.probability || 1;
-        if (!PRNG.nextProc(probability)) {
+        if (!prng_1.prng.nextProc(probability)) {
             continue;
         }
         if (should_message_answer_bot) {
@@ -261,4 +180,5 @@ exports.listenForMessage = async function listenForMessage(message) {
             await listener.answers.sendReplies(message);
         }
     }
-};
+}
+exports.listenForMessage = listenForMessage;

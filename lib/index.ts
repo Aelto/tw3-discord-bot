@@ -1,9 +1,9 @@
 import { Client, Message, MessageAttachment } from "discord.js";
 import { activeUserInteractionHandler } from "./antibot_handler/active_users";
+import { addListenCommands, listenForMessage } from "./commands/listen";
 
 const Discord = require("discord.js");
 const fs = require("fs");
-const { listenForMessage, addListenCommands } = require("./commands/listen.js");
 const {
   ADMIN_ROLE_ID,
   WARNED_ROLE_1_ID,
@@ -952,7 +952,7 @@ client.on("ready", () => {
   const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
   if (log_channel) {
-    log_channel.send("Hello, i just restarted :wave:").catch(console.error);
+    // log_channel.send("Hello, i just restarted :wave:").catch(console.error);
   }
 });
 
