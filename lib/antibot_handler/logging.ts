@@ -115,3 +115,12 @@ export async function log_reputation_user_shutdown(
     `A recent message from <@${author.id}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
   );
 }
+
+export async function log_message_from_jailed(
+  client: Client,
+  message: Message
+) {
+  get_channel_log(client).send(
+    `A recent message from <@${message.author.id}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+  );
+}

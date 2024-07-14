@@ -1,12 +1,18 @@
 import { Client, GuildMember, Message } from "discord.js";
 import {
+  log_message_from_jailed,
   log_reputation,
   log_reputation_message_deleted,
   log_reputation_user_shutdown,
 } from "../logging";
 import { Jail } from "../jail";
 import { AntispamMessage, messageToAntiSpamMessage } from "./types";
-import { ANTISPAM_MESSAGES, RECENT_MESSAGES, cleanupAntispamMessages, getAntispamMessageByAuthorId } from "./caches";
+import {
+  ANTISPAM_MESSAGES,
+  RECENT_MESSAGES,
+  cleanupAntispamMessages,
+  getAntispamMessageByAuthorId,
+} from "./caches";
 
 const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
 
@@ -26,6 +32,12 @@ export async function antiSpamOnMessage(
     author_member.id === BOT_ID ||
     author_member.roles.cache.has(ADMIN_ROLE_ID)
   ) {
+    return;
+  }
+
+  if (jail.is_jailed(message)) {
+    message.delete().catch(console.error);
+    log_message_from_jailed(client, message);
     return;
   }
 
@@ -209,6 +221,3 @@ function deleteRecentMessagesFromUser(id: GuildMember["id"]) {
     message.delete().catch(console.error);
   }
 }
-
-
-

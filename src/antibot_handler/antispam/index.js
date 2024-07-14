@@ -14,6 +14,11 @@ async function antiSpamOnMessage(client, jail, message) {
         author_member.roles.cache.has(ADMIN_ROLE_ID)) {
         return;
     }
+    if (jail.is_jailed(message)) {
+        message.delete().catch(console.error);
+        (0, logging_1.log_message_from_jailed)(client, message);
+        return;
+    }
     caches_1.RECENT_MESSAGES.insert(message);
     const reputation = calculateReputation(message);
     handleNewReputation(client, jail, author_member, message, reputation);

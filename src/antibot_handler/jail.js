@@ -65,6 +65,14 @@ class Jail {
         }
         return user;
     }
+    is_jailed(message) {
+        for (const user of this.jail.values()) {
+            if (user.user.id == message.author.id) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Flushes the memory of restricted users, this doesn't mean the users are
      * banned or restricted but simply the jail clears its memory.

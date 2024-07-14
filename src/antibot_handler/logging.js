@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.log_reputation_user_shutdown = exports.log_reputation_message_deleted = exports.log_reputation = exports.log_new_active_user_allowed = exports.log_new_active_user = void 0;
+exports.log_message_from_jailed = exports.log_reputation_user_shutdown = exports.log_reputation_message_deleted = exports.log_reputation = exports.log_new_active_user_allowed = exports.log_new_active_user = void 0;
 const Discord = require("discord.js");
 const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
 function get_channel(client) {
@@ -79,3 +79,7 @@ async function log_reputation_user_shutdown(client, author, message) {
     get_channel_log(client).send(`A recent message from <@${author.id}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
 exports.log_reputation_user_shutdown = log_reputation_user_shutdown;
+async function log_message_from_jailed(client, message) {
+    get_channel_log(client).send(`A recent message from <@${message.author.id}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+}
+exports.log_message_from_jailed = log_message_from_jailed;
