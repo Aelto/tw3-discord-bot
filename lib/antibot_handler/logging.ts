@@ -92,7 +92,7 @@ export async function log_reputation(
   message: AntispamMessage
 ) {
   get_channel_log(client).send(
-    `<@${author.id}> reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+    `<@${author.id}>, <#${message.channel_id}>, reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``
   );
 }
 
@@ -102,7 +102,7 @@ export async function log_reputation_message_deleted(
   message: Message
 ) {
   get_channel_log(client).send(
-    `A recent message from <@${author.id}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+    `A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
   );
 }
 
@@ -112,7 +112,7 @@ export async function log_reputation_user_shutdown(
   message: Message
 ) {
   get_channel_log(client).send(
-    `A recent message from <@${author.id}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+    `A recent message from <@${author.id}> in <#${message.channelId}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
   );
 }
 
@@ -121,6 +121,6 @@ export async function log_message_from_jailed(
   message: Message
 ) {
   get_channel_log(client).send(
-    `A recent message from <@${message.author.id}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+    `A recent message from <@${message.author.id}> in <#${message.channelId}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
   );
 }
