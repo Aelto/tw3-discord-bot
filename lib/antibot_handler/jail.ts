@@ -67,6 +67,8 @@ export class Jail {
 
     this.jail.set(uuid, restricted);
 
+    this.remove_outdated_jailed_users();
+
     return restricted;
   }
 
@@ -106,8 +108,14 @@ export class Jail {
    * Flushes the memory of restricted users, this doesn't mean the users are
    * banned or restricted but simply the jail clears its memory.
    */
-  flush() {
-    this.jail.clear();
+  remove_outdated_jailed_users() {
+    const to_delete = Array.from(this.jail.keys()).filter((key) =>
+      this.jail.get(key).can_be_deleted()
+    );
+
+    for (const key of to_delete) {
+      this.jail.delete(key);
+    }
   }
 }
 
