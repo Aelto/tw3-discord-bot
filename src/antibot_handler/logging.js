@@ -68,18 +68,18 @@ async function log_new_active_user_allowed(client, id) {
 }
 exports.log_new_active_user_allowed = log_new_active_user_allowed;
 async function log_reputation(client, author, message) {
-    get_channel_log(client).send(`<@${author.id}> reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+    get_channel_log(client).send(`<@${author.id}>, <#${message.channel_id}>, reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
 exports.log_reputation = log_reputation;
 async function log_reputation_message_deleted(client, author, message) {
-    get_channel_log(client).send(`A recent message from <@${author.id}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+    get_channel_log(client).send(`A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
 exports.log_reputation_message_deleted = log_reputation_message_deleted;
 async function log_reputation_user_shutdown(client, author, message) {
-    get_channel_log(client).send(`A recent message from <@${author.id}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+    get_channel_log(client).send(`A recent message from <@${author.id}> in <#${message.channelId}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
 exports.log_reputation_user_shutdown = log_reputation_user_shutdown;
 async function log_message_from_jailed(client, message) {
-    get_channel_log(client).send(`A recent message from <@${message.author.id}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+    get_channel_log(client).send(`A recent message from <@${message.author.id}> in <#${message.channelId}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
 exports.log_message_from_jailed = log_message_from_jailed;

@@ -63,5 +63,12 @@ ${this.original_text_message}`.trim())
         this.user.ban().catch(console.error);
         this.delete_logging_message();
     }
+    can_be_deleted() {
+        const one_second = 1000;
+        const one_minute = one_second * 60;
+        const one_hour = one_minute * 60;
+        const one_day = one_hour * 24;
+        return Date.now() - this.creation_date.getTime() > one_day * 5;
+    }
 }
 exports.RestrictedUser = RestrictedUser;
