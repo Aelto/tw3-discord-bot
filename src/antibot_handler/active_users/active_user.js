@@ -12,6 +12,7 @@ class NewActiveUser {
     creation_date;
     member;
     last_message_sent;
+    last_channel_id;
     /**
      * represents the amount of messages since the member has been created noticed
      */
@@ -42,14 +43,15 @@ class NewActiveUser {
     }
     onHitGoalAchieved(client) {
         if (this.last_message_sent) {
-            (0, logging_1.log_new_active_user)(client, this.member.id, this.last_message_sent);
+            (0, logging_1.log_new_active_user)(client, this.member.id, this.last_message_sent, this.last_channel_id);
         }
     }
     allow_user() {
         this.member.roles.add(BASIC_ROLE).catch(console.error);
     }
-    setLastMessageSent(content) {
+    setLastMessageSent(content, channel_id) {
         this.last_message_sent = content;
+        this.last_channel_id = channel_id;
     }
 }
 exports.NewActiveUser = NewActiveUser;

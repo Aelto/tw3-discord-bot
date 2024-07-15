@@ -12,6 +12,7 @@ export class NewActiveUser {
   public creation_date: number;
   private member: GuildMember;
   private last_message_sent: string;
+  private last_channel_id: string;
 
   /**
    * represents the amount of messages since the member has been created noticed
@@ -50,7 +51,12 @@ export class NewActiveUser {
 
   onHitGoalAchieved(client) {
     if (this.last_message_sent) {
-      log_new_active_user(client, this.member.id, this.last_message_sent);
+      log_new_active_user(
+        client,
+        this.member.id,
+        this.last_message_sent,
+        this.last_channel_id
+      );
     }
   }
 
@@ -58,7 +64,8 @@ export class NewActiveUser {
     this.member.roles.add(BASIC_ROLE).catch(console.error);
   }
 
-  setLastMessageSent(content: string) {
+  setLastMessageSent(content: string, channel_id: string) {
     this.last_message_sent = content;
+    this.last_channel_id = channel_id;
   }
 }

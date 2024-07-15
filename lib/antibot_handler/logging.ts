@@ -61,7 +61,8 @@ exports.log_allow = function (client, member) {
 export async function log_new_active_user(
   client: Client,
   id: string,
-  last_message_sent: string
+  last_message_sent: string,
+  last_channel_id: string
 ) {
   const row = new Discord.MessageActionRow().addComponents(
     new Discord.MessageButton()
@@ -76,7 +77,7 @@ export async function log_new_active_user(
 
   await get_channel_log(client)
     .send({
-      content: `<@${id}> has no role yet and has just recently started posting messages. What would you like to do?\n\n__**Last message sent**__:\`\`\`${last_message_sent}\`\`\``,
+      content: `<@${id}> has no role yet and has just recently started posting messages, the most recent one being in <#${last_channel_id}>. What would you like to do?\n\n__**Last message sent**__:\`\`\`${last_message_sent}\`\`\``,
       components: [row],
     })
     .catch(console.error);

@@ -57,7 +57,7 @@ class ActiveUserCache {
       return false;
     }
 
-    user.setLastMessageSent(message.content);
+    user.setLastMessageSent(message.content, message.channelId);
     user.increaseHit(client);
 
     return true;
