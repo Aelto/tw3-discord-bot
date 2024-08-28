@@ -20,33 +20,33 @@ async function antiSpamOnMessage(client, jail, message) {
         return;
     }
     caches_1.RECENT_MESSAGES.insert(message);
-    const reputation = calculateReputation(message);
+    const reputation = calculateReputation(message, author_member);
     handleNewReputation(client, jail, author_member, message, reputation);
 }
 exports.antiSpamOnMessage = antiSpamOnMessage;
 /**
  *
  */
-function calculateReputation(message) {
+function calculateReputation(message, author_member) {
     const author = message.author?.id;
     if (!author) {
         return (0, types_1.messageToAntiSpamMessage)(message);
     }
     const previous = (0, caches_1.getAntispamMessageByAuthorId)(author);
-    if (!previous) {
-        return (0, types_1.messageToAntiSpamMessage)(message);
-    }
     // NOTE: use the current reputation for building the new object:
-    const current = (0, types_1.messageToAntiSpamMessage)(message, previous.reputation);
-    const delta = current.timestamp - previous.timestamp;
+    const current = (0, types_1.messageToAntiSpamMessage)(message, previous?.reputation ?? 10);
+    const delta = current.timestamp - (previous?.timestamp ?? 0);
     // messages can be asynchronous, if we receive an older message than what we
     // already scanned then ignore:
     if (delta < 0) {
         return current;
     }
-    const same_content = previous.content === current.content;
-    const same_channel = previous.channel_id === current.channel_id;
+    const same_content = (previous?.content ?? "") === current.content;
+    const same_channel = (previous?.channel_id ?? 0) === current.channel_id;
     const has_link = current.content.includes("http://") || current.content.includes("https://");
+    // 1 for the @everyone
+    const author_has_role = author_member.roles.cache.size > 1;
+    const mentions_someone = message.mentions.users.size > 0;
     const one_second = 1000;
     const one_minute = 60 * one_second;
     const is_delta_normal = delta < one_minute;
@@ -94,14 +94,53 @@ function calculateReputation(message) {
                 current.reputation -= 3;
             }
         }
-        if (message.mentions.users.size > 0) {
+        if (mentions_someone) {
             current.reputation -= 1;
             // punish repetitive pings even more if previous message was already bad
-            if (previous.tendency < 0) {
+            if (previous?.tendency ?? 10 < 0) {
                 current.reputation -= 1;
             }
         }
     }
+    // measures to handle newcoming spammers who may send only one message:
+    const includes_dollar = message.content.includes("$");
+    const includes_steam = message.content.includes("steam");
+    const includes_gift = message.content.includes("gift");
+    const includes_hidden_link = message.content.includes("[") &&
+        message.content.includes("]") &&
+        message.content.includes("(") &&
+        message.content.includes(")");
+    if (!author_has_role && has_link) {
+        current.reputation -= 1;
+    }
+    if (!author_has_role && mentions_someone) {
+        current.reputation -= 3;
+    }
+    if (!author_has_role && includes_dollar) {
+        current.reputation -= 2;
+    }
+    if (!includes_gift) {
+        current.reputation -= 1;
+        if (!author_has_role) {
+            current.reputation -= 1;
+        }
+    }
+    if (includes_hidden_link) {
+        current.reputation -= 1;
+        if (!author_has_role) {
+            current.reputation -= 1;
+        }
+    }
+    if (!author_has_role && includes_steam) {
+        current.reputation -= 1;
+    }
+    if (has_link && mentions_someone) {
+        current.reputation -= 2;
+        if (!author_has_role) {
+            current.reputation -= 3;
+        }
+    }
+    // measures to restore reputation on valid behaviour
     if (same_channel && !same_content) {
         // restore a bit of reputation on varied messages in same channels
         current.reputation += 1;
