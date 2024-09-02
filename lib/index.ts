@@ -31,6 +31,7 @@ const client = new Discord.Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.MessageContent,
   ],
 });
 const addScreenshotReactionListener = require("./screenshot_handler.js");
