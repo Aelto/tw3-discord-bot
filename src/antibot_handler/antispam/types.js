@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.messageToAntiSpamMessage = void 0;
+exports.messageToAntiSpamMessage = messageToAntiSpamMessage;
 function messageToAntiSpamMessage(message, reputation = 10) {
     return {
         content: message.content,
@@ -10,4 +10,3 @@ function messageToAntiSpamMessage(message, reputation = 10) {
         tendency: 0,
     };
 }
-exports.messageToAntiSpamMessage = messageToAntiSpamMessage;

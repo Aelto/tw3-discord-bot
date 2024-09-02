@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.antiSpamOnMessage = void 0;
+exports.antiSpamOnMessage = antiSpamOnMessage;
 const logging_1 = require("../logging");
 const types_1 = require("./types");
 const caches_1 = require("./caches");
@@ -23,7 +23,6 @@ async function antiSpamOnMessage(client, jail, message) {
     const reputation = calculateReputation(message, author_member);
     handleNewReputation(client, jail, author_member, message, reputation);
 }
-exports.antiSpamOnMessage = antiSpamOnMessage;
 /**
  *
  */

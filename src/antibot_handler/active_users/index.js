@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.activeUserInteractionHandler = exports.activeUserDetectionOnMessage = void 0;
+exports.activeUserDetectionOnMessage = activeUserDetectionOnMessage;
+exports.activeUserInteractionHandler = activeUserInteractionHandler;
 const cache_1 = require("./cache");
 const active_user_1 = require("./active_user");
 const logging_1 = require("../logging");
@@ -17,7 +18,6 @@ function activeUserDetectionOnMessage(message, client) {
     }
     cache_1.default.increaseMemberHit(author_member, message, client);
 }
-exports.activeUserDetectionOnMessage = activeUserDetectionOnMessage;
 function isNewActiveUser(message) {
     // exclude messages from the welcome channel
     if (message.channelId === WELCOME_CHANNEL_ID) {
@@ -45,4 +45,3 @@ async function activeUserInteractionHandler(interaction, client) {
         }
     }
 }
-exports.activeUserInteractionHandler = activeUserInteractionHandler;

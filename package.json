@@ -21,7 +21,7 @@
   "homepage": "https://github.com/Aelto/tw3-discord-bot#readme",
   "dependencies": {
     "discord-buttons": "4.0.0-deprecated",
-    "discord.js": "13.6.0"
+    "discord.js": "14.15.3"
   },
   "devDependencies": {
     "typescript": "^5.2.2"

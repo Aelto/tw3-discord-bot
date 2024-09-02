@@ -51,7 +51,9 @@ module.exports = class QueueInterval {
   }
 
   stop() {
-    clearInterval(this.interval_id);
+    if (typeof this.interval_id === "number") {
+      clearInterval(this.interval_id);
+    }
 
     this.interval_id = null;
     this.on_clear();

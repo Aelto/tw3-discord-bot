@@ -1,6 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.log_message_from_jailed = exports.log_reputation_user_shutdown = exports.log_reputation_message_deleted = exports.log_reputation = exports.log_new_active_user_allowed = exports.log_new_active_user = void 0;
+exports.log_new_active_user = log_new_active_user;
+exports.log_new_active_user_allowed = log_new_active_user_allowed;
+exports.log_reputation = log_reputation;
+exports.log_reputation_message_deleted = log_reputation_message_deleted;
+exports.log_reputation_user_shutdown = log_reputation_user_shutdown;
+exports.log_message_from_jailed = log_message_from_jailed;
+exports.log_invite_created = log_invite_created;
+exports.log_invite_from_non_hunter = log_invite_from_non_hunter;
 const Discord = require("discord.js");
 const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
 function get_channel(client) {
@@ -62,24 +69,24 @@ async function log_new_active_user(client, id, last_message_sent, last_channel_i
     })
         .catch(console.error);
 }
-exports.log_new_active_user = log_new_active_user;
 async function log_new_active_user_allowed(client, id) {
     get_channel_log(client).send(`<@${id}> has been given his role`);
 }
-exports.log_new_active_user_allowed = log_new_active_user_allowed;
 async function log_reputation(client, author, message) {
     get_channel_log(client).send(`<@${author.id}>, <#${message.channel_id}>, reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
-exports.log_reputation = log_reputation;
 async function log_reputation_message_deleted(client, author, message) {
     get_channel_log(client).send(`A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
-exports.log_reputation_message_deleted = log_reputation_message_deleted;
 async function log_reputation_user_shutdown(client, author, message) {
     get_channel_log(client).send(`A recent message from <@${author.id}> in <#${message.channelId}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
-exports.log_reputation_user_shutdown = log_reputation_user_shutdown;
 async function log_message_from_jailed(client, message) {
     get_channel_log(client).send(`A recent message from <@${message.author.id}> in <#${message.channelId}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
-exports.log_message_from_jailed = log_message_from_jailed;
+async function log_invite_created(client, user, channel) {
+    get_channel_log(client).send(`Member <@${user.id}> created an invite for <#${channel.id}>`);
+}
+async function log_invite_from_non_hunter(client, member) {
+    get_channel_log(client).send(`Member <@${member.id}> created an invite but was lacking the basic roles, invite was automatically deleted.`);
+}

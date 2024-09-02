@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAntispamMessageByAuthorId = exports.cleanupAntispamMessages = exports.RECENT_MESSAGES = exports.ANTISPAM_MESSAGES = void 0;
+exports.RECENT_MESSAGES = exports.ANTISPAM_MESSAGES = void 0;
+exports.cleanupAntispamMessages = cleanupAntispamMessages;
+exports.getAntispamMessageByAuthorId = getAntispamMessageByAuthorId;
 const fifo_queue_1 = require("../../datatypes/fifo-queue");
 /**
  * stores the last message posted by people with information about the message
@@ -28,8 +30,6 @@ function cleanupAntispamMessages() {
         }
     }
 }
-exports.cleanupAntispamMessages = cleanupAntispamMessages;
 function getAntispamMessageByAuthorId(id) {
     return exports.ANTISPAM_MESSAGES.get(id) || null;
 }
-exports.getAntispamMessageByAuthorId = getAntispamMessageByAuthorId;

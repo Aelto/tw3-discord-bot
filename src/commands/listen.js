@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listenForMessage = exports.addListenCommands = void 0;
+exports.addListenCommands = addListenCommands;
+exports.listenForMessage = listenForMessage;
 const listener_1 = require("./listener");
 const listener_database_1 = require("./listener_database");
 const prng_1 = require("../core/prng");
@@ -142,7 +143,6 @@ function addListenCommands(commands) {
         },
     };
 }
-exports.addListenCommands = addListenCommands;
 async function listenForMessage(message) {
     let message_before = null;
     // a way to cache the message because fetching for every listener could
@@ -181,4 +181,3 @@ async function listenForMessage(message) {
         }
     }
 }
-exports.listenForMessage = listenForMessage;

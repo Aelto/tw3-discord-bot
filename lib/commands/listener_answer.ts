@@ -1,6 +1,7 @@
-import { Channel, Message, MessageActionRow, MessageButton } from "discord.js";
+import { Message } from "discord.js";
 
 const path = require("path");
+const Discord = require("discord.js");
 
 export class ListenerAnswers {
   private answers: string[];
@@ -31,8 +32,8 @@ export class ListenerAnswers {
   }
 
   private async sendOneReply(message: Message, reply: string) {
-    const row = new MessageActionRow().addComponents(
-      new MessageButton()
+    const row = new Discord.MessageActionRow().addComponents(
+      new Discord.MessageButton()
         .setCustomId("delete_listen")
         .setLabel("Delete")
         .setStyle("SECONDARY")

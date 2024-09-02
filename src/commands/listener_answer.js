@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListenerAnswers = void 0;
-const discord_js_1 = require("discord.js");
 const path = require("path");
+const Discord = require("discord.js");
 class ListenerAnswers {
     answers;
     constructor(answers) {
@@ -26,7 +26,7 @@ class ListenerAnswers {
         }
     }
     async sendOneReply(message, reply) {
-        const row = new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton()
+        const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
             .setCustomId("delete_listen")
             .setLabel("Delete")
             .setStyle("SECONDARY"));

@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.antibot_invite_create_handler = antibot_invite_create_handler;
 const active_users_1 = require("./active_users");
 const antispam_1 = require("./antispam");
 const jail_1 = require("./jail");
-const { SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID, } = require("../constants");
+const logging_1 = require("./logging");
+const { SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID, BASIC_ROLE, } = require("../constants");
 const { log_allow, log_ban, log_restrict } = require("./logging");
 /**
  * Automatically deletes the messages of people without the basic role, then
@@ -41,3 +43,18 @@ exports.antibot_interaction_handler = async function (interaction, client) {
         }
     }
 };
+async function antibot_invite_create_handler(invite) {
+    const client = invite.client;
+    const invite_guild = client.guilds.cache.get(invite.guild.id);
+    console.log(invite_guild);
+    const user = invite.inviter;
+    const inviter = invite_guild?.members.cache.get(user.id);
+    (0, logging_1.log_invite_created)(client, user, invite.channel);
+    if (!inviter) {
+        return;
+    }
+    if (!inviter.roles.cache.has(BASIC_ROLE)) {
+        await invite.delete().catch(console.error);
+        (0, logging_1.log_invite_from_non_hunter)(client, inviter);
+    }
+}

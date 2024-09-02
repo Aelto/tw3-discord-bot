@@ -1,4 +1,4 @@
-import { Client, GuildMember, Message, User } from "discord.js";
+import { Channel, Client, GuildMember, Message, User } from "discord.js";
 import { AntispamMessage } from "./antispam/types";
 
 const Discord = require("discord.js");
@@ -123,5 +123,24 @@ export async function log_message_from_jailed(
 ) {
   get_channel_log(client).send(
     `A recent message from <@${message.author.id}> in <#${message.channelId}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+  );
+}
+
+export async function log_invite_created(
+  client: Client,
+  user: User,
+  channel: Channel
+) {
+  get_channel_log(client).send(
+    `Member <@${user.id}> created an invite for <#${channel.id}>`
+  );
+}
+
+export async function log_invite_from_non_hunter(
+  client: Client,
+  member: GuildMember
+) {
+  get_channel_log(client).send(
+    `Member <@${member.id}> created an invite but was lacking the basic roles, invite was automatically deleted.`
   );
 }

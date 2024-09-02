@@ -1,6 +1,13 @@
-import { Client, Message, MessageAttachment } from "discord.js";
+import {
+  Client,
+  Events,
+  GatewayIntentBits,
+  IntentsBitField,
+  Message,
+} from "discord.js";
 import { activeUserInteractionHandler } from "./antibot_handler/active_users";
 import { addListenCommands, listenForMessage } from "./commands/listen";
+import { antibot_invite_create_handler } from "./antibot_handler";
 
 const Discord = require("discord.js");
 const fs = require("fs");
@@ -18,12 +25,12 @@ const consume = require("./core/consume-command.js");
 
 const client = new Discord.Client({
   intents: [
-    Discord.Intents.FLAGS.GUILDS,
-    Discord.Intents.FLAGS.GUILD_MEMBERS,
-    Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Discord.Intents.FLAGS.GUILD_MESSAGES,
-    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildInvites,
   ],
 });
 const addScreenshotReactionListener = require("./screenshot_handler.js");
@@ -1008,6 +1015,8 @@ client.on("interactionCreate", async (interaction) => {
   antibot_interaction_handler(interaction, client);
   activeUserInteractionHandler(interaction, client);
 });
+
+client.on(Events.InviteCreate, antibot_invite_create_handler);
 
 client.on("guildBanRemove", async (guild, user) => {
   var banlana = [

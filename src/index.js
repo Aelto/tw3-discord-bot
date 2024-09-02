@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const active_users_1 = require("./antibot_handler/active_users");
 const listen_1 = require("./commands/listen");
+const antibot_handler_1 = require("./antibot_handler");
 const Discord = require("discord.js");
 const fs = require("fs");
 const { ADMIN_ROLE_ID, WARNED_ROLE_1_ID, WARNED_ROLE_2_ID, MAIN_CHANNEL_ID, COMMANDS_PREFIX, LOG_CHANNEL_ID, } = require("./constants.js");
@@ -9,12 +11,12 @@ const key = require("./key");
 const consume = require("./core/consume-command.js");
 const client = new Discord.Client({
     intents: [
-        Discord.Intents.FLAGS.GUILDS,
-        Discord.Intents.FLAGS.GUILD_MEMBERS,
-        Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-        Discord.Intents.FLAGS.GUILD_MESSAGES,
-        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        discord_js_1.GatewayIntentBits.Guilds,
+        discord_js_1.GatewayIntentBits.GuildMembers,
+        discord_js_1.GatewayIntentBits.GuildEmojisAndStickers,
+        discord_js_1.GatewayIntentBits.GuildMessages,
+        discord_js_1.GatewayIntentBits.GuildMessageReactions,
+        discord_js_1.GatewayIntentBits.GuildInvites,
     ],
 });
 const addScreenshotReactionListener = require("./screenshot_handler.js");
@@ -606,6 +608,7 @@ client.on("interactionCreate", async (interaction) => {
     antibot_interaction_handler(interaction, client);
     (0, active_users_1.activeUserInteractionHandler)(interaction, client);
 });
+client.on(discord_js_1.Events.InviteCreate, antibot_handler_1.antibot_invite_create_handler);
 client.on("guildBanRemove", async (guild, user) => {
     var banlana = [
         "**The wounds can be healed, but never hidden.**",
