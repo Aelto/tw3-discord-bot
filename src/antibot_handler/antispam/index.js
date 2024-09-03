@@ -2,34 +2,33 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.antiSpamOnMessage = antiSpamOnMessage;
 const logging_1 = require("../logging");
+const jail_1 = require("../jail");
 const types_1 = require("./types");
 const caches_1 = require("./caches");
-const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
-async function antiSpamOnMessage(client, jail, message) {
+const constants_1 = require("../../constants");
+async function antiSpamOnMessage(client, message) {
     (0, caches_1.cleanupAntispamMessages)();
     const author_member = message.member || message.guild.members.cache.get(message.author.id);
-    console.log(author_member);
     if (!author_member ||
         !author_member.id ||
-        author_member.id === BOT_ID ||
-        author_member.roles.cache.has(ADMIN_ROLE_ID)) {
+        author_member.id === constants_1.BOT_ID ||
+        author_member.roles.cache.has(constants_1.ADMIN_ROLE_ID)) {
         return;
     }
-    if (jail.is_jailed(message)) {
+    if (jail_1.JAIL.is_jailed(message)) {
         message.delete().catch(console.error);
         (0, logging_1.log_message_from_jailed)(client, message);
         return;
     }
     caches_1.RECENT_MESSAGES.insert(message);
     const reputation = calculateReputation(message, author_member);
-    handleNewReputation(client, jail, author_member, message, reputation);
+    handleNewReputation(client, author_member, message, reputation);
 }
 /**
  *
  */
 function calculateReputation(message, author_member) {
     const author = message.author?.id;
-    console.log(message);
     if (!author) {
         return (0, types_1.messageToAntiSpamMessage)(message);
     }
@@ -42,7 +41,6 @@ function calculateReputation(message, author_member) {
     if (delta < 0) {
         return current;
     }
-    console.log(current);
     const same_content = (previous?.content ?? "") === current.content;
     const same_channel = (previous?.channel_id ?? 0) === current.channel_id;
     const has_link = current.content.includes("http://") || current.content.includes("https://");
@@ -153,10 +151,10 @@ function calculateReputation(message, author_member) {
             current.reputation += 1;
         }
     }
-    current.tendency = current.reputation - previous.reputation;
+    current.tendency = current.reputation - (previous?.reputation ?? 0);
     return current;
 }
-async function handleNewReputation(client, jail, author, message, antispam) {
+async function handleNewReputation(client, author, message, antispam) {
     if (!author.id) {
         return;
     }
@@ -179,7 +177,7 @@ async function handleNewReputation(client, jail, author, message, antispam) {
         return;
     }
     if (antispam.reputation < 0) {
-        jail.restrict_message(message);
+        jail_1.JAIL.restrict_message(message);
         (0, logging_1.log_reputation_user_shutdown)(client, author, message);
         deleteRecentMessagesFromUser(author.id);
     }

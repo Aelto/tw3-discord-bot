@@ -1,4 +1,4 @@
-import { Client, Message } from "discord.js";
+import { Client, GatewayIntentBits, Message } from "discord.js";
 import { activeUserInteractionHandler } from "./antibot_handler/active_users";
 import { addListenCommands, listenForMessage } from "./commands/listen";
 import {
@@ -23,19 +23,13 @@ const consume = require("./core/consume-command.js");
 
 const client = new Discord.Client({
   intents: [
-    Discord.Intents.FLAGS.GUILDS,
-    Discord.Intents.FLAGS.GUILD_MEMBERS,
-    Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Discord.Intents.FLAGS.GUILD_MESSAGES,
-    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    Discord.Intents.FLAGS.MESSAGE_CONTENT,
-    // GatewayIntentBits.Guilds,
-    // GatewayIntentBits.GuildMembers,
-    // GatewayIntentBits.GuildEmojisAndStickers,
-    // GatewayIntentBits.GuildMessages,
-    // GatewayIntentBits.GuildMessageReactions,
-    // GatewayIntentBits.GuildInvites,
-    // GatewayIntentBits.MessageContent,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.MessageContent,
   ],
 });
 const addScreenshotReactionListener = require("./screenshot_handler.js");
@@ -964,13 +958,7 @@ client.on("ready", () => {
   }
 });
 
-process.on("unhandledRejection", (error) => {
-  console.log("Test error:", error);
-});
-
 client.on("messageCreate", async (message: Message) => {
-  console.log(message.content);
-
   antibot_handler(message, client);
   thread_channel_handler(message, client);
   prompt_handler(message, client);

@@ -5,7 +5,7 @@ import {
   log_reputation_message_deleted,
   log_reputation_user_shutdown,
 } from "../logging";
-import { Jail } from "../jail";
+import { JAIL } from "../jail";
 import { AntispamMessage, messageToAntiSpamMessage } from "./types";
 import {
   ANTISPAM_MESSAGES,
@@ -13,20 +13,14 @@ import {
   cleanupAntispamMessages,
   getAntispamMessageByAuthorId,
 } from "./caches";
+import { ADMIN_ROLE_ID, BOT_ID } from "../../constants";
 
-const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
-
-export async function antiSpamOnMessage(
-  client: Client,
-  jail: Jail,
-  message: Message
-) {
+export async function antiSpamOnMessage(client: Client, message: Message) {
   cleanupAntispamMessages();
 
   const author_member =
     message.member || message.guild.members.cache.get(message.author.id);
 
-  console.log(author_member);
   if (
     !author_member ||
     !author_member.id ||
@@ -36,7 +30,7 @@ export async function antiSpamOnMessage(
     return;
   }
 
-  if (jail.is_jailed(message)) {
+  if (JAIL.is_jailed(message)) {
     message.delete().catch(console.error);
     log_message_from_jailed(client, message);
     return;
@@ -45,7 +39,7 @@ export async function antiSpamOnMessage(
   RECENT_MESSAGES.insert(message);
 
   const reputation = calculateReputation(message, author_member);
-  handleNewReputation(client, jail, author_member, message, reputation);
+  handleNewReputation(client, author_member, message, reputation);
 }
 
 /**
@@ -56,8 +50,6 @@ function calculateReputation(
   author_member: GuildMember
 ): AntispamMessage {
   const author = message.author?.id;
-
-  console.log(message);
 
   if (!author) {
     return messageToAntiSpamMessage(message);
@@ -74,8 +66,6 @@ function calculateReputation(
   if (delta < 0) {
     return current;
   }
-
-  console.log(current);
 
   const same_content = (previous?.content ?? "") === current.content;
   const same_channel = (previous?.channel_id ?? 0) === current.channel_id;
@@ -222,13 +212,12 @@ function calculateReputation(
     }
   }
 
-  current.tendency = current.reputation - previous.reputation;
+  current.tendency = current.reputation - (previous?.reputation ?? 0);
   return current;
 }
 
 async function handleNewReputation(
   client: Client,
-  jail: Jail,
   author: GuildMember,
   message: Message,
   antispam: AntispamMessage
@@ -262,7 +251,7 @@ async function handleNewReputation(
   }
 
   if (antispam.reputation < 0) {
-    jail.restrict_message(message);
+    JAIL.restrict_message(message);
     log_reputation_user_shutdown(client, author, message);
     deleteRecentMessagesFromUser(author.id);
   }

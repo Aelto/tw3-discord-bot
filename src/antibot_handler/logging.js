@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.log_restrict = log_restrict;
+exports.log_ban = log_ban;
+exports.log_allow = log_allow;
 exports.log_new_active_user = log_new_active_user;
 exports.log_new_active_user_allowed = log_new_active_user_allowed;
 exports.log_reputation = log_reputation;
@@ -20,7 +23,7 @@ function get_channel_log(client) {
  *
  * @param {RestrictedUser} restricted_user
  */
-exports.log_restrict = async function (client, restricted_user) {
+async function log_restrict(client, restricted_user) {
     const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
         .setCustomId(`allow_user;${restricted_user.get_unique_id()}`)
         .setLabel("Allow")
@@ -35,25 +38,25 @@ exports.log_restrict = async function (client, restricted_user) {
     })
         .catch(console.error);
     restricted_user.link_to_logging_message(message);
-};
+}
 /**
  *
  * @param {Discord.GuildMember} member
  */
-exports.log_ban = function (client, member) {
+function log_ban(client, member) {
     get_channel(client)
         .send(`<@${member.id}> was previously restricted and is now banned.`)
         .catch(console.error);
-};
+}
 /**
  *
  * @param {Discord.GuildMember} member
  */
-exports.log_allow = function (client, member) {
+function log_allow(client, member) {
     get_channel(client)
         .send(`<@${member.id}> was previously restricted but is now free.`)
         .catch(console.error);
-};
+}
 async function log_new_active_user(client, id, last_message_sent, last_channel_id) {
     const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
         .setCustomId(`active_user_allow;${id}`)

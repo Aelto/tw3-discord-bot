@@ -7,8 +7,7 @@ const active_users_1 = require("./active_users");
 const jail_1 = require("./jail");
 const logging_1 = require("./logging");
 const antispam_1 = require("./antispam");
-const { SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID, BASIC_ROLE, } = require("../constants");
-const { log_allow, log_ban, log_restrict } = require("./logging");
+const constants_1 = require("../constants");
 /**
  * Automatically deletes the messages of people without the basic role, then
  * assigns the author a restricted role and DMs instructions on how to remove
@@ -19,13 +18,10 @@ const { log_allow, log_ban, log_restrict } = require("./logging");
  * @param {Client} client
  */
 async function antibot_handler(message, client) {
-    console.log("1");
     if (client.user.id === message.author.id) {
         return;
     }
-    console.log("2");
-    await (0, antispam_1.antiSpamOnMessage)(client, jail_1.JAIL, message).catch(console.log);
-    console.log("4");
+    await (0, antispam_1.antiSpamOnMessage)(client, message).catch(console.log);
     (0, active_users_1.activeUserDetectionOnMessage)(message, client);
 }
 /**
@@ -37,28 +33,27 @@ async function antibot_interaction_handler(interaction, client) {
         const [id, uuid] = interaction.customId.split(";");
         const restricted = jail_1.JAIL.allow_user(uuid);
         if (restricted) {
-            log_allow(client, restricted.user);
+            (0, logging_1.log_allow)(client, restricted.user);
         }
     }
     else if (interaction.customId.startsWith("ban_user;")) {
         const [id, uuid] = interaction.customId.split(";");
         const restricted = jail_1.JAIL.ban_user(uuid);
         if (restricted) {
-            log_ban(client, restricted.user);
+            (0, logging_1.log_ban)(client, restricted.user);
         }
     }
 }
 async function antibot_invite_create_handler(invite) {
     const client = invite.client;
     const invite_guild = client.guilds.cache.get(invite.guild.id);
-    console.log(invite_guild);
     const user = invite.inviter;
     const inviter = invite_guild?.members.cache.get(user.id);
     (0, logging_1.log_invite_created)(client, user, invite.channel);
     if (!inviter) {
         return;
     }
-    if (!inviter.roles.cache.has(BASIC_ROLE)) {
+    if (!inviter.roles.cache.has(constants_1.BASIC_ROLE)) {
         await invite.delete().catch(console.error);
         (0, logging_1.log_invite_from_non_hunter)(client, inviter);
     }

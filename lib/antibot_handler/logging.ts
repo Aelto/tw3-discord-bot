@@ -16,7 +16,7 @@ function get_channel_log(client) {
  *
  * @param {RestrictedUser} restricted_user
  */
-exports.log_restrict = async function (client, restricted_user) {
+export async function log_restrict(client, restricted_user) {
   const row = new Discord.MessageActionRow().addComponents(
     new Discord.MessageButton()
       .setCustomId(`allow_user;${restricted_user.get_unique_id()}`)
@@ -36,27 +36,27 @@ exports.log_restrict = async function (client, restricted_user) {
     .catch(console.error);
 
   restricted_user.link_to_logging_message(message);
-};
+}
 
 /**
  *
  * @param {Discord.GuildMember} member
  */
-exports.log_ban = function (client, member) {
+export function log_ban(client, member) {
   get_channel(client)
     .send(`<@${member.id}> was previously restricted and is now banned.`)
     .catch(console.error);
-};
+}
 
 /**
  *
  * @param {Discord.GuildMember} member
  */
-exports.log_allow = function (client, member) {
+export function log_allow(client, member) {
   get_channel(client)
     .send(`<@${member.id}> was previously restricted but is now free.`)
     .catch(console.error);
-};
+}
 
 export async function log_new_active_user(
   client: Client,

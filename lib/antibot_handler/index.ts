@@ -1,17 +1,14 @@
 import { Client, Invite } from "discord.js";
 import { activeUserDetectionOnMessage } from "./active_users";
 import { JAIL } from "./jail";
-import { log_invite_created, log_invite_from_non_hunter } from "./logging";
+import {
+  log_allow,
+  log_ban,
+  log_invite_created,
+  log_invite_from_non_hunter,
+} from "./logging";
 import { antiSpamOnMessage } from "./antispam";
-
-const {
-  SHUT_ROLE,
-  GRAVEYARD_CHANNEL_ID,
-  ADMIN_ROLE_ID,
-  BASIC_ROLE,
-} = require("../constants");
-
-const { log_allow, log_ban, log_restrict } = require("./logging");
+import { BASIC_ROLE } from "../constants";
 
 /**
  * Automatically deletes the messages of people without the basic role, then
@@ -23,15 +20,11 @@ const { log_allow, log_ban, log_restrict } = require("./logging");
  * @param {Client} client
  */
 export async function antibot_handler(message, client) {
-  console.log("1");
   if (client.user.id === message.author.id) {
     return;
   }
 
-  console.log("2");
-
-  await antiSpamOnMessage(client, JAIL, message).catch(console.log);
-  console.log("4");
+  await antiSpamOnMessage(client, message).catch(console.log);
   activeUserDetectionOnMessage(message, client);
 }
 
@@ -60,7 +53,6 @@ export async function antibot_interaction_handler(interaction, client) {
 export async function antibot_invite_create_handler(invite: Invite) {
   const client = invite.client;
   const invite_guild = client.guilds.cache.get(invite.guild.id);
-  console.log(invite_guild);
 
   const user = invite.inviter;
   const inviter = invite_guild?.members.cache.get(user.id);
