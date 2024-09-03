@@ -1,8 +1,8 @@
 import { Client, Invite } from "discord.js";
 import { activeUserDetectionOnMessage } from "./active_users";
-import { antiSpamOnMessage } from "./antispam";
 import { JAIL } from "./jail";
 import { log_invite_created, log_invite_from_non_hunter } from "./logging";
+import { antiSpamOnMessage } from "./antispam";
 
 const {
   SHUT_ROLE,
@@ -22,20 +22,24 @@ const { log_allow, log_ban, log_restrict } = require("./logging");
  * @param {Message} message
  * @param {Client} client
  */
-exports.antibot_handler = async function (message, client) {
-  if (message.client.user.id === message.author.id) {
+export async function antibot_handler(message, client) {
+  console.log("1");
+  if (client.user.id === message.author.id) {
     return;
   }
 
-  await antiSpamOnMessage(client, JAIL, message);
+  console.log("2");
+
+  await antiSpamOnMessage(client, JAIL, message).catch(console.log);
+  console.log("4");
   activeUserDetectionOnMessage(message, client);
-};
+}
 
 /**
  *
  * @param {Interaction} interaction
  */
-exports.antibot_interaction_handler = async function (interaction, client) {
+export async function antibot_interaction_handler(interaction, client) {
   if (interaction.customId.startsWith("allow_user;")) {
     const [id, uuid] = interaction.customId.split(";");
 
@@ -51,7 +55,7 @@ exports.antibot_interaction_handler = async function (interaction, client) {
       log_ban(client, restricted.user);
     }
   }
-};
+}
 
 export async function antibot_invite_create_handler(invite: Invite) {
   const client = invite.client;

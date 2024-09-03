@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const discord_js_1 = require("discord.js");
 const active_users_1 = require("./antibot_handler/active_users");
 const listen_1 = require("./commands/listen");
 const antibot_handler_1 = require("./antibot_handler");
@@ -11,16 +10,22 @@ const key = require("./key");
 const consume = require("./core/consume-command.js");
 const client = new Discord.Client({
     intents: [
-        discord_js_1.GatewayIntentBits.Guilds,
-        discord_js_1.GatewayIntentBits.GuildMembers,
-        discord_js_1.GatewayIntentBits.GuildEmojisAndStickers,
-        discord_js_1.GatewayIntentBits.GuildMessages,
-        discord_js_1.GatewayIntentBits.GuildMessageReactions,
-        discord_js_1.GatewayIntentBits.GuildInvites,
+        Discord.Intents.FLAGS.GUILDS,
+        Discord.Intents.FLAGS.GUILD_MEMBERS,
+        Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        Discord.Intents.FLAGS.GUILD_MESSAGES,
+        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Discord.Intents.FLAGS.MESSAGE_CONTENT,
+        // GatewayIntentBits.Guilds,
+        // GatewayIntentBits.GuildMembers,
+        // GatewayIntentBits.GuildEmojisAndStickers,
+        // GatewayIntentBits.GuildMessages,
+        // GatewayIntentBits.GuildMessageReactions,
+        // GatewayIntentBits.GuildInvites,
+        // GatewayIntentBits.MessageContent,
     ],
 });
 const addScreenshotReactionListener = require("./screenshot_handler.js");
-const { antibot_handler, antibot_interaction_handler, } = require("./antibot_handler");
 const thread_channel_handler = require("./thread_channel_handler.js");
 const helpme_channel_handler = require("./helpme_handler");
 client.login(key);
@@ -571,11 +576,15 @@ client.on("ready", () => {
     console.log("The Caretaker is ready");
     const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
     if (log_channel) {
-        log_channel.send("Hello, i just restarted :wave:").catch(console.error);
+        // log_channel.send("Hello, i just restarted :wave:").catch(console.error);
     }
 });
-client.on("messageCreate", (message) => {
-    antibot_handler(message, client);
+process.on("unhandledRejection", (error) => {
+    console.log("Test error:", error);
+});
+client.on("messageCreate", async (message) => {
+    console.log(message.content);
+    (0, antibot_handler_1.antibot_handler)(message, client);
     thread_channel_handler(message, client);
     prompt_handler(message, client);
     if (message.content.startsWith(COMMANDS_PREFIX)) {
@@ -605,10 +614,10 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.customId === "delete_listen") {
         interaction.message.delete().catch((e) => console.error(e));
     }
-    antibot_interaction_handler(interaction, client);
+    (0, antibot_handler_1.antibot_interaction_handler)(interaction, client);
     (0, active_users_1.activeUserInteractionHandler)(interaction, client);
 });
-client.on(discord_js_1.Events.InviteCreate, antibot_handler_1.antibot_invite_create_handler);
+client.on("inviteCreate", antibot_handler_1.antibot_invite_create_handler);
 client.on("guildBanRemove", async (guild, user) => {
     var banlana = [
         "**The wounds can be healed, but never hidden.**",

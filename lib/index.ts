@@ -1,13 +1,11 @@
-import {
-  Client,
-  Events,
-  GatewayIntentBits,
-  IntentsBitField,
-  Message,
-} from "discord.js";
+import { Client, Message } from "discord.js";
 import { activeUserInteractionHandler } from "./antibot_handler/active_users";
 import { addListenCommands, listenForMessage } from "./commands/listen";
-import { antibot_invite_create_handler } from "./antibot_handler";
+import {
+  antibot_handler,
+  antibot_interaction_handler,
+  antibot_invite_create_handler,
+} from "./antibot_handler";
 
 const Discord = require("discord.js");
 const fs = require("fs");
@@ -25,20 +23,22 @@ const consume = require("./core/consume-command.js");
 
 const client = new Discord.Client({
   intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildEmojisAndStickers,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.GuildInvites,
-    GatewayIntentBits.MessageContent,
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MEMBERS,
+    Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Discord.Intents.FLAGS.MESSAGE_CONTENT,
+    // GatewayIntentBits.Guilds,
+    // GatewayIntentBits.GuildMembers,
+    // GatewayIntentBits.GuildEmojisAndStickers,
+    // GatewayIntentBits.GuildMessages,
+    // GatewayIntentBits.GuildMessageReactions,
+    // GatewayIntentBits.GuildInvites,
+    // GatewayIntentBits.MessageContent,
   ],
 });
 const addScreenshotReactionListener = require("./screenshot_handler.js");
-const {
-  antibot_handler,
-  antibot_interaction_handler,
-} = require("./antibot_handler");
 const thread_channel_handler = require("./thread_channel_handler.js");
 const helpme_channel_handler = require("./helpme_handler");
 client.login(key);
@@ -960,11 +960,17 @@ client.on("ready", () => {
   const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
 
   if (log_channel) {
-    log_channel.send("Hello, i just restarted :wave:").catch(console.error);
+    // log_channel.send("Hello, i just restarted :wave:").catch(console.error);
   }
 });
 
-client.on("messageCreate", (message) => {
+process.on("unhandledRejection", (error) => {
+  console.log("Test error:", error);
+});
+
+client.on("messageCreate", async (message: Message) => {
+  console.log(message.content);
+
   antibot_handler(message, client);
   thread_channel_handler(message, client);
   prompt_handler(message, client);
@@ -1017,7 +1023,7 @@ client.on("interactionCreate", async (interaction) => {
   activeUserInteractionHandler(interaction, client);
 });
 
-client.on(Events.InviteCreate, antibot_invite_create_handler);
+client.on("inviteCreate", antibot_invite_create_handler);
 
 client.on("guildBanRemove", async (guild, user) => {
   var banlana = [

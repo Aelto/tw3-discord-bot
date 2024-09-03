@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const { HELPME_CHANNEL_IDS } = require("../constants");
+const constants_1 = require("../constants");
 const topic_store = require("./topic_store");
 /**
  * This module is everything about the "helpme" handler, channels where multiple
@@ -11,7 +11,7 @@ const topic_store = require("./topic_store");
  * @param {Discord.Client} client
  */
 module.exports = async function thread_channel_handler(message, client) {
-    if (!HELPME_CHANNEL_IDS.includes(message.channel.id)) {
+    if (!constants_1.HELPME_CHANNEL_IDS.includes(message.channel.id)) {
         return;
     }
     // when the message is from the bot

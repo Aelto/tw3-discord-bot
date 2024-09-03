@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.antibot_handler = antibot_handler;
+exports.antibot_interaction_handler = antibot_interaction_handler;
 exports.antibot_invite_create_handler = antibot_invite_create_handler;
 const active_users_1 = require("./active_users");
-const antispam_1 = require("./antispam");
 const jail_1 = require("./jail");
 const logging_1 = require("./logging");
+const antispam_1 = require("./antispam");
 const { SHUT_ROLE, GRAVEYARD_CHANNEL_ID, ADMIN_ROLE_ID, BASIC_ROLE, } = require("../constants");
 const { log_allow, log_ban, log_restrict } = require("./logging");
 /**
@@ -16,18 +18,21 @@ const { log_allow, log_ban, log_restrict } = require("./logging");
  * @param {Message} message
  * @param {Client} client
  */
-exports.antibot_handler = async function (message, client) {
-    if (message.client.user.id === message.author.id) {
+async function antibot_handler(message, client) {
+    console.log("1");
+    if (client.user.id === message.author.id) {
         return;
     }
-    await (0, antispam_1.antiSpamOnMessage)(client, jail_1.JAIL, message);
+    console.log("2");
+    await (0, antispam_1.antiSpamOnMessage)(client, jail_1.JAIL, message).catch(console.log);
+    console.log("4");
     (0, active_users_1.activeUserDetectionOnMessage)(message, client);
-};
+}
 /**
  *
  * @param {Interaction} interaction
  */
-exports.antibot_interaction_handler = async function (interaction, client) {
+async function antibot_interaction_handler(interaction, client) {
     if (interaction.customId.startsWith("allow_user;")) {
         const [id, uuid] = interaction.customId.split(";");
         const restricted = jail_1.JAIL.allow_user(uuid);
@@ -42,7 +47,7 @@ exports.antibot_interaction_handler = async function (interaction, client) {
             log_ban(client, restricted.user);
         }
     }
-};
+}
 async function antibot_invite_create_handler(invite) {
     const client = invite.client;
     const invite_guild = client.guilds.cache.get(invite.guild.id);

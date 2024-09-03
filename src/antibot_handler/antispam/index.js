@@ -8,6 +8,7 @@ const { BOT_ID, ADMIN_ROLE_ID } = require("../constants.js");
 async function antiSpamOnMessage(client, jail, message) {
     (0, caches_1.cleanupAntispamMessages)();
     const author_member = message.member || message.guild.members.cache.get(message.author.id);
+    console.log(author_member);
     if (!author_member ||
         !author_member.id ||
         author_member.id === BOT_ID ||
@@ -28,6 +29,7 @@ async function antiSpamOnMessage(client, jail, message) {
  */
 function calculateReputation(message, author_member) {
     const author = message.author?.id;
+    console.log(message);
     if (!author) {
         return (0, types_1.messageToAntiSpamMessage)(message);
     }
@@ -40,6 +42,7 @@ function calculateReputation(message, author_member) {
     if (delta < 0) {
         return current;
     }
+    console.log(current);
     const same_content = (previous?.content ?? "") === current.content;
     const same_channel = (previous?.channel_id ?? 0) === current.channel_id;
     const has_link = current.content.includes("http://") || current.content.includes("https://");

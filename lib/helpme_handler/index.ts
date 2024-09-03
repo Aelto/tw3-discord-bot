@@ -1,4 +1,5 @@
-const { HELPME_CHANNEL_IDS } = require("../constants");
+import { HELPME_CHANNEL_IDS } from "../constants";
+
 const topic_store = require("./topic_store");
 
 /**

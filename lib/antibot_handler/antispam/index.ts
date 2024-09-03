@@ -26,6 +26,7 @@ export async function antiSpamOnMessage(
   const author_member =
     message.member || message.guild.members.cache.get(message.author.id);
 
+  console.log(author_member);
   if (
     !author_member ||
     !author_member.id ||
@@ -56,6 +57,8 @@ function calculateReputation(
 ): AntispamMessage {
   const author = message.author?.id;
 
+  console.log(message);
+
   if (!author) {
     return messageToAntiSpamMessage(message);
   }
@@ -71,6 +74,8 @@ function calculateReputation(
   if (delta < 0) {
     return current;
   }
+
+  console.log(current);
 
   const same_content = (previous?.content ?? "") === current.content;
   const same_channel = (previous?.channel_id ?? 0) === current.channel_id;
