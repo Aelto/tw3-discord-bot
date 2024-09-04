@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Message } from "discord.js";
+import { Client, EmbedBuilder, GatewayIntentBits, Message } from "discord.js";
 import { activeUserInteractionHandler } from "./antibot_handler/active_users";
 import { addListenCommands, listenForMessage } from "./commands/listen";
 import {
@@ -165,10 +165,9 @@ commands["report"] = {
           if (level === 1) {
             reported_member.roles.add(WARNED_ROLE_1_ID);
 
-            const embed = new Discord.MessageEmbed()
+            const embed = new EmbedBuilder()
               .setAuthor({
                 name: client.user.username,
-                icon_url: client.user.avatarURL,
               })
               .setTitle("Reported user")
               .setDescription(
@@ -179,7 +178,6 @@ commands["report"] = {
               .setColor(15158332)
               .setTimestamp(new Date())
               .setFooter({
-                icon_url: reported_user.avatarURL,
                 text: reported_user.username,
               });
             return message.guild.channels.cache
@@ -190,10 +188,9 @@ commands["report"] = {
             reported_member.roles.remove(WARNED_ROLE_1_ID);
             reported_member.roles.add(WARNED_ROLE_2_ID);
 
-            const embed = new Discord.MessageEmbed()
+            const embed = new EmbedBuilder()
               .setAuthor({
                 name: client.user.username,
-                icon_url: client.user.avatarURL,
               })
               .setTitle("Reported user")
               .setDescription(
@@ -204,7 +201,6 @@ commands["report"] = {
               .setColor(15158332)
               .setTimestamp(new Date())
               .setFooter({
-                icon_url: reported_user.avatarURL,
                 text: reported_user.username,
               });
 
@@ -217,10 +213,9 @@ commands["report"] = {
               `You were kicked from the server due to repeated offenses. Reason for the last report: ${reason}`
             );
 
-            const embed = new Discord.MessageEmbed()
+            const embed = new EmbedBuilder()
               .setAuthor({
                 name: client.user.username,
-                icon_url: client.user.avatarURL,
               })
               .setTitle("Reported user")
               .setDescription(
@@ -231,7 +226,6 @@ commands["report"] = {
               .setColor(15158332)
               .setTimestamp(new Date())
               .setFooter({
-                icon_url: reported_user.avatarURL,
                 text: reported_user.username,
               });
 
@@ -327,10 +321,9 @@ commands["cleanse"] = {
           if (level === 1) {
             cleansed_member.roles.remove(WARNED_ROLE_1_ID);
 
-            const embed = new Discord.MessageEmbed()
+            const embed = new EmbedBuilder()
               .setAuthor({
                 name: client.user.username,
-                icon_url: client.user.avatarURL,
               })
               .setTitle("Cleansed user")
               .setDescription(
@@ -341,7 +334,6 @@ commands["cleanse"] = {
               .setColor(3066993)
               .setTimestamp(new Date())
               .setFooter({
-                icon_url: cleansed_member.avatarURL,
                 text: cleansed_member.username,
               });
             return message.guild.channels.cache
@@ -351,10 +343,9 @@ commands["cleanse"] = {
             cleansed_member.roles.add(WARNED_ROLE_1_ID);
             cleansed_member.roles.remove(WARNED_ROLE_2_ID);
 
-            const embed = new Discord.MessageEmbed()
+            const embed = new EmbedBuilder()
               .setAuthor({
                 name: client.user.username,
-                icon_url: client.user.avatarURL,
               })
               .setTitle("Cleansed user")
               .setDescription(
@@ -365,7 +356,6 @@ commands["cleanse"] = {
               .setColor(3066993)
               .setTimestamp(new Date())
               .setFooter({
-                icon_url: cleansed_member.avatarURL,
                 text: cleansed_member.username,
               });
             return message.guild.channels.cache
@@ -739,7 +729,7 @@ commands["announce"] = {
     try {
       const channel = await client.channels.fetch(channel_id);
       const text = words.join(" ");
-      const embed = new Discord.MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle("Message from the peacekeepers")
         .setDescription(String(text))
         .setColor(0)

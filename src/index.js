@@ -95,17 +95,15 @@ commands["report"] = {
                 .then(() => {
                 if (level === 1) {
                     reported_member.roles.add(WARNED_ROLE_1_ID);
-                    const embed = new Discord.MessageEmbed()
+                    const embed = new discord_js_1.EmbedBuilder()
                         .setAuthor({
                         name: client.user.username,
-                        icon_url: client.user.avatarURL,
                     })
                         .setTitle("Reported user")
                         .setDescription(String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **warned**. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`))
                         .setColor(15158332)
                         .setTimestamp(new Date())
                         .setFooter({
-                        icon_url: reported_user.avatarURL,
                         text: reported_user.username,
                     });
                     return message.guild.channels.cache
@@ -116,17 +114,15 @@ commands["report"] = {
                 else if (level === 2) {
                     reported_member.roles.remove(WARNED_ROLE_1_ID);
                     reported_member.roles.add(WARNED_ROLE_2_ID);
-                    const embed = new Discord.MessageEmbed()
+                    const embed = new discord_js_1.EmbedBuilder()
                         .setAuthor({
                         name: client.user.username,
-                        icon_url: client.user.avatarURL,
                     })
                         .setTitle("Reported user")
                         .setDescription(String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **flagged**, the 2nd strike. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`))
                         .setColor(15158332)
                         .setTimestamp(new Date())
                         .setFooter({
-                        icon_url: reported_user.avatarURL,
                         text: reported_user.username,
                     });
                     return message.guild.channels.cache
@@ -136,17 +132,15 @@ commands["report"] = {
                 }
                 else {
                     reported_member.kick(`You were kicked from the server due to repeated offenses. Reason for the last report: ${reason}`);
-                    const embed = new Discord.MessageEmbed()
+                    const embed = new discord_js_1.EmbedBuilder()
                         .setAuthor({
                         name: client.user.username,
-                        icon_url: client.user.avatarURL,
                     })
                         .setTitle("Reported user")
                         .setDescription(String(`<@${reported_user.id}> has been reported by the peacekeepers and is now **kicked**.\n\n**__The reason for the report is:__**\n${reason}`))
                         .setColor(15158332)
                         .setTimestamp(new Date())
                         .setFooter({
-                        icon_url: reported_user.avatarURL,
                         text: reported_user.username,
                     });
                     return message.guild.channels.cache
@@ -210,17 +204,15 @@ commands["cleanse"] = {
                 .then(() => {
                 if (level === 1) {
                     cleansed_member.roles.remove(WARNED_ROLE_1_ID);
-                    const embed = new Discord.MessageEmbed()
+                    const embed = new discord_js_1.EmbedBuilder()
                         .setAuthor({
                         name: client.user.username,
-                        icon_url: client.user.avatarURL,
                     })
                         .setTitle("Cleansed user")
                         .setDescription(String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now free of all the negative roles`))
                         .setColor(3066993)
                         .setTimestamp(new Date())
                         .setFooter({
-                        icon_url: cleansed_member.avatarURL,
                         text: cleansed_member.username,
                     });
                     return message.guild.channels.cache
@@ -230,17 +222,15 @@ commands["cleanse"] = {
                 else if (level === 2) {
                     cleansed_member.roles.add(WARNED_ROLE_1_ID);
                     cleansed_member.roles.remove(WARNED_ROLE_2_ID);
-                    const embed = new Discord.MessageEmbed()
+                    const embed = new discord_js_1.EmbedBuilder()
                         .setAuthor({
                         name: client.user.username,
-                        icon_url: client.user.avatarURL,
                     })
                         .setTitle("Cleansed user")
                         .setDescription(String(`<@${cleansed_user.id}> was cleansed by the peacekeepers and is now back to the **warned** role.`))
                         .setColor(3066993)
                         .setTimestamp(new Date())
                         .setFooter({
-                        icon_url: cleansed_member.avatarURL,
                         text: cleansed_member.username,
                     });
                     return message.guild.channels.cache
@@ -448,7 +438,7 @@ commands["announce"] = {
         try {
             const channel = await client.channels.fetch(channel_id);
             const text = words.join(" ");
-            const embed = new Discord.MessageEmbed()
+            const embed = new discord_js_1.EmbedBuilder()
                 .setTitle("Message from the peacekeepers")
                 .setDescription(String(text))
                 .setColor(0)

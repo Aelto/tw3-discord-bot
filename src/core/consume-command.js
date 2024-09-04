@@ -1,67 +1,65 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Discord = require('discord.js');
-module.exports = function consumeCommand(client, message, title, output, color = 'default', keep_original_message = false) {
+const discord_js_1 = require("discord.js");
+module.exports = function consumeCommand(client, message, title, output, color = "default", keep_original_message = false) {
     const deleted_promise = keep_original_message
         ? Promise.resolve()
         : message.delete();
     deleted_promise
-        .then(msg => {
+        .then((msg) => {
         let embedColor = 0;
         switch (color) {
-            case 'blue':
+            case "blue":
                 embedColor = 3447003; // 555200
                 break;
-            case 'green':
+            case "green":
                 embedColor = 3066993;
                 break;
-            case 'red':
+            case "red":
                 embedColor = 15158332; // 0x#FF0000;
             default:
                 break;
         }
-        const embed = new Discord.MessageEmbed()
+        const embed = new discord_js_1.EmbedBuilder()
             .setColor(embedColor)
             .setAuthor({
             name: client.user.username,
-            icon_url: client.user.avatarURL
         })
             .setTitle(title)
             .setDescription(String(output))
             .setTimestamp(new Date())
             .setFooter({
-            icon_url: message.author.avatarURL,
-            text: message.author.username
+            text: message.author.username,
         });
         return output
             ? message.channel.send({ embeds: [embed] }).catch(console.error)
             : message.channel.send(title).catch(console.error);
     })
-        .then(msg => {
+        .then((msg) => {
         setTimeout(() => {
-            msg.delete()
-                .catch(err => message.channel.send(err))
+            msg
+                .delete()
+                .catch((err) => message.channel.send(err))
                 .catch(console.error);
         }, 1 * 60 * 1000);
     })
-        .catch(err => {
+        .catch((err) => {
         const out = `[in] \`${message}\`\n${output}\nERROR, something went wrong`;
         console.log(err);
-        const embed = new Discord.MessageEmbed()
+        const embed = new discord_js_1.EmbedBuilder()
             .setAuthor({
             name: client.user.username,
-            icon_url: client.user.avatarURL
         })
-            .setTitle('Error, something went wrong')
+            .setTitle("Error, something went wrong")
             .setDescription(String(err))
             .setColor(0)
             .setTimestamp(new Date());
-        message.channel.send({ embeds: [embed] })
+        message.channel
+            .send({ embeds: [embed] })
             .catch(console.error)
-            .then(msg => {
+            .then((msg) => {
             setTimeout(() => {
-                msg.delete()
-                    .catch(error => console.log(error));
+                msg.delete().catch((error) => console.log(error));
             }, 1 * 60 * 1000);
         });
     });

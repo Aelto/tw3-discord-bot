@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const Discord = require("discord.js");
 const { SCREENSHOT_CHANNEL_ID, SCREENSHOT_REPOST_CHANNEL_ID, } = require("./constants");
 const QueueInterval = require("./queue-interval.js");
@@ -67,17 +68,15 @@ module.exports = function addScreenshotHandler(client) {
                 if (contains_spoiler) {
                     continue;
                 }
-                const embed = new Discord.MessageEmbed()
+                const embed = new discord_js_1.EmbedBuilder()
                     .setAuthor({
                     name: message.content,
-                    icon_url: message.author.avatarURL,
                 })
                     .setDescription(`[by ${message.author.username}](${message.url})`)
                     .setColor(3066993)
                     .setTimestamp(new Date())
                     .setImage(image.url)
                     .setFooter({
-                    icon_url: message.author.avatarURL,
                     text: message.author.username,
                 });
                 //@ts-ignore

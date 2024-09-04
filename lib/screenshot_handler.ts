@@ -1,4 +1,10 @@
-import { Message, MessageReaction, PartialUser, Client } from "discord.js";
+import {
+  Message,
+  MessageReaction,
+  PartialUser,
+  Client,
+  EmbedBuilder,
+} from "discord.js";
 
 const Discord = require("discord.js");
 const {
@@ -99,17 +105,15 @@ module.exports = function addScreenshotHandler(client: Client) {
           continue;
         }
 
-        const embed = new Discord.MessageEmbed()
+        const embed = new EmbedBuilder()
           .setAuthor({
             name: message.content,
-            icon_url: message.author.avatarURL,
           })
           .setDescription(`[by ${message.author.username}](${message.url})`)
           .setColor(3066993)
           .setTimestamp(new Date())
           .setImage(image.url)
           .setFooter({
-            icon_url: message.author.avatarURL,
             text: message.author.username,
           });
 
