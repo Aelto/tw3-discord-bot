@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.get_channel_log = get_channel_log;
 exports.log_restrict = log_restrict;
 exports.log_ban = log_ban;
 exports.log_allow = log_allow;

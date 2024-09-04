@@ -561,7 +561,7 @@ client.on("ready", () => {
     console.log("The Caretaker is ready");
     const log_channel = client.channels.cache.get(LOG_CHANNEL_ID);
     if (log_channel) {
-        // log_channel.send("Hello, i just restarted :wave:").catch(console.error);
+        log_channel.send("Hello, i just restarted :wave:").catch(console.error);
     }
 });
 client.on("messageCreate", async (message) => {

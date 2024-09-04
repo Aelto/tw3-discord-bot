@@ -8,7 +8,7 @@ function get_channel(client) {
   return client.channels.cache.get(ADMIN_CHANNEL_ID);
 }
 
-function get_channel_log(client) {
+export function get_channel_log(client) {
   return client.channels.cache.get(LOG_CHANNEL_ID);
 }
 

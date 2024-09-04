@@ -13,7 +13,7 @@ import {
   cleanupAntispamMessages,
   getAntispamMessageByAuthorId,
 } from "./caches";
-import { ADMIN_ROLE_ID, BOT_ID } from "../../constants";
+import { ADMIN_ROLE_ID, BOT_ID, SHUT_ROLE } from "../../constants";
 
 export async function antiSpamOnMessage(client: Client, message: Message) {
   cleanupAntispamMessages();
@@ -73,7 +73,9 @@ function calculateReputation(
     current.content.includes("http://") || current.content.includes("https://");
 
   // 1 for the @everyone
-  const author_has_role = author_member.roles.cache.size > 1;
+  const author_has_role =
+    author_member.roles.cache.size > 1 &&
+    !author_member.roles.cache.has(SHUT_ROLE);
   const mentions_someone = message.mentions.users.size > 0;
 
   const one_second = 1000;
@@ -157,31 +159,43 @@ function calculateReputation(
     message.content.includes("(") &&
     message.content.includes(")");
 
-  if (!author_has_role && has_link) {
-    current.reputation -= 1;
-  }
-
-  if (!author_has_role && mentions_someone) {
-    current.reputation -= 3;
-  }
-
-  if (!author_has_role && includes_dollar) {
-    current.reputation -= 2;
-  }
-
-  if (!includes_gift) {
-    current.reputation -= 1;
+  if (has_link) {
+    current.reputation -= 0.25;
 
     if (!author_has_role) {
       current.reputation -= 1;
     }
   }
 
-  if (includes_hidden_link) {
-    current.reputation -= 1;
+  if (mentions_someone) {
+    current.reputation -= 0.5;
 
     if (!author_has_role) {
-      current.reputation -= 1;
+      current.reputation -= 2;
+    }
+  }
+
+  if (includes_dollar) {
+    current.reputation -= 0.5;
+
+    if (!author_has_role) {
+      current.reputation -= 2;
+    }
+  }
+
+  if (!includes_gift) {
+    current.reputation -= 0.5;
+
+    if (!author_has_role) {
+      current.reputation -= 2;
+    }
+  }
+
+  if (includes_hidden_link) {
+    current.reputation -= 0.5;
+
+    if (!author_has_role) {
+      current.reputation -= 1.5;
     }
   }
 
@@ -190,29 +204,45 @@ function calculateReputation(
   }
 
   if (has_link && mentions_someone) {
-    current.reputation -= 2;
+    current.reputation -= 0.25;
 
     if (!author_has_role) {
-      current.reputation -= 3;
+      current.reputation -= 1;
     }
+  }
+
+  const scam_infractions_count = [
+    !author_has_role,
+    includes_dollar,
+    includes_steam,
+    includes_gift,
+    includes_hidden_link,
+    has_link,
+  ].reduce((acc, cur) => (cur ? acc + 1 : acc), 0);
+
+  // punish further for multiple infractions that are
+  // usually associated with scammers
+  if (scam_infractions_count > 1) {
+    current.reputation -= scam_infractions_count;
   }
 
   // measures to restore reputation on valid behaviour
-
-  if (same_channel && !same_content) {
-    // restore a bit of reputation on varied messages in same channels
-    current.reputation += 1;
-  }
-
-  if (!same_content && is_delta_normal) {
-    current.reputation += 1;
-
-    if (same_channel) {
+  if (previous) {
+    if (same_channel && !same_content) {
+      // restore a bit of reputation on varied messages in same channels
       current.reputation += 1;
+    }
+
+    if (!same_content && is_delta_normal) {
+      current.reputation += 1;
+
+      if (same_channel) {
+        current.reputation += 1;
+      }
     }
   }
 
-  current.tendency = current.reputation - (previous?.reputation ?? 0);
+  current.tendency = current.reputation - (previous?.reputation ?? 10);
   return current;
 }
 
@@ -226,6 +256,7 @@ async function handleNewReputation(
     return;
   }
 
+  const author_has_role = author.roles.cache.size > 1;
   const previous = ANTISPAM_MESSAGES.get(author.id);
   const previous_tendency = previous?.tendency ?? 0;
   const previous_reputation = previous?.reputation ?? 10;
@@ -237,7 +268,7 @@ async function handleNewReputation(
 
   ANTISPAM_MESSAGES.set(author.id, antispam);
 
-  if (previous_tendency < 0 && antispam.tendency < 0) {
+  if ((!author_has_role || previous_tendency < 0) && antispam.tendency < 0) {
     log_reputation(client, author, antispam);
   }
 
