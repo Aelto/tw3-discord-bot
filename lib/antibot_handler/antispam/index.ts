@@ -13,7 +13,12 @@ import {
   cleanupAntispamMessages,
   getAntispamMessageByAuthorId,
 } from "./caches";
-import { ADMIN_ROLE_ID, BOT_ID, SHUT_ROLE } from "../../constants";
+import {
+  ADMIN_ROLE_ID,
+  BOT_ID,
+  SHUT_ROLE,
+  WELCOME_CHANNEL_ID,
+} from "../../constants";
 
 export async function antiSpamOnMessage(client: Client, message: Message) {
   cleanupAntispamMessages();
@@ -25,7 +30,8 @@ export async function antiSpamOnMessage(client: Client, message: Message) {
     !author_member ||
     !author_member.id ||
     author_member.id === BOT_ID ||
-    author_member.roles.cache.has(ADMIN_ROLE_ID)
+    author_member.roles.cache.has(ADMIN_ROLE_ID) ||
+    message.channel.id === WELCOME_CHANNEL_ID
   ) {
     return;
   }
@@ -183,7 +189,7 @@ function calculateReputation(
     }
   }
 
-  if (!includes_gift) {
+  if (includes_gift) {
     current.reputation -= 0.5;
 
     if (!author_has_role) {
