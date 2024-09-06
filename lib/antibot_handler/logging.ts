@@ -1,4 +1,13 @@
-import { Channel, Client, GuildMember, Message, User } from "discord.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  Channel,
+  Client,
+  GuildMember,
+  Message,
+  User,
+} from "discord.js";
 import { AntispamMessage } from "./antispam/types";
 
 const Discord = require("discord.js");
@@ -17,15 +26,15 @@ export function get_channel_log(client) {
  * @param {RestrictedUser} restricted_user
  */
 export async function log_restrict(client, restricted_user) {
-  const row = new Discord.MessageActionRow().addComponents(
-    new Discord.MessageButton()
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
       .setCustomId(`allow_user;${restricted_user.get_unique_id()}`)
       .setLabel("Allow")
-      .setStyle("SUCCESS"),
-    new Discord.MessageButton()
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
       .setCustomId(`ban_user;${restricted_user.get_unique_id()}`)
       .setLabel("Ban")
-      .setStyle("DANGER")
+      .setStyle(ButtonStyle.Danger)
   );
 
   const message = await get_channel(client)
@@ -64,15 +73,15 @@ export async function log_new_active_user(
   last_message_sent: string,
   last_channel_id: string
 ) {
-  const row = new Discord.MessageActionRow().addComponents(
-    new Discord.MessageButton()
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
       .setCustomId(`active_user_allow;${id}`)
       .setLabel("Give role")
-      .setStyle("SUCCESS"),
-    new Discord.MessageButton()
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
       .setCustomId(`active_user_postpone;${id}`)
       .setLabel("Wait 3 more messages")
-      .setStyle("SECONDARY")
+      .setStyle(ButtonStyle.Secondary)
   );
 
   await get_channel_log(client)

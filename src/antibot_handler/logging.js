@@ -12,6 +12,7 @@ exports.log_reputation_user_shutdown = log_reputation_user_shutdown;
 exports.log_message_from_jailed = log_message_from_jailed;
 exports.log_invite_created = log_invite_created;
 exports.log_invite_from_non_hunter = log_invite_from_non_hunter;
+const discord_js_1 = require("discord.js");
 const Discord = require("discord.js");
 const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
 function get_channel(client) {
@@ -25,13 +26,13 @@ function get_channel_log(client) {
  * @param {RestrictedUser} restricted_user
  */
 async function log_restrict(client, restricted_user) {
-    const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
+    const row = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
         .setCustomId(`allow_user;${restricted_user.get_unique_id()}`)
         .setLabel("Allow")
-        .setStyle("SUCCESS"), new Discord.MessageButton()
+        .setStyle(discord_js_1.ButtonStyle.Success), new discord_js_1.ButtonBuilder()
         .setCustomId(`ban_user;${restricted_user.get_unique_id()}`)
         .setLabel("Ban")
-        .setStyle("DANGER"));
+        .setStyle(discord_js_1.ButtonStyle.Danger));
     const message = await get_channel(client)
         .send({
         content: `<@${restricted_user.user.id}> tried to send a link which was automatically deleted: \`${restricted_user.original_text_message}\``,
@@ -59,13 +60,13 @@ function log_allow(client, member) {
         .catch(console.error);
 }
 async function log_new_active_user(client, id, last_message_sent, last_channel_id) {
-    const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
+    const row = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
         .setCustomId(`active_user_allow;${id}`)
         .setLabel("Give role")
-        .setStyle("SUCCESS"), new Discord.MessageButton()
+        .setStyle(discord_js_1.ButtonStyle.Success), new discord_js_1.ButtonBuilder()
         .setCustomId(`active_user_postpone;${id}`)
         .setLabel("Wait 3 more messages")
-        .setStyle("SECONDARY"));
+        .setStyle(discord_js_1.ButtonStyle.Secondary));
     await get_channel_log(client)
         .send({
         content: `<@${id}> has no role yet and has just recently started posting messages, the most recent one being in <#${last_channel_id}>. What would you like to do?\n\n__**Last message sent**__:\`\`\`${last_message_sent}\`\`\``,

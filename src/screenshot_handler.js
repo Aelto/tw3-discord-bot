@@ -70,7 +70,7 @@ module.exports = function addScreenshotHandler(client) {
                 }
                 const embed = new discord_js_1.EmbedBuilder()
                     .setAuthor({
-                    name: message.content,
+                    name: message.content || message.author.username,
                 })
                     .setDescription(`[by ${message.author.username}](${message.url})`)
                     .setColor(3066993)

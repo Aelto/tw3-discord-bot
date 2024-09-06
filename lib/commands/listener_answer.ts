@@ -1,4 +1,9 @@
-import { Message } from "discord.js";
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  Message,
+} from "discord.js";
 
 const path = require("path");
 const Discord = require("discord.js");
@@ -32,11 +37,11 @@ export class ListenerAnswers {
   }
 
   private async sendOneReply(message: Message, reply: string) {
-    const row = new Discord.MessageActionRow().addComponents(
-      new Discord.MessageButton()
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
         .setCustomId("delete_listen")
         .setLabel("Delete")
-        .setStyle("SECONDARY")
+        .setStyle(ButtonStyle.Secondary)
     );
 
     if (reply.startsWith("file=")) {
@@ -44,12 +49,17 @@ export class ListenerAnswers {
       const path = this.getFilePathFromAlias(file_alias);
 
       await message.channel
-        .send({ files: [path], components: [row] })
+        .send({
+          files: [path],
+          //@ts-ignore
+          components: [row],
+        })
         .catch(console.error);
     } else {
       await message
         .reply({
           content: reply,
+          //@ts-ignore
           components: [row],
         })
         .catch(console.error);

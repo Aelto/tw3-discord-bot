@@ -12,7 +12,8 @@ async function antiSpamOnMessage(client, message) {
     if (!author_member ||
         !author_member.id ||
         author_member.id === constants_1.BOT_ID ||
-        author_member.roles.cache.has(constants_1.ADMIN_ROLE_ID)) {
+        author_member.roles.cache.has(constants_1.ADMIN_ROLE_ID) ||
+        message.channel.id === constants_1.WELCOME_CHANNEL_ID) {
         return;
     }
     if (jail_1.JAIL.is_jailed(message)) {
@@ -22,7 +23,6 @@ async function antiSpamOnMessage(client, message) {
     }
     caches_1.RECENT_MESSAGES.insert(message);
     const reputation = calculateReputation(message, author_member);
-    console.log(reputation);
     handleNewReputation(client, author_member, message, reputation);
 }
 /**
@@ -130,7 +130,7 @@ function calculateReputation(message, author_member) {
             current.reputation -= 2;
         }
     }
-    if (!includes_gift) {
+    if (includes_gift) {
         current.reputation -= 0.5;
         if (!author_has_role) {
             current.reputation -= 2;

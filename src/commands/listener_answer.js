@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListenerAnswers = void 0;
+const discord_js_1 = require("discord.js");
 const path = require("path");
 const Discord = require("discord.js");
 class ListenerAnswers {
@@ -26,21 +27,26 @@ class ListenerAnswers {
         }
     }
     async sendOneReply(message, reply) {
-        const row = new Discord.MessageActionRow().addComponents(new Discord.MessageButton()
+        const row = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
             .setCustomId("delete_listen")
             .setLabel("Delete")
-            .setStyle("SECONDARY"));
+            .setStyle(discord_js_1.ButtonStyle.Secondary));
         if (reply.startsWith("file=")) {
             const file_alias = reply.replace("file=", "");
             const path = this.getFilePathFromAlias(file_alias);
             await message.channel
-                .send({ files: [path], components: [row] })
+                .send({
+                files: [path],
+                //@ts-ignore
+                components: [row],
+            })
                 .catch(console.error);
         }
         else {
             await message
                 .reply({
                 content: reply,
+                //@ts-ignore
                 components: [row],
             })
                 .catch(console.error);
