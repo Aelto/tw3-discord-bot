@@ -16,9 +16,10 @@ async function antiSpamOnMessage(client, message) {
         message.channel.id === constants_1.WELCOME_CHANNEL_ID) {
         return;
     }
-    if (jail_1.JAIL.is_jailed(message)) {
+    const jailed_user = jail_1.JAIL.get_user(message);
+    if (jailed_user !== null) {
         message.delete().catch(console.error);
-        (0, logging_1.log_message_from_jailed)(client, message);
+        (0, logging_1.log_message_from_jailed)(client, message, jailed_user);
         return;
     }
     caches_1.RECENT_MESSAGES.insert(message);
@@ -204,8 +205,8 @@ async function handleNewReputation(client, author, message, antispam) {
         return;
     }
     if (antispam.reputation < 0) {
-        jail_1.JAIL.restrict_message(message);
-        (0, logging_1.log_reputation_user_shutdown)(client, author, message);
+        const restricted_user = jail_1.JAIL.restrict_message(message);
+        (0, logging_1.log_reputation_user_shutdown)(client, author, message, restricted_user);
         deleteRecentMessagesFromUser(author.id);
     }
 }

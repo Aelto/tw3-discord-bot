@@ -36,9 +36,10 @@ export async function antiSpamOnMessage(client: Client, message: Message) {
     return;
   }
 
-  if (JAIL.is_jailed(message)) {
+  const jailed_user = JAIL.get_user(message);
+  if (jailed_user !== null) {
     message.delete().catch(console.error);
-    log_message_from_jailed(client, message);
+    log_message_from_jailed(client, message, jailed_user);
     return;
   }
 
@@ -288,8 +289,8 @@ async function handleNewReputation(
   }
 
   if (antispam.reputation < 0) {
-    JAIL.restrict_message(message);
-    log_reputation_user_shutdown(client, author, message);
+    const restricted_user = JAIL.restrict_message(message);
+    log_reputation_user_shutdown(client, author, message, restricted_user);
     deleteRecentMessagesFromUser(author.id);
   }
 }

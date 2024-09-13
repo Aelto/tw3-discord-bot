@@ -94,6 +94,16 @@ export class Jail {
     return user;
   }
 
+  get_user(message: Message) {
+    for (const user of this.jail.values()) {
+      if (user.user.id == message.author.id) {
+        return user;
+      }
+    }
+
+    return null;
+  }
+
   is_jailed(message: Message) {
     for (const user of this.jail.values()) {
       if (user.user.id == message.author.id) {

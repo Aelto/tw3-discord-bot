@@ -9,6 +9,7 @@ import {
   User,
 } from "discord.js";
 import { AntispamMessage } from "./antispam/types";
+import { RestrictedUser } from "./restricted_user";
 
 const Discord = require("discord.js");
 const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
@@ -119,20 +120,46 @@ export async function log_reputation_message_deleted(
 export async function log_reputation_user_shutdown(
   client: Client,
   author: GuildMember,
-  message: Message
+  message: Message,
+  jailed_user: RestrictedUser
 ) {
-  get_channel_log(client).send(
-    `A recent message from <@${author.id}> in <#${message.channelId}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`allow_user;${jailed_user.unique_id}`)
+      .setLabel("Release")
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
+      .setCustomId(`allow_user;${jailed_user.unique_id}`)
+      .setLabel("Ban")
+      .setStyle(ButtonStyle.Secondary)
   );
+
+  get_channel_log(client).send({
+    content: `A recent message from <@${author.id}> in <#${message.channelId}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
+    components: [row],
+  });
 }
 
 export async function log_message_from_jailed(
   client: Client,
-  message: Message
+  message: Message,
+  jailed_user: RestrictedUser
 ) {
-  get_channel_log(client).send(
-    `A recent message from <@${message.author.id}> in <#${message.channelId}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`allow_user;${jailed_user.unique_id}`)
+      .setLabel("Release")
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
+      .setCustomId(`allow_user;${jailed_user.unique_id}`)
+      .setLabel("Ban")
+      .setStyle(ButtonStyle.Secondary)
   );
+
+  get_channel_log(client).send({
+    content: `A recent message from <@${message.author.id}> in <#${message.channelId}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
+    components: [row],
+  });
 }
 
 export async function log_invite_created(

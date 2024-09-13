@@ -66,6 +66,14 @@ class Jail {
         }
         return user;
     }
+    get_user(message) {
+        for (const user of this.jail.values()) {
+            if (user.user.id == message.author.id) {
+                return user;
+            }
+        }
+        return null;
+    }
     is_jailed(message) {
         for (const user of this.jail.values()) {
             if (user.user.id == message.author.id) {

@@ -83,11 +83,31 @@ async function log_reputation(client, author, message) {
 async function log_reputation_message_deleted(client, author, message) {
     get_channel_log(client).send(`A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
 }
-async function log_reputation_user_shutdown(client, author, message) {
-    get_channel_log(client).send(`A recent message from <@${author.id}> in <#${message.channelId}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+async function log_reputation_user_shutdown(client, author, message, jailed_user) {
+    const row = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
+        .setCustomId(`allow_user;${jailed_user.unique_id}`)
+        .setLabel("Release")
+        .setStyle(discord_js_1.ButtonStyle.Success), new discord_js_1.ButtonBuilder()
+        .setCustomId(`allow_user;${jailed_user.unique_id}`)
+        .setLabel("Ban")
+        .setStyle(discord_js_1.ButtonStyle.Secondary));
+    get_channel_log(client).send({
+        content: `A recent message from <@${author.id}> in <#${message.channelId}> caused the user to be shutdown. **Reason**: Negative reputation.\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
+        components: [row],
+    });
 }
-async function log_message_from_jailed(client, message) {
-    get_channel_log(client).send(`A recent message from <@${message.author.id}> in <#${message.channelId}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+async function log_message_from_jailed(client, message, jailed_user) {
+    const row = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
+        .setCustomId(`allow_user;${jailed_user.unique_id}`)
+        .setLabel("Release")
+        .setStyle(discord_js_1.ButtonStyle.Success), new discord_js_1.ButtonBuilder()
+        .setCustomId(`allow_user;${jailed_user.unique_id}`)
+        .setLabel("Ban")
+        .setStyle(discord_js_1.ButtonStyle.Secondary));
+    get_channel_log(client).send({
+        content: `A recent message from <@${message.author.id}> in <#${message.channelId}> was deleted. **Reason**: Already jailed.\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
+        components: [row],
+    });
 }
 async function log_invite_created(client, user, channel) {
     get_channel_log(client).send(`Member <@${user.id}> created an invite for <#${channel.id}>`);

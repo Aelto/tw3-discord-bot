@@ -55,20 +55,6 @@ export class RestrictedUser {
     this.user.roles.remove(SHUT_ROLE).catch(console.error);
     this.user.roles.add(BASIC_ROLE).catch(console.error);
 
-    this.original_message.channel
-      .send(
-        `
-__**<@${this.user.id}>, an update on the previous ping you received:**__
-Your message was detected as potentially dangerous and in the meantime you were given a restricting role to secure the server.
-
-The peacekeepers decided it was safe and manually gave you the correct roles, allowing you to freely visit & discuss in the server.
-Sorry for the inconvenience!
-
-__Below is the content of your previous message:__
-${this.original_text_message}`.trim()
-      )
-      .catch(console.error);
-
     this.delete_logging_message();
   }
 
