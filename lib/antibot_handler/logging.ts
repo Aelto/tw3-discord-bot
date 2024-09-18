@@ -151,7 +151,7 @@ export async function log_message_from_jailed(
       .setLabel("Release")
       .setStyle(ButtonStyle.Success),
     new ButtonBuilder()
-      .setCustomId(`allow_user;${jailed_user.unique_id}`)
+      .setCustomId(`ban_user;${jailed_user.unique_id}`)
       .setLabel("Ban")
       .setStyle(ButtonStyle.Secondary)
   );
