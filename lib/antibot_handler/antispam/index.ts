@@ -89,8 +89,8 @@ function calculateReputation(
   const one_minute = 60 * one_second;
 
   const is_delta_normal = delta < one_minute;
-  const is_delta_small = delta < 30 * one_second;
-  const is_delta_small_very = delta < 10 * one_second;
+  const is_delta_small = delta < 15 * one_second;
+  const is_delta_small_very = delta < 5 * one_second;
   const is_delta_tiny = delta < one_second;
 
   if (same_content) {
@@ -135,14 +135,18 @@ function calculateReputation(
     }
   }
 
+  if (is_delta_tiny) {
+    current.reputation -= 0.5;
+  }
+
   if (!same_channel && is_delta_small) {
-    current.reputation -= 1;
+    current.reputation -= 0.5;
 
     if (is_delta_small_very) {
-      current.reputation -= 2;
+      current.reputation -= 1;
 
       if (is_delta_tiny) {
-        current.reputation -= 3;
+        current.reputation -= 2.5;
       }
     }
 
@@ -174,35 +178,31 @@ function calculateReputation(
     }
   }
 
-  if (mentions_someone) {
-    current.reputation -= 0.5;
-
-    if (!author_has_role) {
-      current.reputation -= 2;
-    }
+  if (mentions_someone && !author_has_role) {
+    current.reputation -= 1;
   }
 
   if (includes_dollar) {
-    current.reputation -= 0.5;
+    current.reputation -= 0.25;
 
     if (!author_has_role) {
-      current.reputation -= 2;
+      current.reputation -= 1;
     }
   }
 
   if (includes_gift) {
-    current.reputation -= 0.5;
+    current.reputation -= 0.25;
 
     if (!author_has_role) {
-      current.reputation -= 2;
+      current.reputation -= 1;
     }
   }
 
   if (includes_hidden_link) {
-    current.reputation -= 0.5;
+    current.reputation -= 0.25;
 
     if (!author_has_role) {
-      current.reputation -= 1.5;
+      current.reputation -= 1.0;
     }
   }
 
@@ -230,7 +230,7 @@ function calculateReputation(
   // punish further for multiple infractions that are
   // usually associated with scammers
   if (scam_infractions_count > 1) {
-    current.reputation -= scam_infractions_count;
+    current.reputation -= scam_infractions_count * 0.5;
   }
 
   // measures to restore reputation on valid behaviour
