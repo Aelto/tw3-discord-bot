@@ -1,5 +1,3 @@
-type DeferredActionData<Data> = [Data, (Data) => void];
-
 export class DeferredSet<Key> {
   private debounce_buffer: Map<Key, NodeJS.Timeout> = new Map();
   private disable_buffer: Set<Key> = new Set();
@@ -27,6 +25,7 @@ export class DeferredSet<Key> {
       id,
       setTimeout(() => {
         action();
+        this.debounce_buffer.delete(id);
 
         // disable similar actions
         if (this.disable_seconds > 0) {

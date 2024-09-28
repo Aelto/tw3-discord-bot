@@ -2,7 +2,7 @@
  * A queue where you can push actions (promises) to run on an interval, to defer
  * the actions.
  */
-module.exports = class QueueInterval {
+export class QueueInterval {
   delay: number;
   interval_id: NodeJS.Timer;
   queue: any[];
@@ -58,4 +58,4 @@ module.exports = class QueueInterval {
     this.interval_id = null;
     this.on_clear();
   }
-};
+}

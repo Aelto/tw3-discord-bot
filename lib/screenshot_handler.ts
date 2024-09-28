@@ -1,33 +1,15 @@
-import {
-  Message,
-  MessageReaction,
-  PartialUser,
-  Client,
-  EmbedBuilder,
-} from "discord.js";
+import { MessageReaction, PartialUser, Client, EmbedBuilder } from "discord.js";
 import { DeferredSet } from "./datatypes/deferred-set";
-
-const Discord = require("discord.js");
-const {
+import {
   SCREENSHOT_CHANNEL_ID,
   SCREENSHOT_REPOST_CHANNEL_ID,
-} = require("./constants");
-const QueueInterval = require("./queue-interval.js");
+} from "./constants";
 
 /**
  * the amount of reactions from unique users needed for a repost
  */
 const number_of_unique_votes = 4;
-const processed_messages = new Set();
 const debouncer = new DeferredSet(10, 10);
-
-/**
- * setup a queue that will run on a 60 seconds interval.
- */
-const queue_interval = new QueueInterval(10000, () => {
-  // when the queue is empty, clear the Set:
-  processed_messages.clear();
-}).start();
 
 module.exports = function addScreenshotHandler(client: Client) {
   client.on(
@@ -97,46 +79,38 @@ async function onReactionAdded(
     return;
   }
 
-  queue_interval.push(async () => {
-    const message = reaction.message;
+  const message = reaction.message;
 
-    if (processed_messages.has(message.id)) {
-      return;
+  await message.react("📸");
+  const { attachments } = message;
+  const repost_channel = message.client.channels.cache.get(
+    SCREENSHOT_REPOST_CHANNEL_ID
+  );
+
+  for (const image of Array.from(attachments.values())) {
+    if (!image) {
+      continue;
     }
 
-    processed_messages.add(message.id);
+    const contains_spoiler = image.name.toLowerCase().includes("spoiler_");
 
-    await message.react("📸");
-    const { attachments } = message;
-    const repost_channel = message.client.channels.cache.get(
-      SCREENSHOT_REPOST_CHANNEL_ID
-    );
-
-    for (const image of Array.from(attachments.values())) {
-      if (!image) {
-        continue;
-      }
-
-      const contains_spoiler = image.name.toLowerCase().includes("spoiler_");
-
-      if (contains_spoiler) {
-        continue;
-      }
-
-      const embed = new EmbedBuilder()
-        .setAuthor({
-          name: message.content || message.author.username,
-        })
-        .setDescription(`[by ${message.author.username}](${message.url})`)
-        .setColor(3066993)
-        .setTimestamp(new Date())
-        .setImage(image.url)
-        .setFooter({
-          text: message.author.username,
-        });
-
-      //@ts-ignore
-      repost_channel.send({ embeds: [embed] }).catch(console.error);
+    if (contains_spoiler) {
+      continue;
     }
-  });
+
+    const embed = new EmbedBuilder()
+      .setAuthor({
+        name: message.content || message.author.username,
+      })
+      .setDescription(`[by ${message.author.username}](${message.url})`)
+      .setColor(3066993)
+      .setTimestamp(new Date())
+      .setImage(image.url)
+      .setFooter({
+        text: message.author.username,
+      });
+
+    //@ts-ignore
+    repost_channel.send({ embeds: [embed] }).catch(console.error);
+  }
 }

@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueueInterval = void 0;
 /**
  * A queue where you can push actions (promises) to run on an interval, to defer
  * the actions.
  */
-module.exports = class QueueInterval {
+class QueueInterval {
     delay;
     interval_id;
     queue;
@@ -48,4 +49,5 @@ module.exports = class QueueInterval {
         this.interval_id = null;
         this.on_clear();
     }
-};
+}
+exports.QueueInterval = QueueInterval;

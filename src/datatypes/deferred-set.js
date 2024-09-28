@@ -20,6 +20,7 @@ class DeferredSet {
         }
         this.debounce_buffer.set(id, setTimeout(() => {
             action();
+            this.debounce_buffer.delete(id);
             // disable similar actions
             if (this.disable_seconds > 0) {
                 this.disable_buffer.add(id);
