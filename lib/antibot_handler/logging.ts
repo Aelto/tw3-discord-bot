@@ -129,7 +129,7 @@ export async function log_reputation_user_shutdown(
       .setLabel("Release")
       .setStyle(ButtonStyle.Success),
     new ButtonBuilder()
-      .setCustomId(`allow_user;${jailed_user.unique_id}`)
+      .setCustomId(`ban_user;${jailed_user.unique_id}`)
       .setLabel("Ban")
       .setStyle(ButtonStyle.Secondary)
   );
