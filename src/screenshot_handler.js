@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const deferred_set_1 = require("./datatypes/deferred-set");
 const Discord = require("discord.js");
 const { SCREENSHOT_CHANNEL_ID, SCREENSHOT_REPOST_CHANNEL_ID, } = require("./constants");
 const QueueInterval = require("./queue-interval.js");
@@ -9,6 +10,7 @@ const QueueInterval = require("./queue-interval.js");
  */
 const number_of_unique_votes = 4;
 const processed_messages = new Set();
+const debouncer = new deferred_set_1.DeferredSet(10, 10);
 /**
  * setup a queue that will run on a 60 seconds interval.
  */
@@ -17,8 +19,7 @@ const queue_interval = new QueueInterval(10000, () => {
     processed_messages.clear();
 }).start();
 module.exports = function addScreenshotHandler(client) {
-    const screenshot_handler = async (reaction, user) => {
-        // when the reaction is from the bot
+    client.on("messageReactionAdd", async (reaction, user) => {
         if (reaction.me || user.bot) {
             return;
         }
@@ -35,54 +36,56 @@ module.exports = function addScreenshotHandler(client) {
                 return;
             }
         }
-        const reactions = Array.from(reaction.message.reactions.cache.values());
-        const sync_users = reactions.map((reaction) => Array.from(reaction.users.cache.values()));
-        const reactions_users = await Promise.all(reactions.map((reaction) => reaction.users.fetch()));
-        const users = reactions_users
-            .map((users_collection) => Array.from(users_collection.values()))
-            .concat(sync_users)
-            .flatMap((user) => user)
-            .map((user) => user.id);
-        const unique_users = Array.from(new Set(users));
-        const already_has_bot_reaction = unique_users.some((user) => user === client.user.id);
-        if (already_has_bot_reaction) {
-            return;
-        }
-        if (unique_users.length < number_of_unique_votes) {
-            return;
-        }
-        queue_interval.push(async () => {
-            const message = reaction.message;
-            if (processed_messages.has(message.id)) {
-                return;
-            }
-            processed_messages.add(message.id);
-            await message.react("📸");
-            const { attachments } = message;
-            const repost_channel = message.client.channels.cache.get(SCREENSHOT_REPOST_CHANNEL_ID);
-            for (const image of Array.from(attachments.values())) {
-                if (!image) {
-                    continue;
-                }
-                const contains_spoiler = image.name.toLowerCase().includes("spoiler_");
-                if (contains_spoiler) {
-                    continue;
-                }
-                const embed = new discord_js_1.EmbedBuilder()
-                    .setAuthor({
-                    name: message.content || message.author.username,
-                })
-                    .setDescription(`[by ${message.author.username}](${message.url})`)
-                    .setColor(3066993)
-                    .setTimestamp(new Date())
-                    .setImage(image.url)
-                    .setFooter({
-                    text: message.author.username,
-                });
-                //@ts-ignore
-                repost_channel.send({ embeds: [embed] }).catch(console.error);
-            }
-        });
-    };
-    client.on("messageReactionAdd", screenshot_handler);
+        debouncer.set(reaction.message.id, () => onReactionAdded(client, reaction, user));
+    });
 };
+async function onReactionAdded(client, reaction, user) {
+    const reactions = Array.from(reaction.message.reactions.cache.values());
+    const sync_users = reactions.map((reaction) => Array.from(reaction.users.cache.values()));
+    const reactions_users = await Promise.all(reactions.map((reaction) => reaction.users.fetch()));
+    const users = reactions_users
+        .map((users_collection) => Array.from(users_collection.values()))
+        .concat(sync_users)
+        .flatMap((user) => user)
+        .map((user) => user.id);
+    const unique_users = Array.from(new Set(users));
+    const already_has_bot_reaction = unique_users.some((user) => user === client.user.id);
+    if (already_has_bot_reaction) {
+        return;
+    }
+    if (unique_users.length < number_of_unique_votes) {
+        return;
+    }
+    queue_interval.push(async () => {
+        const message = reaction.message;
+        if (processed_messages.has(message.id)) {
+            return;
+        }
+        processed_messages.add(message.id);
+        await message.react("📸");
+        const { attachments } = message;
+        const repost_channel = message.client.channels.cache.get(SCREENSHOT_REPOST_CHANNEL_ID);
+        for (const image of Array.from(attachments.values())) {
+            if (!image) {
+                continue;
+            }
+            const contains_spoiler = image.name.toLowerCase().includes("spoiler_");
+            if (contains_spoiler) {
+                continue;
+            }
+            const embed = new discord_js_1.EmbedBuilder()
+                .setAuthor({
+                name: message.content || message.author.username,
+            })
+                .setDescription(`[by ${message.author.username}](${message.url})`)
+                .setColor(3066993)
+                .setTimestamp(new Date())
+                .setImage(image.url)
+                .setFooter({
+                text: message.author.username,
+            });
+            //@ts-ignore
+            repost_channel.send({ embeds: [embed] }).catch(console.error);
+        }
+    });
+}
