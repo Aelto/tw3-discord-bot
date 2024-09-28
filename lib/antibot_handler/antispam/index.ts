@@ -74,8 +74,11 @@ function calculateReputation(
     return current;
   }
 
-  const same_content = (previous?.content ?? "") === current.content;
-  const same_channel = (previous?.channel_id ?? 0) === current.channel_id;
+  const same_content =
+    Boolean(previous?.content ?? "") && previous.content === current.content;
+  const same_channel =
+    (previous?.channel_id ?? 0) !== 0 &&
+    previous.channel_id === current.channel_id;
   const has_link =
     current.content.includes("http://") || current.content.includes("https://");
 
@@ -105,16 +108,16 @@ function calculateReputation(
 
       // without even waiting a bit between each copy
       if (is_delta_normal) {
-        current.reputation -= 2;
+        current.reputation -= 1;
       }
 
       // faster than a few seconds are certainly from bots:
       if (is_delta_small_very) {
-        current.reputation -= 10;
+        current.reputation -= 5;
       }
 
       if (is_delta_tiny) {
-        current.reputation -= 100;
+        current.reputation -= 5;
       }
     }
 
@@ -235,16 +238,16 @@ function calculateReputation(
 
   // measures to restore reputation on valid behaviour
   if (previous) {
-    if (same_channel && !same_content) {
+    if (!same_content && same_channel) {
       // restore a bit of reputation on varied messages in same channels
       current.reputation += 1;
     }
 
-    if (!same_content && is_delta_normal) {
-      current.reputation += 1;
+    if (!same_content && !same_channel) {
+      current.reputation += 0.25;
 
-      if (same_channel) {
-        current.reputation += 1;
+      if (is_delta_normal) {
+        current.reputation += 0.5;
       }
     }
   }

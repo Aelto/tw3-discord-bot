@@ -88,7 +88,7 @@ async function log_reputation_user_shutdown(client, author, message, jailed_user
         .setCustomId(`allow_user;${jailed_user.unique_id}`)
         .setLabel("Release")
         .setStyle(discord_js_1.ButtonStyle.Success), new discord_js_1.ButtonBuilder()
-        .setCustomId(`allow_user;${jailed_user.unique_id}`)
+        .setCustomId(`ban_user;${jailed_user.unique_id}`)
         .setLabel("Ban")
         .setStyle(discord_js_1.ButtonStyle.Secondary));
     get_channel_log(client).send({
