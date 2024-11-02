@@ -59,7 +59,7 @@ function log_allow(client, member) {
         .send(`<@${member.id}> was previously restricted but is now free.`)
         .catch(console.error);
 }
-async function log_new_active_user(client, id, last_message_sent, last_channel_id) {
+async function log_new_active_user(client, id, last_message_sent, last_channel_id, previous_messages) {
     const row = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
         .setCustomId(`active_user_allow;${id}`)
         .setLabel("Give role")
@@ -67,9 +67,12 @@ async function log_new_active_user(client, id, last_message_sent, last_channel_i
         .setCustomId(`active_user_postpone;${id}`)
         .setLabel("Wait 3 more messages")
         .setStyle(discord_js_1.ButtonStyle.Secondary));
+    const message_history = [...previous_messages, last_message_sent]
+        .map((m) => "```" + m + "```")
+        .join("\n");
     await get_channel_log(client)
         .send({
-        content: `<@${id}> has no role yet and has just recently started posting messages, the most recent one being in <#${last_channel_id}>. What would you like to do?\n\n__**Last message sent**__:\`\`\`${last_message_sent}\`\`\``,
+        content: `<@${id}> has no role yet and has just recently started posting messages, the most recent one being in <#${last_channel_id}>. What would you like to do?\n\n__**Messages history**__:\n${message_history}`,
         components: [row],
     })
         .catch(console.error);

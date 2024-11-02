@@ -2,7 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NewActiveUser = void 0;
 const logging_1 = require("../logging");
+const deferred_set_1 = require("../../datatypes/deferred-set");
 const { BASIC_ROLE } = require("../../constants");
+const debouncer = new deferred_set_1.DeferredSet(120, 0);
 /**
  * Represent a new but active user that may require some attention to get his
  * basic roles set up.
@@ -43,7 +45,7 @@ class NewActiveUser {
     }
     onHitGoalAchieved(client) {
         if (this.last_message_sent) {
-            (0, logging_1.log_new_active_user)(client, this.member.id, this.last_message_sent, this.last_channel_id);
+            debouncer.set(this.member.id, (debounced_messages) => (0, logging_1.log_new_active_user)(client, this.member.id, this.last_message_sent, this.last_channel_id, debounced_messages || []), (acc) => [...(acc || []), this.last_message_sent]);
         }
     }
     allow_user() {

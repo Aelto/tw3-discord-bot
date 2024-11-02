@@ -110,8 +110,14 @@ function calculateReputation(message, author_member) {
         }
     }
     // measures to handle newcoming spammers who may send only one message:
+    const is_first_message = !author_has_role && !Boolean(previous);
     const includes_dollar = message.content.includes("$");
-    const includes_steam = message.content.includes("steam");
+    const includes_frequent_scam_word = [
+        "steam",
+        "telegram",
+        "hours",
+        "profit",
+    ].filter((word) => message.content.includes(word)).length;
     const includes_gift = message.content.includes("gift");
     const includes_hidden_link = message.content.includes("[") &&
         message.content.includes("]") &&
@@ -144,8 +150,19 @@ function calculateReputation(message, author_member) {
             current.reputation -= 1.0;
         }
     }
-    if (!author_has_role && includes_steam) {
+    if (!author_has_role && includes_frequent_scam_word > 0) {
         current.reputation -= 1;
+    }
+    if (is_first_message) {
+        if (includes_frequent_scam_word > 0) {
+            current.reputation -= 1;
+        }
+        if (has_link) {
+            current.reputation -= 1;
+        }
+        if (includes_frequent_scam_word > 0 && has_link) {
+            current.reputation -= 2;
+        }
     }
     if (has_link && mentions_someone) {
         current.reputation -= 0.25;
@@ -156,11 +173,12 @@ function calculateReputation(message, author_member) {
     const scam_infractions_count = [
         !author_has_role,
         includes_dollar,
-        includes_steam,
         includes_gift,
         includes_hidden_link,
         has_link,
-    ].reduce((acc, cur) => (cur ? acc + 1 : acc), 0);
+        message.content.includes("%"),
+    ].reduce((acc, cur) => (cur ? acc + 1 : acc), 0) +
+        includes_frequent_scam_word;
     // punish further for multiple infractions that are
     // usually associated with scammers
     if (scam_infractions_count > 1) {
