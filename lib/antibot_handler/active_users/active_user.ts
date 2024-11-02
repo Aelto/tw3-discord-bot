@@ -1,7 +1,10 @@
 import { GuildMember } from "discord.js";
 import { log_new_active_user } from "../logging";
+import { DeferredSet } from "../../datatypes/deferred-set";
 
 const { BASIC_ROLE } = require("../../constants");
+
+const debouncer = new DeferredSet(120, 0);
 
 /**
  * Represent a new but active user that may require some attention to get his
@@ -51,11 +54,17 @@ export class NewActiveUser {
 
   onHitGoalAchieved(client) {
     if (this.last_message_sent) {
-      log_new_active_user(
-        client,
+      debouncer.set(
         this.member.id,
-        this.last_message_sent,
-        this.last_channel_id
+        (debounced_messages?: string[]) =>
+          log_new_active_user(
+            client,
+            this.member.id,
+            this.last_message_sent,
+            this.last_channel_id,
+            debounced_messages || []
+          ),
+        (acc?: string[]) => [...(acc || []), this.last_message_sent]
       );
     }
   }
