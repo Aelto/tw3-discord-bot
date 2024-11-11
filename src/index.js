@@ -4,6 +4,7 @@ const discord_js_1 = require("discord.js");
 const active_users_1 = require("./antibot_handler/active_users");
 const listen_1 = require("./commands/listen");
 const antibot_handler_1 = require("./antibot_handler");
+const constants_1 = require("./constants");
 const Discord = require("discord.js");
 const fs = require("fs");
 const { ADMIN_ROLE_ID, WARNED_ROLE_1_ID, WARNED_ROLE_2_ID, MAIN_CHANNEL_ID, COMMANDS_PREFIX, LOG_CHANNEL_ID, } = require("./constants.js");
@@ -568,6 +569,10 @@ client.on("messageCreate", async (message) => {
     (0, antibot_handler_1.antibot_handler)(message, client);
     thread_channel_handler(message, client);
     prompt_handler(message, client);
+    if (message.member.roles.cache.some((r) => r.id == constants_1.SILENCED_ROLE_ID)) {
+        await message.delete().catch(console.error);
+        return;
+    }
     if (message.content.startsWith(COMMANDS_PREFIX)) {
         const args = message.content.replace(/[$][ ]*/, "").split(" ");
         const [command, ...argv] = args;

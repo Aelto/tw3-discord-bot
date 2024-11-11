@@ -6,6 +6,7 @@ import {
   antibot_interaction_handler,
   antibot_invite_create_handler,
 } from "./antibot_handler";
+import { SILENCED_ROLE_ID } from "./constants";
 
 const Discord = require("discord.js");
 const fs = require("fs");
@@ -952,6 +953,12 @@ client.on("messageCreate", async (message: Message) => {
   antibot_handler(message, client);
   thread_channel_handler(message, client);
   prompt_handler(message, client);
+
+  if (message.member.roles.cache.some((r) => r.id == SILENCED_ROLE_ID)) {
+    await message.delete().catch(console.error);
+
+    return;
+  }
 
   if (message.content.startsWith(COMMANDS_PREFIX)) {
     const args = message.content.replace(/[$][ ]*/, "").split(" ");
