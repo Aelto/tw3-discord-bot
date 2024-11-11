@@ -954,12 +954,6 @@ client.on("messageCreate", async (message: Message) => {
   thread_channel_handler(message, client);
   prompt_handler(message, client);
 
-  if (message.member.roles.cache.some((r) => r.id == SILENCED_ROLE_ID)) {
-    await message.delete().catch(console.error);
-
-    return;
-  }
-
   if (message.content.startsWith(COMMANDS_PREFIX)) {
     const args = message.content.replace(/[$][ ]*/, "").split(" ");
     const [command, ...argv] = args;
@@ -991,6 +985,15 @@ client.on("messageCreate", async (message: Message) => {
    * listen if the bot can answer with a listener
    */
   if (!message.author.username.includes("Caretaker")) {
+    if (
+      message?.member?.roles?.cache.some((r) => r.id == SILENCED_ROLE_ID) ??
+      false
+    ) {
+      await message.delete().catch(console.error);
+
+      return;
+    }
+
     listenForMessage(message);
   }
 });
