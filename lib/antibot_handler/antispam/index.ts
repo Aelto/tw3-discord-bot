@@ -19,6 +19,7 @@ import {
   SHUT_ROLE,
   WELCOME_CHANNEL_ID,
 } from "../../constants";
+import { allowed_domains } from "../allowed_domains";
 
 export async function antiSpamOnMessage(client: Client, message: Message) {
   cleanupAntispamMessages();
@@ -79,7 +80,7 @@ function calculateReputation(
   const same_channel =
     (previous?.channel_id ?? 0) !== 0 &&
     previous.channel_id === current.channel_id;
-  const has_link =
+  const has_unverified_link =
     current.content.includes("http://") || current.content.includes("https://");
 
   // 1 for the @everyone
@@ -130,7 +131,7 @@ function calculateReputation(
     }
   }
 
-  if (!same_channel && has_link) {
+  if (!same_channel && has_unverified_link) {
     current.reputation -= 1;
 
     if (same_content) {
@@ -173,6 +174,8 @@ function calculateReputation(
     "profit",
     "commission",
     "digital artist",
+    "invest",
+    "earn",
   ].filter((word) => message.content.includes(word)).length;
   const includes_gift = message.content.includes("gift");
   const includes_hidden_link =
@@ -181,8 +184,8 @@ function calculateReputation(
     message.content.includes("(") &&
     message.content.includes(")");
 
-  if (has_link) {
-    current.reputation -= 0.25;
+  if (has_unverified_link) {
+    current.reputation -= 0.5;
 
     if (!author_has_role) {
       current.reputation -= 1;
@@ -226,16 +229,16 @@ function calculateReputation(
       current.reputation -= 1;
     }
 
-    if (has_link) {
-      current.reputation -= 1;
+    if (has_unverified_link) {
+      current.reputation -= 0.5;
     }
 
-    if (includes_frequent_scam_word > 0 && has_link) {
+    if (includes_frequent_scam_word > 0 && has_unverified_link) {
       current.reputation -= 2;
     }
   }
 
-  if (has_link && mentions_someone) {
+  if (has_unverified_link && mentions_someone) {
     current.reputation -= 0.25;
 
     if (!author_has_role) {
@@ -249,7 +252,8 @@ function calculateReputation(
       includes_dollar,
       includes_gift,
       includes_hidden_link,
-      has_link,
+      has_unverified_link,
+      message.content.includes("media.discordapp.net"),
       message.content.includes("%"),
     ].reduce((acc, cur) => (cur ? acc + 1 : acc), 0) +
     includes_frequent_scam_word;

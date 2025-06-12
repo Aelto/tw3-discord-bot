@@ -16,3 +16,7 @@ export const allowed_domains = [
   "sites.google.com/view/caerme-the-w3-guide",
   "sites.google.com/view/lune-the-w3-guide",
 ];
+
+export function containsAllowedDomain(str: string): boolean {
+  return allowed_domains.some((domain) => str.includes(domain));
+}
