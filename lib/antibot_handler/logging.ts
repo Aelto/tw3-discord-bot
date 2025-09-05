@@ -38,7 +38,7 @@ export async function log_restrict(client, restricted_user) {
       .setStyle(ButtonStyle.Danger)
   );
 
-  const message = await get_channel(client)
+  const message = await get_channel_log(client)
     .send({
       content: `<@${restricted_user.user.id}> tried to send a link which was automatically deleted: \`${restricted_user.original_text_message}\``,
       components: [row],
@@ -53,7 +53,7 @@ export async function log_restrict(client, restricted_user) {
  * @param {Discord.GuildMember} member
  */
 export function log_ban(client, member) {
-  get_channel(client)
+  get_channel_log(client)
     .send(`<@${member.id}> was previously restricted and is now banned.`)
     .catch(console.error);
 }
@@ -63,7 +63,7 @@ export function log_ban(client, member) {
  * @param {Discord.GuildMember} member
  */
 export function log_allow(client, member) {
-  get_channel(client)
+  get_channel_log(client)
     .send(`<@${member.id}> was previously restricted but is now free.`)
     .catch(console.error);
 }
