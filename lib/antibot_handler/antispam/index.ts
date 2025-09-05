@@ -176,6 +176,13 @@ function calculateReputation(
     "digital artist",
     "invest",
     "earn",
+    "upwork",
+    "earn",
+    "freelanc",
+    "pay",
+    "DM",
+    "business",
+    "dropshipping",
   ].filter((word) => message.content.includes(word)).length;
   const includes_gift = message.content.includes("gift");
   const includes_hidden_link =
