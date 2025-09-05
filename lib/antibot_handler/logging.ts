@@ -10,6 +10,7 @@ import {
 } from "discord.js";
 import { AntispamMessage } from "./antispam/types";
 import { RestrictedUser } from "./restricted_user";
+import { MessagePendingReputation } from "./antispam/reputation/pending_reputation";
 
 const Discord = require("discord.js");
 const { ADMIN_CHANNEL_ID, LOG_CHANNEL_ID } = require("../constants");
@@ -105,21 +106,27 @@ export async function log_new_active_user_allowed(client, id: string) {
 export async function log_reputation(
   client: Client,
   author: GuildMember,
-  message: AntispamMessage
+  message: AntispamMessage,
+  pending: MessagePendingReputation
 ) {
-  get_channel_log(client).send(
+  await get_channel_log(client).send(
     `<@${author.id}>, <#${message.channel_id}>, reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``
   );
+
+  get_channel_log(client).send(pending.toString());
 }
 
 export async function log_reputation_message_deleted(
   client: Client,
   author: GuildMember,
-  message: Message
+  message: Message,
+  pending: MessagePendingReputation
 ) {
-  get_channel_log(client).send(
+  await get_channel_log(client).send(
     `A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
   );
+
+  get_channel_log(client).send(pending.toString());
 }
 
 export async function log_reputation_user_shutdown(

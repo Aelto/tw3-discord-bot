@@ -33,7 +33,7 @@ async function log_restrict(client, restricted_user) {
         .setCustomId(`ban_user;${restricted_user.get_unique_id()}`)
         .setLabel("Ban")
         .setStyle(discord_js_1.ButtonStyle.Danger));
-    const message = await get_channel(client)
+    const message = await get_channel_log(client)
         .send({
         content: `<@${restricted_user.user.id}> tried to send a link which was automatically deleted: \`${restricted_user.original_text_message}\``,
         components: [row],
@@ -46,7 +46,7 @@ async function log_restrict(client, restricted_user) {
  * @param {Discord.GuildMember} member
  */
 function log_ban(client, member) {
-    get_channel(client)
+    get_channel_log(client)
         .send(`<@${member.id}> was previously restricted and is now banned.`)
         .catch(console.error);
 }
@@ -55,7 +55,7 @@ function log_ban(client, member) {
  * @param {Discord.GuildMember} member
  */
 function log_allow(client, member) {
-    get_channel(client)
+    get_channel_log(client)
         .send(`<@${member.id}> was previously restricted but is now free.`)
         .catch(console.error);
 }
@@ -80,11 +80,13 @@ async function log_new_active_user(client, id, last_message_sent, last_channel_i
 async function log_new_active_user_allowed(client, id) {
     get_channel_log(client).send(`<@${id}> has been given his role`);
 }
-async function log_reputation(client, author, message) {
-    get_channel_log(client).send(`<@${author.id}>, <#${message.channel_id}>, reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+async function log_reputation(client, author, message, pending) {
+    await get_channel_log(client).send(`<@${author.id}>, <#${message.channel_id}>, reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+    get_channel_log(client).send(pending.toString());
 }
-async function log_reputation_message_deleted(client, author, message) {
-    get_channel_log(client).send(`A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+async function log_reputation_message_deleted(client, author, message, pending) {
+    await get_channel_log(client).send(`A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+    get_channel_log(client).send(pending.toString());
 }
 async function log_reputation_user_shutdown(client, author, message, jailed_user) {
     const row = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()

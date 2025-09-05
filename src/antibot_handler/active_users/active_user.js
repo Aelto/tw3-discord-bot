@@ -4,7 +4,7 @@ exports.NewActiveUser = void 0;
 const logging_1 = require("../logging");
 const deferred_set_1 = require("../../datatypes/deferred-set");
 const { BASIC_ROLE } = require("../../constants");
-const debouncer = new deferred_set_1.DeferredSet(120, 0);
+const debouncer = new deferred_set_1.DeferredSet(60, 0);
 /**
  * Represent a new but active user that may require some attention to get his
  * basic roles set up.

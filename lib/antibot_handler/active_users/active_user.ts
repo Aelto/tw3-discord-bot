@@ -4,7 +4,7 @@ import { DeferredSet } from "../../datatypes/deferred-set";
 
 const { BASIC_ROLE } = require("../../constants");
 
-const debouncer = new DeferredSet(120, 0);
+const debouncer = new DeferredSet(60, 0);
 
 /**
  * Represent a new but active user that may require some attention to get his
