@@ -1,10 +1,8 @@
-import { get_channel_log } from "../../logging";
-
 export class MessagePendingReputation {
   private changes: ReputationRuleResult[] = [];
   private vars: Map<ReputationRuleResultKey, any> = new Map();
 
-  private missing_vars: ReputationRuleResultKey[];
+  private missing_vars: ReputationRuleResultKey[] = [];
 
   public append(reason: string, change: number) {
     this.changes.push({ reason, reputation_change: change });
@@ -37,6 +35,11 @@ export class MessagePendingReputation {
 
   public getTotalChange(): number {
     return this.changes.reduce((acc, n) => acc + n.reputation_change, 0);
+  }
+
+  public logMissingVars() {
+    const vars = this.missing_vars.map((v) => v.toString()).join(", ");
+    console.log("PendingReputation, missing vars: " + vars);
   }
 
   public toString(): string {

@@ -65,6 +65,7 @@ class MessageReputationCalculator {
     }
 
     current.reputation += pending.getTotalChange();
+    pending.logMissingVars();
 
     return [current, pending];
   }
