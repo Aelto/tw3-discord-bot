@@ -4,7 +4,7 @@ exports.ReputationRuleResultKey = exports.MessagePendingReputation = void 0;
 class MessagePendingReputation {
     changes = [];
     vars = new Map();
-    missing_vars;
+    missing_vars = [];
     append(reason, change) {
         this.changes.push({ reason, reputation_change: change });
     }
@@ -29,6 +29,10 @@ class MessagePendingReputation {
     }
     getTotalChange() {
         return this.changes.reduce((acc, n) => acc + n.reputation_change, 0);
+    }
+    logMissingVars() {
+        const vars = this.missing_vars.map((v) => v.toString()).join(", ");
+        console.log("PendingReputation, missing vars: " + vars);
     }
     toString() {
         return this.changes
