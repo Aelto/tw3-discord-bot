@@ -49,18 +49,18 @@ export class SpamDeltaDetection extends BaseMessageReputationRule {
     pending.append_if(
       is_delta_small,
       "Small delta between multiple messages",
-      -0.1
+      -0.5
     );
     pending.append_if(
       is_delta_small_very,
       "Very small delta between multiple messages",
-      -0.15
+      -1
     );
 
     pending.append_if(
       is_delta_tiny,
       "Tiny delta between multiple messages",
-      -0.25
+      -2
     );
 
     pending.append_if(

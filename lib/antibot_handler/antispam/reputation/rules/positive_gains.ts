@@ -23,12 +23,12 @@ export class PositiveGainsDetection extends BaseMessageReputationRule {
         ReputationRuleResultKey.PreviousMessageDeltaNormal,
       ]);
 
-    pending.append("Author sent a message", +0.5);
+    pending.append("Author sent a message", +0.25);
 
     pending.append_if(
       is_delta_normal,
       "Author sent a message (with normal or longer delta)",
-      +0.5
+      +0.25
     );
 
     pending.append_if(
