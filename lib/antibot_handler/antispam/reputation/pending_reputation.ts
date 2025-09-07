@@ -37,9 +37,11 @@ export class MessagePendingReputation {
     return this.changes.reduce((acc, n) => acc + n.reputation_change, 0);
   }
 
-  public logMissingVars() {
-    const vars = this.missing_vars.map((v) => v.toString()).join(", ");
-    console.log("PendingReputation, missing vars: " + vars);
+  public log() {
+    if (this.missing_vars.length > 0) {
+      const vars = this.missing_vars.map((v) => v.toString()).join(", ");
+      console.log("PendingReputation, missing vars: " + vars);
+    }
   }
 
   public toString(): string {

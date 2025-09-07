@@ -23,9 +23,9 @@ class SpamDeltaDetection extends rule_1.BaseMessageReputationRule {
         const is_delta_small_very = delta < 5 * one_second;
         const is_delta_tiny = delta < one_second;
         pending.setVar(pending_reputation_1.ReputationRuleResultKey.PreviousMessageDeltaNormal, is_delta_normal);
-        pending.append_if(is_delta_small, "Small delta between multiple messages", -0.1);
-        pending.append_if(is_delta_small_very, "Very small delta between multiple messages", -0.15);
-        pending.append_if(is_delta_tiny, "Tiny delta between multiple messages", -0.25);
+        pending.append_if(is_delta_small, "Small delta between multiple messages", -0.5);
+        pending.append_if(is_delta_small_very, "Very small delta between multiple messages", -1);
+        pending.append_if(is_delta_tiny, "Tiny delta between multiple messages", -2);
         pending.append_if(same_content && !same_channel, "Identical messages sent across multiple channels", -2);
         pending.append_if(same_content && !same_channel && !has_role, "Identical messages sent across multiple channels (has no role)", -2);
         pending.append_if(same_content && !same_channel && is_delta_normal, "Identical messages sent across multiple channels (normal delta)", -1);
