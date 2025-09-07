@@ -16,14 +16,15 @@ export class SameContentDetection extends BaseMessageReputationRule {
     pending: MessagePendingReputation
   ): void {
     const same_content =
-      Boolean(previous?.content ?? "") && previous.content === current.content;
+      (previous?.content ?? "").length > 0 &&
+      previous.content === current.content;
 
     pending.setVar(
       ReputationRuleResultKey.PreviousMessageSameContent,
       same_content
     );
 
-    if (!same_content) {
+    if (same_content) {
       pending.append("Previous & current messages have the same content", -1);
     }
   }
