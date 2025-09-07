@@ -22,7 +22,7 @@ export class MessagePendingReputation {
     const value = this.vars.get(key);
 
     // for logging mostly, to detect incorrect ordering of rules
-    if (!value) {
+    if (value === undefined) {
       this.missing_vars.push(key);
     }
 
