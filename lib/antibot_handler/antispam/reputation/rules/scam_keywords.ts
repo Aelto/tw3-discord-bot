@@ -21,6 +21,7 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
       ReputationRuleResultKey.HasLink,
     ]);
 
+    const lowercased = message.content.toLowerCase();
     const scam_word_count: number = [
       "steam",
       "telegram",
@@ -41,13 +42,13 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
       "gift",
       "media.discordapp.net",
       "%",
-    ].filter((word) => message.content.includes(word)).length;
+    ].filter((word) => lowercased.includes(word)).length;
 
     const includes_hidden_link =
-      message.content.includes("[") &&
-      message.content.includes("]") &&
-      message.content.includes("(") &&
-      message.content.includes(")");
+      lowercased.includes("[") &&
+      lowercased.includes("]") &&
+      lowercased.includes("(") &&
+      lowercased.includes(")");
 
     pending.append_if(
       !author_has_role && has_link,

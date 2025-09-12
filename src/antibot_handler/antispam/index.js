@@ -39,7 +39,7 @@ async function handleNewReputation(client, author, message, antispam, pending) {
         return;
     }
     caches_1.ANTISPAM_MESSAGES.set(author.id, antispam);
-    if ((!author_has_role || previous_tendency < 0) && antispam.tendency < 0) {
+    if ((previous_tendency < 0 && antispam.tendency < 0) || !author_has_role) {
         (0, logging_1.log_reputation)(client, author, antispam, pending);
     }
     if (antispam.reputation > 0) {
@@ -47,9 +47,8 @@ async function handleNewReputation(client, author, message, antispam, pending) {
             message.delete().catch(console.error);
             (0, logging_1.log_reputation_message_deleted)(client, author, message, pending);
         }
-        return;
     }
-    if (antispam.reputation < 0) {
+    else {
         const restricted_user = jail_1.JAIL.restrict_message(message);
         (0, logging_1.log_reputation_user_shutdown)(client, author, message, restricted_user);
         deleteRecentMessagesFromUser(author.id);

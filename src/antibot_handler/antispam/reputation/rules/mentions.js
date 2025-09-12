@@ -17,11 +17,11 @@ class MentionsDetection extends rule_1.BaseMessageReputationRule {
             // exponential amount to punish multi-pings further
             const amount = mentions_count * mentions_count;
             if (has_role) {
-                const change = -0.1;
+                const change = -0.5;
                 pending.append("Message mentions one or more persons (author has a role)", amount * change);
             }
             else {
-                const change = -0.5;
+                const change = -1.0;
                 pending.append("Message mentions one or more persons (author DOES NOT have a role)", amount * change);
             }
         }

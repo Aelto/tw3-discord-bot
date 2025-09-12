@@ -10,6 +10,7 @@ class ScamKeywordsDetection extends rule_1.BaseMessageReputationRule {
             pending_reputation_1.ReputationRuleResultKey.FirstMessage,
             pending_reputation_1.ReputationRuleResultKey.HasLink,
         ]);
+        const lowercased = message.content.toLowerCase();
         const scam_word_count = [
             "steam",
             "telegram",
@@ -30,11 +31,11 @@ class ScamKeywordsDetection extends rule_1.BaseMessageReputationRule {
             "gift",
             "media.discordapp.net",
             "%",
-        ].filter((word) => message.content.includes(word)).length;
-        const includes_hidden_link = message.content.includes("[") &&
-            message.content.includes("]") &&
-            message.content.includes("(") &&
-            message.content.includes(")");
+        ].filter((word) => lowercased.includes(word)).length;
+        const includes_hidden_link = lowercased.includes("[") &&
+            lowercased.includes("]") &&
+            lowercased.includes("(") &&
+            lowercased.includes(")");
         pending.append_if(!author_has_role && has_link, "Author has no role and sent a link", -0.5);
         pending.append_if(!author_has_role && !is_first_message && has_link, "Author has no role, never sent a message, and sent a link", -1);
         pending.append_if(!author_has_role && scam_word_count > 0, "Author has no role and message contains scam-y words", -1);
