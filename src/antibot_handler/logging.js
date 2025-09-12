@@ -81,7 +81,8 @@ async function log_new_active_user_allowed(client, id) {
     get_channel_log(client).send(`<@${id}> has been given his role`);
 }
 async function log_reputation(client, author, message, pending) {
-    await get_channel_log(client).send(`<@${author.id}>, <#${message.channel_id}>, reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+    const rounded_reputation = Math.floor(Math.floor(message.reputation * 10) * 0.1);
+    await get_channel_log(client).send(`<@${author.id}>, <#${message.channel_id}>, reputation: ${rounded_reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
     get_channel_log(client).send(pending.toString());
 }
 async function log_reputation_message_deleted(client, author, message, pending) {

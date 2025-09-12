@@ -109,8 +109,12 @@ export async function log_reputation(
   message: AntispamMessage,
   pending: MessagePendingReputation
 ) {
+  const rounded_reputation = Math.floor(
+    Math.floor(message.reputation * 10) * 0.1
+  );
+
   await get_channel_log(client).send(
-    `<@${author.id}>, <#${message.channel_id}>, reputation: ${message.reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+    `<@${author.id}>, <#${message.channel_id}>, reputation: ${rounded_reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``
   );
 
   get_channel_log(client).send(pending.toString());

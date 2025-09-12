@@ -24,13 +24,15 @@ class ScamKeywordsDetection extends rule_1.BaseMessageReputationRule {
             "earn",
             "freelanc",
             "pay",
-            "DM",
+            "dm",
             "business",
             "dropshipping",
             "$",
             "gift",
             "media.discordapp.net",
             "%",
+            "whatsapp",
+            "hiring",
         ].filter((word) => lowercased.includes(word)).length;
         const includes_hidden_link = lowercased.includes("[") &&
             lowercased.includes("]") &&
@@ -41,7 +43,7 @@ class ScamKeywordsDetection extends rule_1.BaseMessageReputationRule {
         pending.append_if(!author_has_role && scam_word_count > 0, "Author has no role and message contains scam-y words", -1);
         pending.append_if(is_first_message && scam_word_count > 0, "Author has not sent a message in a long time and message contains scam-y words", -1);
         pending.append_if(includes_hidden_link && (is_first_message || author_has_role), "Message contains hidden link and author has not sent a message in a long time or has no role", -3);
-        pending.append_if(scam_word_count > 0, "Message contains scam-y words (punishment varies with words count)", scam_word_count * 0.5);
+        pending.append_if(scam_word_count > 0, "Message contains scam-y words (punishment varies with words count)", scam_word_count * 0.75 * -1);
     }
 }
 exports.ScamKeywordsDetection = ScamKeywordsDetection;

@@ -64,7 +64,8 @@ class MessageReputationCalculator {
       rule.process(message, current, previous, author_member, pending);
     }
 
-    current.reputation += pending.getTotalChange();
+    current.tendency = pending.getTotalChange();
+    current.reputation += current.tendency;
     pending.log();
 
     return [current, pending];

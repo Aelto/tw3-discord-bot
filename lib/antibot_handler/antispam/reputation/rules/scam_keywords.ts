@@ -35,13 +35,15 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
       "earn",
       "freelanc",
       "pay",
-      "DM",
+      "dm",
       "business",
       "dropshipping",
       "$",
       "gift",
       "media.discordapp.net",
       "%",
+      "whatsapp",
+      "hiring",
     ].filter((word) => lowercased.includes(word)).length;
 
     const includes_hidden_link =
@@ -83,7 +85,7 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
     pending.append_if(
       scam_word_count > 0,
       "Message contains scam-y words (punishment varies with words count)",
-      scam_word_count * 0.5
+      scam_word_count * 0.75 * -1
     );
   }
 }
