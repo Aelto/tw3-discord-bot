@@ -15,11 +15,13 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
     author_member: GuildMember,
     pending: MessagePendingReputation
   ): void {
-    const [author_has_role, is_first_message, has_link] = pending.getVars([
-      ReputationRuleResultKey.AuthorHasRole,
-      ReputationRuleResultKey.FirstMessage,
-      ReputationRuleResultKey.HasLink,
-    ]);
+    const [author_has_role, is_first_message, has_link, normal_delta] =
+      pending.getVars([
+        ReputationRuleResultKey.AuthorHasRole,
+        ReputationRuleResultKey.FirstMessage,
+        ReputationRuleResultKey.HasLink,
+        ReputationRuleResultKey.PreviousMessageDeltaNormal,
+      ]);
 
     const lowercased = message.content.toLowerCase();
     const scam_word_count: number = [
@@ -44,7 +46,9 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
       "%",
       "whatsapp",
       "hiring",
-    ].filter((word) => lowercased.includes(word)).length;
+      "work",
+      "remote",
+    ].reduce((acc, word) => (lowercased.includes(word) ? acc + 1 : acc), 0);
 
     const includes_hidden_link =
       lowercased.includes("[") &&
@@ -67,12 +71,24 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
     pending.append_if(
       !author_has_role && scam_word_count > 0,
       "Author has no role and message contains scam-y words",
-      -1
+      -2
     );
 
     pending.append_if(
       is_first_message && scam_word_count > 0,
       "Author has not sent a message in a long time and message contains scam-y words",
+      -2
+    );
+
+    pending.append_if(
+      !normal_delta && scam_word_count > 0,
+      "Author has sent multiple message with a smal delta, and message contains scam-y words",
+      -1
+    );
+
+    pending.append_if(
+      !author_has_role && !normal_delta && scam_word_count > 0,
+      "Author has sent multiple message with a smal delta, and message contains scam-y words (no role)",
       -1
     );
 
