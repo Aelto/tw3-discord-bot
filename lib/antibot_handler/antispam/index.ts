@@ -72,7 +72,7 @@ async function handleNewReputation(
 
   if (
     !author_has_role ||
-    antispam.tendency < 3 ||
+    antispam.tendency < -3 ||
     (antispam.tendency < -1 && previous_tendency < 0)
   ) {
     log_reputation(client, author, antispam, pending);
