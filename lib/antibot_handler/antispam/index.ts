@@ -70,7 +70,11 @@ async function handleNewReputation(
 
   ANTISPAM_MESSAGES.set(author.id, antispam);
 
-  if ((previous_tendency < 0 && antispam.tendency < 0) || !author_has_role) {
+  if (
+    !author_has_role ||
+    antispam.tendency < 3 ||
+    (antispam.tendency < -1 && previous_tendency < 0)
+  ) {
     log_reputation(client, author, antispam, pending);
   }
 
