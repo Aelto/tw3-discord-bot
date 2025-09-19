@@ -27,5 +27,11 @@ export class SameContentDetection extends BaseMessageReputationRule {
     if (same_content) {
       pending.append("Previous & current messages have the same content", -1);
     }
+
+    pending.append_if(
+      current.content.length > 500,
+      "Previous & current messages have the same content (long message)",
+      -1
+    );
   }
 }

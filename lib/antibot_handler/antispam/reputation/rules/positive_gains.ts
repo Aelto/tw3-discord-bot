@@ -5,7 +5,6 @@ import {
   ReputationRuleResultKey,
 } from "../pending_reputation";
 import { BaseMessageReputationRule } from "../rule";
-import { SHUT_ROLE } from "../../../../constants";
 
 export class PositiveGainsDetection extends BaseMessageReputationRule {
   process(
@@ -15,13 +14,19 @@ export class PositiveGainsDetection extends BaseMessageReputationRule {
     author_member: GuildMember,
     pending: MessagePendingReputation
   ): void {
-    const [author_has_role, is_first_message, has_link, is_delta_normal] =
-      pending.getVars([
-        ReputationRuleResultKey.AuthorHasRole,
-        ReputationRuleResultKey.FirstMessage,
-        ReputationRuleResultKey.HasLink,
-        ReputationRuleResultKey.PreviousMessageDeltaNormal,
-      ]);
+    const [
+      author_has_role,
+      is_first_message,
+      has_link,
+      is_delta_normal,
+      is_same_channel,
+    ] = pending.getVars([
+      ReputationRuleResultKey.AuthorHasRole,
+      ReputationRuleResultKey.FirstMessage,
+      ReputationRuleResultKey.HasLink,
+      ReputationRuleResultKey.PreviousMessageDeltaNormal,
+      ReputationRuleResultKey.PreviousMessageSameChannel,
+    ]);
 
     pending.append("Author sent a message", +0.25);
 
@@ -35,6 +40,18 @@ export class PositiveGainsDetection extends BaseMessageReputationRule {
       is_first_message && author_has_role,
       "Author sent a message with no activity for a long time and with necessary roles",
       +2
+    );
+
+    pending.append_if(
+      is_same_channel,
+      "Author sent many messages in a single channel",
+      0.25
+    );
+
+    pending.append_if(
+      is_same_channel && is_delta_normal,
+      "Author sent many messages in a single channel (with normal or longer delta)",
+      +0.25
     );
 
     pending.append_if(

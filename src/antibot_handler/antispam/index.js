@@ -39,11 +39,14 @@ async function handleNewReputation(client, author, message, antispam, pending) {
         return;
     }
     caches_1.ANTISPAM_MESSAGES.set(author.id, antispam);
-    if ((previous_tendency < 0 && antispam.tendency < 0) || !author_has_role) {
+    if (!author_has_role ||
+        antispam.tendency < 3 ||
+        (antispam.tendency < -1 && previous_tendency < 0)) {
         (0, logging_1.log_reputation)(client, author, antispam, pending);
     }
     if (antispam.reputation > 0) {
-        if (antispam.tendency < -3) {
+        // as reputation decreases, the threshold for the deletion of messages decreases
+        if (antispam.tendency < Math.min(antispam.reputation * -1, -3)) {
             message.delete().catch(console.error);
             (0, logging_1.log_reputation_message_deleted)(client, author, message, pending);
         }
