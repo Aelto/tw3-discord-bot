@@ -19,7 +19,7 @@ export class FirstMessageDetection extends BaseMessageReputationRule {
       ReputationRuleResultKey.AuthorHasRole
     );
 
-    const is_first_message = !author_has_role && !Boolean(previous);
+    const is_first_message = !author_has_role && previous === null;
 
     pending.setVar(ReputationRuleResultKey.FirstMessage, is_first_message);
   }

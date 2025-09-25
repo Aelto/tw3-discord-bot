@@ -3,14 +3,14 @@ import { AntispamMessage, messageToAntiSpamMessage } from "../types";
 import { getAntispamMessageByAuthorId } from "../caches";
 import { BaseMessageReputationRule } from "./rule";
 import { MessagePendingReputation } from "./pending_reputation";
-import { RoleDetection } from "./rules/role";
-import { SpamDeltaDetection } from "./rules/multichannel";
-import { SameContentDetection } from "./rules/same_content";
-import { MentionsDetection } from "./rules/mentions";
-import { LinkDetection } from "./rules/links";
-import { FirstMessageDetection } from "./rules/first_message";
-import { ScamKeywordsDetection } from "./rules/scam_keywords";
-import { PositiveGainsDetection } from "./rules/positive_gains";
+import { RoleDetection } from "./rules/1-roles";
+import { SpamDeltaDetection } from "./rules/6-multichannel";
+import { SameContentDetection } from "./rules/2-same-content";
+import { MentionsDetection } from "./rules/5-mentions";
+import { LinkDetection } from "./rules/0-links";
+import { FirstMessageDetection } from "./rules/3-first-message";
+import { ScamKeywordsDetection } from "./rules/4-scam_keywords";
+import { PositiveGainsDetection } from "./rules/7-positive_gains";
 
 class MessageReputationCalculator {
   rules: BaseMessageReputationRule[];
@@ -52,6 +52,11 @@ class MessageReputationCalculator {
       message,
       previous?.reputation ?? 10
     );
+
+    if (previous.uuid == current.uuid) {
+      return [current, pending];
+    }
+
     const delta = current.timestamp - (previous?.timestamp ?? 0);
 
     // messages can be asynchronous, if we receive an older message than what we
