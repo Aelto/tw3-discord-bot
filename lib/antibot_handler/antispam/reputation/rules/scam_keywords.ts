@@ -5,7 +5,31 @@ import {
   ReputationRuleResultKey,
 } from "../pending_reputation";
 import { BaseMessageReputationRule } from "../rule";
-import { SHUT_ROLE } from "../../../../constants";
+
+const scam_words = new Set([
+  "steam",
+  "telegram",
+  "hours",
+  "profit",
+  "commission",
+  "digital artist",
+  "invest",
+  "upwork",
+  "earn",
+  "freelanc",
+  "pay",
+  "dm",
+  "business",
+  "dropshipping",
+  "$",
+  "gift",
+  "media.discordapp.net",
+  "%",
+  "whatsapp",
+  "hiring",
+  "work",
+  "remote",
+]);
 
 export class ScamKeywordsDetection extends BaseMessageReputationRule {
   process(
@@ -23,32 +47,11 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
         ReputationRuleResultKey.PreviousMessageDeltaNormal,
       ]);
 
-    const lowercased = message.content.toLowerCase();
-    const scam_word_count: number = [
-      "steam",
-      "telegram",
-      "hours",
-      "profit",
-      "commission",
-      "digital artist",
-      "invest",
-      "earn",
-      "upwork",
-      "earn",
-      "freelanc",
-      "pay",
-      "dm",
-      "business",
-      "dropshipping",
-      "$",
-      "gift",
-      "media.discordapp.net",
-      "%",
-      "whatsapp",
-      "hiring",
-      "work",
-      "remote",
-    ].reduce((acc, word) => (lowercased.includes(word) ? acc + 1 : acc), 0);
+    const lowercased = message.content.toLowerCase().split(" ");
+    const scam_word_count: number = lowercased.reduce(
+      (acc, word) => (scam_words.has(word) ? acc + 1 : acc),
+      0
+    );
 
     const includes_hidden_link =
       lowercased.includes("[") &&
