@@ -9,8 +9,8 @@ import { SameContentDetection } from "./rules/2-same-content";
 import { MentionsDetection } from "./rules/5-mentions";
 import { LinkDetection } from "./rules/0-links";
 import { FirstMessageDetection } from "./rules/3-first-message";
-import { ScamKeywordsDetection } from "./rules/4-scam_keywords";
-import { PositiveGainsDetection } from "./rules/7-positive_gains";
+import { ScamKeywordsDetection } from "./rules/7-scam_keywords";
+import { PositiveGainsDetection } from "./rules/8-positive_gains";
 
 class MessageReputationCalculator {
   rules: BaseMessageReputationRule[];
@@ -25,9 +25,9 @@ class MessageReputationCalculator {
       new SameContentDetection(),
 
       new FirstMessageDetection(),
-      new ScamKeywordsDetection(),
       new MentionsDetection(),
       new SpamDeltaDetection(),
+      new ScamKeywordsDetection(),
 
       new PositiveGainsDetection(),
     ];

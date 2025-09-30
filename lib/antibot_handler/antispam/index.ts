@@ -63,6 +63,8 @@ async function handleNewReputation(
   const previous_tendency = previous?.tendency ?? 0;
   const previous_reputation = previous?.reputation ?? 10;
 
+  console.log(message.id);
+
   if (previous_reputation < 0) {
     message.delete().catch(console.error);
     return;

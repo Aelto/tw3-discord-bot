@@ -85,13 +85,13 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
 
     pending.append_if(
       !normal_delta && scam_word_count > 0,
-      "Author has sent multiple message with a smal delta, and message contains scam-y words",
+      "Author has sent multiple message with a small delta, and message contains scam-y words",
       -1
     );
 
     pending.append_if(
       !author_has_role && !normal_delta && scam_word_count > 0,
-      "Author has sent multiple message with a smal delta, and message contains scam-y words (no role)",
+      "Author has sent multiple message with a small delta, and message contains scam-y words (no role)",
       -1
     );
 

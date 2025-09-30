@@ -34,6 +34,7 @@ async function handleNewReputation(client, author, message, antispam, pending) {
     const previous = caches_1.ANTISPAM_MESSAGES.get(author.id);
     const previous_tendency = previous?.tendency ?? 0;
     const previous_reputation = previous?.reputation ?? 10;
+    console.log(message.id);
     if (previous_reputation < 0) {
         message.delete().catch(console.error);
         return;

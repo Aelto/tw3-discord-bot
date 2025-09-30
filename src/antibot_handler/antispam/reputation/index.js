@@ -10,8 +10,8 @@ const _2_same_content_1 = require("./rules/2-same-content");
 const _5_mentions_1 = require("./rules/5-mentions");
 const _0_links_1 = require("./rules/0-links");
 const _3_first_message_1 = require("./rules/3-first-message");
-const _4_scam_keywords_1 = require("./rules/4-scam_keywords");
-const _7_positive_gains_1 = require("./rules/7-positive_gains");
+const _7_scam_keywords_1 = require("./rules/7-scam_keywords");
+const _8_positive_gains_1 = require("./rules/8-positive_gains");
 class MessageReputationCalculator {
     rules;
     constructor() {
@@ -23,10 +23,10 @@ class MessageReputationCalculator {
             new _1_roles_1.RoleDetection(),
             new _2_same_content_1.SameContentDetection(),
             new _3_first_message_1.FirstMessageDetection(),
-            new _4_scam_keywords_1.ScamKeywordsDetection(),
             new _5_mentions_1.MentionsDetection(),
             new _6_multichannel_1.SpamDeltaDetection(),
-            new _7_positive_gains_1.PositiveGainsDetection(),
+            new _7_scam_keywords_1.ScamKeywordsDetection(),
+            new _8_positive_gains_1.PositiveGainsDetection(),
         ];
     }
     calculateReputation(message, author_member) {
