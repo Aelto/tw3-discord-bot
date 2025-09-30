@@ -1,8 +1,6 @@
 import { Message } from "discord.js";
 
 export interface AntispamMessage {
-  uuid: string;
-
   channel_id: string;
   content: string;
   timestamp: number;
@@ -26,7 +24,6 @@ export function messageToAntiSpamMessage(
   reputation: number = 10
 ): AntispamMessage {
   return {
-    uuid: message.id,
     content: message.content,
     timestamp: Date.now(),
     channel_id: message.channelId,

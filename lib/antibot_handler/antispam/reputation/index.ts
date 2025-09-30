@@ -53,10 +53,6 @@ class MessageReputationCalculator {
       previous?.reputation ?? 10
     );
 
-    if (previous.uuid == current.uuid) {
-      return [current, pending];
-    }
-
     const delta = current.timestamp - (previous?.timestamp ?? 0);
 
     // messages can be asynchronous, if we receive an older message than what we

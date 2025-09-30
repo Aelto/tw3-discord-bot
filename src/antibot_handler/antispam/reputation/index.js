@@ -38,9 +38,6 @@ class MessageReputationCalculator {
         const previous = (0, caches_1.getAntispamMessageByAuthorId)(author);
         // NOTE: use the current reputation for building the new object:
         const current = (0, types_1.messageToAntiSpamMessage)(message, previous?.reputation ?? 10);
-        if (previous.uuid == current.uuid) {
-            return [current, pending];
-        }
         const delta = current.timestamp - (previous?.timestamp ?? 0);
         // messages can be asynchronous, if we receive an older message than what we
         // already scanned then ignore:
