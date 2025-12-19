@@ -25,5 +25,15 @@ export class LinkDetection extends BaseMessageReputationRule {
       "Message contains an insecure (HTTP) link",
       -10
     );
+
+    if (has_link) {
+      const count = current.content.split("http").length - 1;
+
+      pending.append_if(
+        count > 1,
+        "Message contains multiple links",
+        -1 * count
+      );
+    }
   }
 }
