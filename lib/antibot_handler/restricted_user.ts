@@ -1,4 +1,5 @@
 import { Message, TextChannel, GuildMember } from "discord.js";
+import { REPUTATION_CACHE } from "./antispam/caches";
 const { SHUT_ROLE, BASIC_ROLE } = require("../constants");
 
 export class RestrictedUser {
@@ -54,6 +55,8 @@ export class RestrictedUser {
   allow_user() {
     this.user.roles.remove(SHUT_ROLE).catch(console.error);
     this.user.roles.add(BASIC_ROLE).catch(console.error);
+
+    REPUTATION_CACHE.resetReputationByauthorId(this.user.id);
 
     this.delete_logging_message();
   }
