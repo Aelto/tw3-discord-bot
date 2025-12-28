@@ -1,6 +1,5 @@
 import { GuildMember, Message } from "discord.js";
 import { AntispamMessage, messageToAntiSpamMessage } from "../types";
-import { getAntispamMessageByAuthorId } from "../caches";
 import { BaseMessageReputationRule } from "./rule";
 import { MessagePendingReputation } from "./pending_reputation";
 import { RoleDetection } from "./rules/1-roles";
@@ -11,6 +10,7 @@ import { LinkDetection } from "./rules/0-links";
 import { FirstMessageDetection } from "./rules/3-first-message";
 import { ScamKeywordsDetection } from "./rules/7-scam_keywords";
 import { PositiveGainsDetection } from "./rules/8-positive_gains";
+import { REPUTATION_CACHE } from "../caches";
 
 class MessageReputationCalculator {
   rules: BaseMessageReputationRule[];
@@ -45,7 +45,7 @@ class MessageReputationCalculator {
     }
 
     const previous: AntispamMessage | null =
-      getAntispamMessageByAuthorId(author);
+      REPUTATION_CACHE.getMessageFromAuthorId(author);
 
     // NOTE: use the current reputation for building the new object:
     const current = messageToAntiSpamMessage(

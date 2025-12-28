@@ -7,17 +7,13 @@ import {
 } from "../logging";
 import { JAIL } from "../jail";
 import { AntispamMessage } from "./types";
-import {
-  ANTISPAM_MESSAGES,
-  RECENT_MESSAGES,
-  cleanupAntispamMessages,
-} from "./caches";
+import { REPUTATION_CACHE, RECENT_MESSAGES } from "./caches";
 import { ADMIN_ROLE_ID, BOT_ID, WELCOME_CHANNEL_ID } from "../../constants";
 import { MESSAGE_REPUTATION_CALCULATOR } from "./reputation";
 import { MessagePendingReputation } from "./reputation/pending_reputation";
 
 export async function antiSpamOnMessage(client: Client, message: Message) {
-  cleanupAntispamMessages();
+  REPUTATION_CACHE.cleanupAntispamMessages();
 
   const author_member =
     message.member || message.guild.members.cache.get(message.author.id);
@@ -59,18 +55,16 @@ async function handleNewReputation(
   }
 
   const author_has_role = author.roles.cache.size > 1;
-  const previous = ANTISPAM_MESSAGES.get(author.id);
+  const previous = REPUTATION_CACHE.getMessageFromAuthorId(author.id);
   const previous_tendency = previous?.tendency ?? 0;
   const previous_reputation = previous?.reputation ?? 10;
-
-  console.log(message.id);
 
   if (previous_reputation < 0) {
     message.delete().catch(console.error);
     return;
   }
 
-  ANTISPAM_MESSAGES.set(author.id, antispam);
+  REPUTATION_CACHE.setMessageCache(author.id, antispam);
 
   if (
     !author_has_role ||
