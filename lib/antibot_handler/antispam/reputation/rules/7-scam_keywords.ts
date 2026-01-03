@@ -6,7 +6,7 @@ import {
 } from "../pending_reputation";
 import { BaseMessageReputationRule } from "../rule";
 
-const scam_words = new Set([
+const scam_words = [
   "steam",
   "telegram",
   "hours",
@@ -29,7 +29,7 @@ const scam_words = new Set([
   "hiring",
   "work",
   "remote",
-]);
+];
 
 export class ScamKeywordsDetection extends BaseMessageReputationRule {
   process(
@@ -48,8 +48,8 @@ export class ScamKeywordsDetection extends BaseMessageReputationRule {
       ]);
 
     const lowercased = message.content.toLowerCase().split(" ");
-    const scam_word_count: number = lowercased.reduce(
-      (acc, word) => (scam_words.has(word) ? acc + 1 : acc),
+    const scam_word_count: number = scam_words.reduce(
+      (acc, word) => (lowercased.includes(word) ? acc + 1 : acc),
       0
     );
 
