@@ -126,9 +126,18 @@ export async function log_reputation_message_deleted(
   message: Message,
   pending: MessagePendingReputation
 ) {
-  await get_channel_log(client).send(
-    `A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+  const id = author.id;
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`active_user_reset_reputation;${id}`)
+      .setLabel("Reset reputation")
+      .setStyle(ButtonStyle.Secondary),
   );
+
+  await get_channel_log(client).send({
+    content: `A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
+    components: [row]
+  });
 
   get_channel_log(client).send(pending.toString());
 }

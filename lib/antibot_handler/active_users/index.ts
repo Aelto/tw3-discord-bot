@@ -3,6 +3,7 @@ import CACHE from "./cache";
 import { NewActiveUser } from "./active_user";
 import { log_new_active_user_allowed } from "../logging";
 import { guildMemberFromMessage } from "../../discord_utils";
+import { REPUTATION_CACHE } from "../antispam/caches";
 const { WELCOME_CHANNEL_ID } = require("../../constants");
 
 export function activeUserDetectionOnMessage(message: Message, client) {
@@ -49,6 +50,12 @@ export async function activeUserInteractionHandler(interaction, client) {
     const user = CACHE.getMember(member_id);
     if (user) {
       user.increaseHitGoal(client);
+    }
+  } else if (interaction.customId.startsWith("active_user_reset_reputation;")) {
+    const [id, member_id] = interaction.customId.split(";");
+
+    if (member_id) {
+      REPUTATION_CACHE.resetReputationByauthorId(member_id);
     }
   }
 }
