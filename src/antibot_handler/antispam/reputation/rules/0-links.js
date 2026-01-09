@@ -10,6 +10,10 @@ class LinkDetection extends rule_1.BaseMessageReputationRule {
         pending.setVar(pending_reputation_1.ReputationRuleResultKey.HasLink, has_link);
         pending.append_if(has_link, "Message contains a link", -0.5);
         pending.append_if(has_http_link, "Message contains an insecure (HTTP) link", -10);
+        if (has_link) {
+            const count = current.content.split("http").length - 1;
+            pending.append_if(count > 1, "Message contains multiple links", -1 * count);
+        }
     }
 }
 exports.LinkDetection = LinkDetection;

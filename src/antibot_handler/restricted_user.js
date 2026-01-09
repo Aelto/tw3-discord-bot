@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RestrictedUser = void 0;
+const caches_1 = require("./antispam/caches");
 const { SHUT_ROLE, BASIC_ROLE } = require("../constants");
 class RestrictedUser {
     original_message;
@@ -46,6 +47,7 @@ class RestrictedUser {
     allow_user() {
         this.user.roles.remove(SHUT_ROLE).catch(console.error);
         this.user.roles.add(BASIC_ROLE).catch(console.error);
+        caches_1.REPUTATION_CACHE.resetReputationByauthorId(this.user.id);
         this.delete_logging_message();
     }
     ban_user() {

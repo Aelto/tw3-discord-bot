@@ -7,7 +7,7 @@ const caches_1 = require("./caches");
 const constants_1 = require("../../constants");
 const reputation_1 = require("./reputation");
 async function antiSpamOnMessage(client, message) {
-    (0, caches_1.cleanupAntispamMessages)();
+    caches_1.REPUTATION_CACHE.cleanupAntispamMessages();
     const author_member = message.member || message.guild.members.cache.get(message.author.id);
     if (!author_member ||
         !author_member.id ||
@@ -31,15 +31,14 @@ async function handleNewReputation(client, author, message, antispam, pending) {
         return;
     }
     const author_has_role = author.roles.cache.size > 1;
-    const previous = caches_1.ANTISPAM_MESSAGES.get(author.id);
+    const previous = caches_1.REPUTATION_CACHE.getMessageFromAuthorId(author.id);
     const previous_tendency = previous?.tendency ?? 0;
     const previous_reputation = previous?.reputation ?? 10;
-    console.log(message.id);
     if (previous_reputation < 0) {
         message.delete().catch(console.error);
         return;
     }
-    caches_1.ANTISPAM_MESSAGES.set(author.id, antispam);
+    caches_1.REPUTATION_CACHE.setMessageCache(author.id, antispam);
     if (!author_has_role ||
         antispam.tendency < -3 ||
         (antispam.tendency < -1 && previous_tendency < 0)) {

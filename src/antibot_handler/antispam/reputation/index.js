@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MESSAGE_REPUTATION_CALCULATOR = void 0;
 const types_1 = require("../types");
-const caches_1 = require("../caches");
 const pending_reputation_1 = require("./pending_reputation");
 const _1_roles_1 = require("./rules/1-roles");
 const _6_multichannel_1 = require("./rules/6-multichannel");
@@ -12,6 +11,7 @@ const _0_links_1 = require("./rules/0-links");
 const _3_first_message_1 = require("./rules/3-first-message");
 const _7_scam_keywords_1 = require("./rules/7-scam_keywords");
 const _8_positive_gains_1 = require("./rules/8-positive_gains");
+const caches_1 = require("../caches");
 class MessageReputationCalculator {
     rules;
     constructor() {
@@ -35,7 +35,7 @@ class MessageReputationCalculator {
         if (!author) {
             return [(0, types_1.messageToAntiSpamMessage)(message), pending];
         }
-        const previous = (0, caches_1.getAntispamMessageByAuthorId)(author);
+        const previous = caches_1.REPUTATION_CACHE.getMessageFromAuthorId(author);
         // NOTE: use the current reputation for building the new object:
         const current = (0, types_1.messageToAntiSpamMessage)(message, previous?.reputation ?? 10);
         const delta = current.timestamp - (previous?.timestamp ?? 0);
