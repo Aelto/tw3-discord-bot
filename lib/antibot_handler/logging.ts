@@ -133,6 +133,18 @@ export async function log_reputation_message_deleted(
   get_channel_log(client).send(pending.toString());
 }
 
+export async function log_inform_user_message_deleted(
+  author: GuildMember,
+  message: Message,
+  pending: MessagePendingReputation
+) {
+  await message.channel.send(
+    `<@${author.id}>, your recent message(s) were deleted as they were detected as potential spam. If you think this is a false positive and your message is legitimate, please wait a few seconds and send it again **but** make sure to avoid pinging too many people, sending too many links, or too many messages in a short amount of time.\n\nDepending on how many of your messages were flagged recently, it is possible that you may be unable to send anything in the next 10 minutes, however it should resolve itself automatically after that delay!\n\nYou can also find a breakdown of why the message flagged as spam below:`
+  );
+
+  message.channel.send(pending.toString());
+}
+
 export async function log_reputation_user_shutdown(
   client: Client,
   author: GuildMember,

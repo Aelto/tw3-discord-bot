@@ -1,5 +1,6 @@
 import { Client, GuildMember, Message } from "discord.js";
 import {
+  log_inform_user_message_deleted,
   log_message_from_jailed,
   log_reputation,
   log_reputation_message_deleted,
@@ -11,6 +12,9 @@ import { REPUTATION_CACHE, RECENT_MESSAGES } from "./caches";
 import { ADMIN_ROLE_ID, BOT_ID, WELCOME_CHANNEL_ID } from "../../constants";
 import { MESSAGE_REPUTATION_CALCULATOR } from "./reputation";
 import { MessagePendingReputation } from "./reputation/pending_reputation";
+import { DeferredSet } from "../../datatypes/deferred-set";
+
+const message_deletion_alert_debouncer = new DeferredSet(2, 60 * 5);
 
 export async function antiSpamOnMessage(client: Client, message: Message) {
   REPUTATION_CACHE.cleanupAntispamMessages();
@@ -84,6 +88,12 @@ async function handleNewReputation(
     if (antispam.tendency < threshold_bound) {
       message.delete().catch(console.error);
       log_reputation_message_deleted(client, author, message, pending);
+
+      // perform a debounced alert to the user about why the message(s)
+      // are being deleted.
+      message_deletion_alert_debouncer.set(author.id, () => {
+        log_inform_user_message_deleted(author, message, pending);
+      });
     }
   } else {
     const restricted_user = JAIL.restrict_message(message);
