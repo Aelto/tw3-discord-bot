@@ -13,6 +13,7 @@ import { ADMIN_ROLE_ID, BOT_ID, WELCOME_CHANNEL_ID } from "../../constants";
 import { MESSAGE_REPUTATION_CALCULATOR } from "./reputation";
 import { MessagePendingReputation } from "./reputation/pending_reputation";
 import { DeferredSet } from "../../datatypes/deferred-set";
+import { deleteMessage } from "../../discord_utils";
 
 const message_deletion_alert_debouncer = new DeferredSet(2, 60 * 5);
 
@@ -34,7 +35,7 @@ export async function antiSpamOnMessage(client: Client, message: Message) {
 
   const jailed_user = JAIL.get_user(message);
   if (jailed_user !== null) {
-    message.delete().catch(console.error);
+    deleteMessage(message);
     log_message_from_jailed(client, message, jailed_user);
     return;
   }
@@ -64,7 +65,7 @@ async function handleNewReputation(
   const previous_reputation = previous?.reputation ?? 10;
 
   if (previous_reputation < 0) {
-    message.delete().catch(console.error);
+    deleteMessage(message);
     return;
   }
 
@@ -86,7 +87,7 @@ async function handleNewReputation(
     const threshold_bound = Math.min(threshold_max, Math.max(threshold_min, threshold));
 
     if (antispam.tendency < threshold_bound) {
-      message.delete().catch(console.error);
+      deleteMessage(message);
       log_reputation_message_deleted(client, author, message, pending);
 
       // perform a debounced alert to the user about why the message(s)
@@ -112,6 +113,6 @@ function deleteRecentMessagesFromUser(id: GuildMember["id"]) {
       continue;
     }
 
-    message.delete().catch(console.error);
+    deleteMessage(message);
   }
 }

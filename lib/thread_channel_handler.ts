@@ -1,4 +1,5 @@
 import { get_channel_log } from "./antibot_handler/logging";
+import { deleteMessage } from "./discord_utils";
 
 const { THREAD_CHANNEL_ID, THREAD_CHANNEL_ROLE_ID } = require("./constants");
 
@@ -114,7 +115,7 @@ module.exports = async function thread_channel_handler(message, client) {
     author_member && author_member.roles.cache.has(THREAD_CHANNEL_ROLE_ID);
 
   if (!has_thread_channel_role) {
-    await message.delete().catch(console.error);
+    await deleteMessage(message);
 
     get_channel_log(client).send(`<@${message.author.id}> tried to send a message in <#${THREAD_CHANNEL_ID}> but lacked the roles, the message was deleted:\n\n\`\`\`${message.content}\`\`\``);
 
@@ -136,7 +137,7 @@ module.exports = async function thread_channel_handler(message, client) {
       const { bot_message = null } = defer_channels.get(author_id);
 
       if (bot_message !== null) {
-        bot_message.delete().catch(console.error);
+        deleteMessage(bot_message);
       }
     }
 

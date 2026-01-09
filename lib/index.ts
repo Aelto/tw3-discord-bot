@@ -7,6 +7,7 @@ import {
   antibot_invite_create_handler,
 } from "./antibot_handler";
 import { SILENCED_ROLE_ID } from "./constants";
+import { deleteMessage } from "./discord_utils";
 
 const Discord = require("discord.js");
 const fs = require("fs");
@@ -690,7 +691,7 @@ commands["say"] = {
       const channel = await client.channels.fetch(channel_id);
       const text = words.join(" ");
 
-      message.delete().catch(console.error);
+      deleteMessage(message);
       channel.send(text).catch(console.error);
     } catch (err) {
       consume(
@@ -736,7 +737,7 @@ commands["announce"] = {
         .setColor(0)
         .setTimestamp(new Date());
 
-      message.delete();
+      deleteMessage(message);
       channel.send({ embeds: [embed] }).catch(console.error);
     } catch (err) {
       consume(
@@ -787,7 +788,7 @@ commands["poll"] = {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      message.delete();
+      deleteMessage(message);
     } catch (err) {
       consume(
         client,
@@ -989,7 +990,7 @@ client.on("messageCreate", async (message: Message) => {
       message?.member?.roles?.cache.some((r) => r.id == SILENCED_ROLE_ID) ??
       false
     ) {
-      await message.delete().catch(console.error);
+      await deleteMessage(message);
 
       return;
     }
