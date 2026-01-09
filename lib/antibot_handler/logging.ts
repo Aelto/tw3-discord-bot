@@ -75,7 +75,7 @@ export async function log_new_active_user(
   last_message_sent: string,
   last_channel_id: string,
   previous_messages: string[]
-) {
+): Promise<Message> {
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId(`active_user_allow;${id}`)
@@ -91,7 +91,7 @@ export async function log_new_active_user(
     .map((m) => "```" + m + "```")
     .join("\n");
 
-  await get_channel_log(client)
+  return await get_channel_log(client)
     .send({
       content: `<@${id}> has no role yet and has just recently started posting messages, the most recent one being in <#${last_channel_id}>. What would you like to do?\n\n__**Messages history**__:\n${message_history}`,
       components: [row],

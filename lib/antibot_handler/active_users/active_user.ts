@@ -1,10 +1,11 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, Message } from "discord.js";
 import { log_new_active_user } from "../logging";
 import { DeferredSet } from "../../datatypes/deferred-set";
 
 const { BASIC_ROLE } = require("../../constants");
 
-const debouncer = new DeferredSet(60, 0);
+type DebouncedAccumulatedData = Array<string>;
+const debouncer = new DeferredSet<GuildMember["id"], DebouncedAccumulatedData>(30, 30);
 
 /**
  * Represent a new but active user that may require some attention to get his
@@ -16,6 +17,8 @@ export class NewActiveUser {
   private member: GuildMember;
   private last_message_sent: string;
   private last_channel_id: string;
+
+  private previous_log: Message;
 
   /**
    * represents the amount of messages since the member has been created noticed
@@ -56,21 +59,37 @@ export class NewActiveUser {
     if (this.last_message_sent) {
       debouncer.set(
         this.member.id,
-        (debounced_messages?: string[]) =>
-          log_new_active_user(
-            client,
-            this.member.id,
-            this.last_message_sent,
-            this.last_channel_id,
-            debounced_messages || []
-          ),
-        (acc?: string[]) => [...(acc || []), this.last_message_sent]
+        (debounced_messages?: DebouncedAccumulatedData) => {
+          this.sendLog(client, debounced_messages);
+
+          return debounced_messages;
+        },
+        (acc?: DebouncedAccumulatedData) => [...(acc || []), this.last_message_sent]
       );
     }
   }
 
   allow_user() {
     this.member.roles.add(BASIC_ROLE).catch(console.error);
+  }
+
+
+  async sendLog(client, debounced_messages: DebouncedAccumulatedData) {
+    if (this.previous_log && this.previous_log.deletable) {
+      this.previous_log.delete().catch(console.error)
+    }
+
+    const message = await log_new_active_user(
+      client,
+      this.member.id,
+      this.last_message_sent,
+      this.last_channel_id,
+      debounced_messages
+    );
+
+    if (message) {
+      this.previous_log = message;
+    }
   }
 
   setLastMessageSent(content: string, channel_id: string) {

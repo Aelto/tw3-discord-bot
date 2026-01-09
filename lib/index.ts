@@ -156,7 +156,7 @@ commands["report"] = {
       }
 
       report_confirmed = confirm.content.toLowerCase().includes("yes");
-    } catch (err) {}
+    } catch (err) { }
 
     if (report_confirmed) {
       const reason = reason_words.join(" ").trim() || "_No reason given_";
@@ -312,7 +312,7 @@ commands["cleanse"] = {
       }
 
       cleanse_confirmed = confirm.content.toLowerCase().includes("yes");
-    } catch (err) {}
+    } catch (err) { }
 
     if (cleanse_confirmed) {
       message.channel
@@ -690,7 +690,7 @@ commands["say"] = {
       const channel = await client.channels.fetch(channel_id);
       const text = words.join(" ");
 
-      message.delete();
+      message.delete().catch(console.error);
       channel.send(text).catch(console.error);
     } catch (err) {
       consume(
@@ -845,16 +845,16 @@ commands["order66"] = {
       channel_id.trim().toLowerCase() === "here"
         ? message.channel
         : await client.channels
-            .fetch(channel_id)
-            .catch(() =>
-              consume(
-                client,
-                message,
-                "Unknown channel",
-                `no channel exists with the id ${channel_id}`,
-                "red"
-              )
-            );
+          .fetch(channel_id)
+          .catch(() =>
+            consume(
+              client,
+              message,
+              "Unknown channel",
+              `no channel exists with the id ${channel_id}`,
+              "red"
+            )
+          );
 
     const gif_message = await channel
       .send(
