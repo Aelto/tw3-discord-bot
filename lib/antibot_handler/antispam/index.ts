@@ -76,7 +76,12 @@ async function handleNewReputation(
 
   if (antispam.reputation > 0) {
     // as reputation decreases, the threshold for the deletion of messages decreases
-    if (antispam.tendency < Math.min(antispam.reputation * -1, -3)) {
+    const threshold_max = -3;
+    const threshold_min = -6;
+    const threshold = antispam.reputation * -1;
+    const threshold_bound = Math.min(threshold_max, Math.max(threshold_min, threshold));
+
+    if (antispam.tendency < threshold_bound) {
       message.delete().catch(console.error);
       log_reputation_message_deleted(client, author, message, pending);
     }
