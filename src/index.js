@@ -5,6 +5,7 @@ const active_users_1 = require("./antibot_handler/active_users");
 const listen_1 = require("./commands/listen");
 const antibot_handler_1 = require("./antibot_handler");
 const constants_1 = require("./constants");
+const is_bot_1 = require("./core/is-bot");
 const Discord = require("discord.js");
 const fs = require("fs");
 const { ADMIN_ROLE_ID, WARNED_ROLE_1_ID, WARNED_ROLE_2_ID, MAIN_CHANNEL_ID, COMMANDS_PREFIX, LOG_CHANNEL_ID, } = require("./constants.js");
@@ -585,7 +586,7 @@ client.on("messageCreate", async (message) => {
     /**
      * listen if the bot can answer with a listener
      */
-    if (!message.author.username.includes("Caretaker")) {
+    if (!(0, is_bot_1.isBot)(message)) {
         if (message?.member?.roles?.cache.some((r) => r.id == constants_1.SILENCED_ROLE_ID) ??
             false) {
             await message.delete().catch(console.error);

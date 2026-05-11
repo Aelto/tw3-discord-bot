@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScamKeywordsDetection = void 0;
 const pending_reputation_1 = require("../pending_reputation");
 const rule_1 = require("../rule");
-const scam_words = new Set([
+const scam_words = [
     "steam",
     "telegram",
     "hours",
@@ -26,7 +26,7 @@ const scam_words = new Set([
     "hiring",
     "work",
     "remote",
-]);
+];
 class ScamKeywordsDetection extends rule_1.BaseMessageReputationRule {
     process(message, current, previous, author_member, pending) {
         const [author_has_role, is_first_message, has_link, normal_delta] = pending.getVars([
@@ -36,7 +36,7 @@ class ScamKeywordsDetection extends rule_1.BaseMessageReputationRule {
             pending_reputation_1.ReputationRuleResultKey.PreviousMessageDeltaNormal,
         ]);
         const lowercased = message.content.toLowerCase().split(" ");
-        const scam_word_count = lowercased.reduce((acc, word) => (scam_words.has(word) ? acc + 1 : acc), 0);
+        const scam_word_count = scam_words.reduce((acc, word) => (lowercased.includes(word) ? acc + 1 : acc), 0);
         const includes_hidden_link = lowercased.includes("[") &&
             lowercased.includes("]") &&
             lowercased.includes("(") &&

@@ -7,6 +7,7 @@ import {
   antibot_invite_create_handler,
 } from "./antibot_handler";
 import { SILENCED_ROLE_ID } from "./constants";
+import { isBot } from "./core/is-bot";
 
 const Discord = require("discord.js");
 const fs = require("fs");
@@ -76,7 +77,7 @@ commands["help"] = {
       message,
       "Here is a list of the commands and what they do",
       helpMessage,
-      "blue"
+      "blue",
     );
   },
 };
@@ -96,7 +97,7 @@ commands["report"] = {
         message,
         "Missing permissions",
         "You don't have the sufficient role to report someone",
-        "red"
+        "red",
       );
     }
 
@@ -108,7 +109,7 @@ commands["report"] = {
         message,
         `Looks like you forgot who to report, who do you want to report. @ him please.`,
         delay,
-        true
+        true,
       );
 
       reported_user = getUserFromMention(who_answer.content);
@@ -131,7 +132,7 @@ commands["report"] = {
           client,
           message,
           `Do you confirm you want to report ${reported_user.username}, this will be his 1st offense`,
-          delay
+          delay,
         );
 
         level = 1;
@@ -140,7 +141,7 @@ commands["report"] = {
           client,
           message,
           `Do you confirm you want to report ${reported_user.username}, this will be his 2nd offense`,
-          delay
+          delay,
         );
 
         level = 2;
@@ -149,7 +150,7 @@ commands["report"] = {
           client,
           message,
           `Do you confirm you want to report ${reported_user.username}, this will be his 3nd and last offense`,
-          delay
+          delay,
         );
 
         level = 3;
@@ -173,8 +174,8 @@ commands["report"] = {
               .setTitle("Reported user")
               .setDescription(
                 String(
-                  `<@${reported_user.id}> has been reported by the peacekeepers and is now **warned**. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`
-                )
+                  `<@${reported_user.id}> has been reported by the peacekeepers and is now **warned**. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`,
+                ),
               )
               .setColor(15158332)
               .setTimestamp(new Date())
@@ -196,8 +197,8 @@ commands["report"] = {
               .setTitle("Reported user")
               .setDescription(
                 String(
-                  `<@${reported_user.id}> has been reported by the peacekeepers and is now **flagged**, the 2nd strike. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`
-                )
+                  `<@${reported_user.id}> has been reported by the peacekeepers and is now **flagged**, the 2nd strike. The third report results in an automatic kick from the server\n\n**__The reason for the report is:__**\n${reason}`,
+                ),
               )
               .setColor(15158332)
               .setTimestamp(new Date())
@@ -211,7 +212,7 @@ commands["report"] = {
               .catch(console.error);
           } else {
             reported_member.kick(
-              `You were kicked from the server due to repeated offenses. Reason for the last report: ${reason}`
+              `You were kicked from the server due to repeated offenses. Reason for the last report: ${reason}`,
             );
 
             const embed = new EmbedBuilder()
@@ -221,8 +222,8 @@ commands["report"] = {
               .setTitle("Reported user")
               .setDescription(
                 String(
-                  `<@${reported_user.id}> has been reported by the peacekeepers and is now **kicked**.\n\n**__The reason for the report is:__**\n${reason}`
-                )
+                  `<@${reported_user.id}> has been reported by the peacekeepers and is now **kicked**.\n\n**__The reason for the report is:__**\n${reason}`,
+                ),
               )
               .setColor(15158332)
               .setTimestamp(new Date())
@@ -265,7 +266,7 @@ commands["cleanse"] = {
         message,
         "Missing permissions",
         "You don't have the sufficient role to cleanse someone",
-        "red"
+        "red",
       );
     }
 
@@ -276,7 +277,7 @@ commands["cleanse"] = {
         message,
         `Looks like you forgot who to cleanse, who do you want to cleanse. @ him please.`,
         delay,
-        true
+        true,
       );
 
       cleansed_user = getUserFromMention(who_answer.content);
@@ -296,7 +297,7 @@ commands["cleanse"] = {
           client,
           message,
           `Do you confirm you want to cleanse ${cleansed_user.username}, he is currently at his 1st offense and will be cleansed of all negative roles`,
-          delay
+          delay,
         );
 
         level = 1;
@@ -305,7 +306,7 @@ commands["cleanse"] = {
           client,
           message,
           `Do you confirm you want to cleanse ${cleansed_user.username}, he is currently at his 2nd offense and will be downgraded to the 1st offense`,
-          delay
+          delay,
         );
 
         level = 2;
@@ -329,8 +330,8 @@ commands["cleanse"] = {
               .setTitle("Cleansed user")
               .setDescription(
                 String(
-                  `<@${cleansed_user.id}> was cleansed by the peacekeepers and is now free of all the negative roles`
-                )
+                  `<@${cleansed_user.id}> was cleansed by the peacekeepers and is now free of all the negative roles`,
+                ),
               )
               .setColor(3066993)
               .setTimestamp(new Date())
@@ -351,8 +352,8 @@ commands["cleanse"] = {
               .setTitle("Cleansed user")
               .setDescription(
                 String(
-                  `<@${cleansed_user.id}> was cleansed by the peacekeepers and is now back to the **warned** role.`
-                )
+                  `<@${cleansed_user.id}> was cleansed by the peacekeepers and is now back to the **warned** role.`,
+                ),
               )
               .setColor(3066993)
               .setTimestamp(new Date())
@@ -440,7 +441,7 @@ commands["modregister"] = {
         message,
         "Cannot register your mod",
         `<@${message.author.id}>, to register a mod you must give a name, a link and optionally a description for the mod.`,
-        "red"
+        "red",
       );
     }
 
@@ -454,7 +455,7 @@ commands["modregister"] = {
       message,
       "Thanks for registering a new mod",
       `<@${message.author.id}> has registered the mod ${args[0]}. It will be added to the database after a Peacekeeper has validater the request`,
-      "blue"
+      "blue",
     );
   },
 };
@@ -472,13 +473,13 @@ commands["modrequests"] = {
         message,
         "Missing permissions",
         "You don't have the sufficient role to view the pending requests",
-        "red"
+        "red",
       );
     }
 
     if (!args.length) {
       const pending_requests = Array.from(mod_requests.entries()).map(
-        ([name, { link }]) => `**${name}**: ${link}`
+        ([name, { link }]) => `**${name}**: ${link}`,
       );
 
       if (!pending_requests.length) {
@@ -487,7 +488,7 @@ commands["modrequests"] = {
           message,
           "No pending requests left",
           "No pending requests left",
-          "red"
+          "red",
         );
       }
 
@@ -496,7 +497,7 @@ commands["modrequests"] = {
         message,
         "Here is a list of all the pending requests i have",
         pending_requests.join("\n") || "",
-        "green"
+        "green",
       );
     } else if (args.length == 1) {
       const pending_request = mod_requests.get(args[0]);
@@ -510,7 +511,7 @@ commands["modrequests"] = {
           `**link**: ${pending_request.link}`,
           `**description**: ${pending_request.description}`,
         ].join("\n"),
-        "green"
+        "green",
       );
     } else {
       const pending_request = mod_requests.get(args[0]);
@@ -522,7 +523,7 @@ commands["modrequests"] = {
           message,
           "Cannot accept pending request",
           `There is no pending request for ${args[0]}`,
-          "red"
+          "red",
         );
       }
 
@@ -538,7 +539,7 @@ commands["modrequests"] = {
           message,
           "Pending request accepted",
           `The mod **${args[0]}** was accepted and has been added to the database`,
-          "green"
+          "green",
         );
       }
 
@@ -547,7 +548,7 @@ commands["modrequests"] = {
         message,
         "Pending request denied",
         `The mod **${args[0]}** was denied and has been removed from the requests`,
-        "red"
+        "red",
       );
     }
   },
@@ -566,7 +567,7 @@ commands["mods"] = {
           message,
           "No mod found",
           `There is no mod with the name ${search}`,
-          "red"
+          "red",
         );
       }
 
@@ -581,12 +582,12 @@ commands["mods"] = {
         message,
         "Here is the information i have about the mod",
         mod_information,
-        "green"
+        "green",
       );
     } else if (arg === "search") {
       const mods = Array.from(registered_mods).filter(
         ([name, { link, description }]) =>
-          search.some((s) => name.includes(s) || description.includes(s))
+          search.some((s) => name.includes(s) || description.includes(s)),
       );
 
       consume(
@@ -594,7 +595,7 @@ commands["mods"] = {
         message,
         "Here is the information i have about the mod. (descriptions removed)",
         mods.map(([_, mod]) => `**__${mod.name}__** - ${mod.link}`).join("\n"),
-        "green"
+        "green",
       );
     } else {
       const mods = Array.from(registered_mods);
@@ -605,7 +606,7 @@ commands["mods"] = {
           message,
           "Here is a list of all the mods i know. (descriptions removed)",
           "No registered mod yet, use the `$modregister` command to add one",
-          "red"
+          "red",
         );
       }
 
@@ -614,7 +615,7 @@ commands["mods"] = {
         message,
         "Here is a list of all the mods i know. (descriptions removed)",
         mods.map(([_, mod]) => `**__${mod.name}__** - ${mod.link}`).join("\n"),
-        "green"
+        "green",
       );
     }
   },
@@ -633,7 +634,7 @@ commands["modremove"] = {
         message,
         "Missing permissions",
         "You don't have the sufficient role to remove a mod",
-        "red"
+        "red",
       );
     }
 
@@ -645,7 +646,7 @@ commands["modremove"] = {
         message,
         "No mod found",
         `No mod found with the name ${name}`,
-        "red"
+        "red",
       );
     }
 
@@ -658,7 +659,7 @@ commands["modremove"] = {
       message,
       "Mod removed",
       `the mod **${name}** was removed from the database`,
-      "green"
+      "green",
     );
   },
 };
@@ -680,7 +681,7 @@ commands["say"] = {
         message,
         "Invalid arguments",
         `you must provide a channel id and a message`,
-        "red"
+        "red",
       );
     }
 
@@ -698,7 +699,7 @@ commands["say"] = {
         message,
         "Unknown channel",
         `no channel exists with the id ${channel_id}`,
-        "red"
+        "red",
       );
     }
   },
@@ -721,7 +722,7 @@ commands["announce"] = {
         message,
         "Invalid arguments",
         `you must provide a channel id and a message`,
-        "red"
+        "red",
       );
     }
 
@@ -744,7 +745,7 @@ commands["announce"] = {
         message,
         "Unknown channel",
         `no channel exists with the id ${channel_id}`,
-        "red"
+        "red",
       );
     }
   },
@@ -767,7 +768,7 @@ commands["poll"] = {
         message,
         "Invalid arguments",
         `you must provide a channel id and a message`,
-        "red"
+        "red",
       );
     }
 
@@ -794,7 +795,7 @@ commands["poll"] = {
         message,
         "Unknown channel",
         `no channel exists with the id ${channel_id}`,
-        "red"
+        "red",
       );
     }
   },
@@ -825,7 +826,7 @@ commands["order66"] = {
         message,
         "Missing permissions",
         "You don't have the sufficient role to remove a mod",
-        "red"
+        "red",
       );
     }
 
@@ -837,7 +838,7 @@ commands["order66"] = {
         message,
         "Missing parameter",
         "You must pass as a second parameter the ID of the starting point for the deletion",
-        "red"
+        "red",
       );
     }
 
@@ -852,13 +853,13 @@ commands["order66"] = {
                 message,
                 "Unknown channel",
                 `no channel exists with the id ${channel_id}`,
-                "red"
-              )
+                "red",
+              ),
             );
 
     const gif_message = await channel
       .send(
-        "https://tenor.com/view/execute-order66-order66-66-palpatine-star-wars-gif-20468321"
+        "https://tenor.com/view/execute-order66-order66-66-palpatine-star-wars-gif-20468321",
       )
       .catch((e) =>
         consume(
@@ -866,8 +867,8 @@ commands["order66"] = {
           message,
           "Error while sending a funny gif message",
           e,
-          "red"
-        )
+          "red",
+        ),
       );
 
     const end_message_param = Boolean(end_message_id)
@@ -881,7 +882,7 @@ commands["order66"] = {
         ...end_message_param,
       })
       .catch((e) =>
-        consume(client, message, "Error while fetching the messages", e, "red")
+        consume(client, message, "Error while fetching the messages", e, "red"),
       );
 
     if (end_message_id) {
@@ -905,8 +906,8 @@ commands["order66"] = {
             message,
             "Error while deleting the gif message",
             e,
-            "red"
-          )
+            "red",
+          ),
         );
 
       await message
@@ -917,8 +918,8 @@ commands["order66"] = {
             message,
             "Error while deleting the command message",
             e,
-            "red"
-          )
+            "red",
+          ),
         );
     }
   },
@@ -967,7 +968,7 @@ client.on("messageCreate", async (message: Message) => {
           message,
           "Error",
           `error when running command \`${command}\`: ${err}`,
-          "red"
+          "red",
         );
       }
     }
@@ -977,14 +978,14 @@ client.on("messageCreate", async (message: Message) => {
       message,
       "Error",
       `no such command \`${command}\``,
-      "red"
+      "red",
     );
   }
 
   /**
    * listen if the bot can answer with a listener
    */
-  if (!message.author.username.includes("Caretaker")) {
+  if (!isBot(message)) {
     if (
       message?.member?.roles?.cache.some((r) => r.id == SILENCED_ROLE_ID) ??
       false
