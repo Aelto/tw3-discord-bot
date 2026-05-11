@@ -6,6 +6,9 @@ const jail_1 = require("../jail");
 const caches_1 = require("./caches");
 const constants_1 = require("../../constants");
 const reputation_1 = require("./reputation");
+const deferred_set_1 = require("../../datatypes/deferred-set");
+const discord_utils_1 = require("../../discord_utils");
+const message_deletion_alert_debouncer = new deferred_set_1.DeferredSet(2, 60 * 5);
 async function antiSpamOnMessage(client, message) {
     caches_1.REPUTATION_CACHE.cleanupAntispamMessages();
     const author_member = message.member || message.guild.members.cache.get(message.author.id);
@@ -18,7 +21,7 @@ async function antiSpamOnMessage(client, message) {
     }
     const jailed_user = jail_1.JAIL.get_user(message);
     if (jailed_user !== null) {
-        message.delete().catch(console.error);
+        (0, discord_utils_1.deleteMessage)(message);
         (0, logging_1.log_message_from_jailed)(client, message, jailed_user);
         return;
     }
@@ -35,7 +38,7 @@ async function handleNewReputation(client, author, message, antispam, pending) {
     const previous_tendency = previous?.tendency ?? 0;
     const previous_reputation = previous?.reputation ?? 10;
     if (previous_reputation < 0) {
-        message.delete().catch(console.error);
+        (0, discord_utils_1.deleteMessage)(message);
         return;
     }
     caches_1.REPUTATION_CACHE.setMessageCache(author.id, antispam);
@@ -46,9 +49,18 @@ async function handleNewReputation(client, author, message, antispam, pending) {
     }
     if (antispam.reputation > 0) {
         // as reputation decreases, the threshold for the deletion of messages decreases
-        if (antispam.tendency < Math.min(antispam.reputation * -1, -3)) {
-            message.delete().catch(console.error);
+        const threshold_max = -3;
+        const threshold_min = -6;
+        const threshold = antispam.reputation * -1;
+        const threshold_bound = Math.min(threshold_max, Math.max(threshold_min, threshold));
+        if (antispam.tendency < threshold_bound) {
+            (0, discord_utils_1.deleteMessage)(message);
             (0, logging_1.log_reputation_message_deleted)(client, author, message, pending);
+            // perform a debounced alert to the user about why the message(s)
+            // are being deleted.
+            message_deletion_alert_debouncer.set(author.id, () => {
+                (0, logging_1.log_inform_user_message_deleted)(author, message, pending);
+            });
         }
     }
     else {
@@ -63,6 +75,6 @@ function deleteRecentMessagesFromUser(id) {
         if (!message) {
             continue;
         }
-        message.delete().catch(console.error);
+        (0, discord_utils_1.deleteMessage)(message);
     }
 }

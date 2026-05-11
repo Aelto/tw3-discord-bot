@@ -1,5 +1,6 @@
 import { Client, GuildMember, Message } from "discord.js";
 import {
+  log_inform_user_message_deleted,
   log_message_from_jailed,
   log_reputation,
   log_reputation_message_deleted,
@@ -11,6 +12,10 @@ import { REPUTATION_CACHE, RECENT_MESSAGES } from "./caches";
 import { ADMIN_ROLE_ID, BOT_ID, WELCOME_CHANNEL_ID } from "../../constants";
 import { MESSAGE_REPUTATION_CALCULATOR } from "./reputation";
 import { MessagePendingReputation } from "./reputation/pending_reputation";
+import { DeferredSet } from "../../datatypes/deferred-set";
+import { deleteMessage } from "../../discord_utils";
+
+const message_deletion_alert_debouncer = new DeferredSet(2, 60 * 5);
 
 export async function antiSpamOnMessage(client: Client, message: Message) {
   REPUTATION_CACHE.cleanupAntispamMessages();
@@ -30,7 +35,7 @@ export async function antiSpamOnMessage(client: Client, message: Message) {
 
   const jailed_user = JAIL.get_user(message);
   if (jailed_user !== null) {
-    message.delete().catch(console.error);
+    deleteMessage(message);
     log_message_from_jailed(client, message, jailed_user);
     return;
   }
@@ -60,7 +65,7 @@ async function handleNewReputation(
   const previous_reputation = previous?.reputation ?? 10;
 
   if (previous_reputation < 0) {
-    message.delete().catch(console.error);
+    deleteMessage(message);
     return;
   }
 
@@ -76,9 +81,20 @@ async function handleNewReputation(
 
   if (antispam.reputation > 0) {
     // as reputation decreases, the threshold for the deletion of messages decreases
-    if (antispam.tendency < Math.min(antispam.reputation * -1, -3)) {
-      message.delete().catch(console.error);
+    const threshold_max = -3;
+    const threshold_min = -6;
+    const threshold = antispam.reputation * -1;
+    const threshold_bound = Math.min(threshold_max, Math.max(threshold_min, threshold));
+
+    if (antispam.tendency < threshold_bound) {
+      deleteMessage(message);
       log_reputation_message_deleted(client, author, message, pending);
+
+      // perform a debounced alert to the user about why the message(s)
+      // are being deleted.
+      message_deletion_alert_debouncer.set(author.id, () => {
+        log_inform_user_message_deleted(author, message, pending);
+      });
     }
   } else {
     const restricted_user = JAIL.restrict_message(message);
@@ -97,6 +113,6 @@ function deleteRecentMessagesFromUser(id: GuildMember["id"]) {
       continue;
     }
 
-    message.delete().catch(console.error);
+    deleteMessage(message);
   }
 }

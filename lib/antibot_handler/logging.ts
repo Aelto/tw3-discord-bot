@@ -75,7 +75,7 @@ export async function log_new_active_user(
   last_message_sent: string,
   last_channel_id: string,
   previous_messages: string[]
-) {
+): Promise<Message> {
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId(`active_user_allow;${id}`)
@@ -91,7 +91,7 @@ export async function log_new_active_user(
     .map((m) => "```" + m + "```")
     .join("\n");
 
-  await get_channel_log(client)
+  return await get_channel_log(client)
     .send({
       content: `<@${id}> has no role yet and has just recently started posting messages, the most recent one being in <#${last_channel_id}>. What would you like to do?\n\n__**Messages history**__:\n${message_history}`,
       components: [row],
@@ -126,11 +126,32 @@ export async function log_reputation_message_deleted(
   message: Message,
   pending: MessagePendingReputation
 ) {
-  await get_channel_log(client).send(
-    `A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+  const id = author.id;
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`active_user_reset_reputation;${id}`)
+      .setLabel("Reset reputation")
+      .setStyle(ButtonStyle.Secondary),
   );
 
+  await get_channel_log(client).send({
+    content: `A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
+    components: [row]
+  });
+
   get_channel_log(client).send(pending.toString());
+}
+
+export async function log_inform_user_message_deleted(
+  author: GuildMember,
+  message: Message,
+  pending: MessagePendingReputation
+) {
+  await message.channel.send(
+    `<@${author.id}>, your recent message(s) were deleted as they were detected as potential spam. If you think this is a false positive and your message is legitimate, please wait a few seconds and send it again **but** make sure to avoid pinging too many people, sending too many links, or too many messages in a short amount of time.\n\nDepending on how many of your messages were flagged recently, it is possible that you may be unable to send anything in the next 10 minutes, however it should resolve itself automatically after that delay!\n\nYou can also find a breakdown of why the message flagged as spam below:`
+  );
+
+  message.channel.send(pending.toString());
 }
 
 export async function log_reputation_user_shutdown(

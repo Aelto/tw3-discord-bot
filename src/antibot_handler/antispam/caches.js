@@ -48,7 +48,7 @@ class AntiSpamMessageCache {
         }
     }
     isAuthorIdValid(id) {
-        return id.length > 0;
+        return typeof id === "string" && id.length > 0;
     }
 }
 exports.REPUTATION_CACHE = new AntiSpamMessageCache();

@@ -8,6 +8,7 @@ exports.log_new_active_user = log_new_active_user;
 exports.log_new_active_user_allowed = log_new_active_user_allowed;
 exports.log_reputation = log_reputation;
 exports.log_reputation_message_deleted = log_reputation_message_deleted;
+exports.log_inform_user_message_deleted = log_inform_user_message_deleted;
 exports.log_reputation_user_shutdown = log_reputation_user_shutdown;
 exports.log_message_from_jailed = log_message_from_jailed;
 exports.log_invite_created = log_invite_created;
@@ -70,7 +71,7 @@ async function log_new_active_user(client, id, last_message_sent, last_channel_i
     const message_history = [...previous_messages, last_message_sent]
         .map((m) => "```" + m + "```")
         .join("\n");
-    await get_channel_log(client)
+    return await get_channel_log(client)
         .send({
         content: `<@${id}> has no role yet and has just recently started posting messages, the most recent one being in <#${last_channel_id}>. What would you like to do?\n\n__**Messages history**__:\n${message_history}`,
         components: [row],
@@ -86,8 +87,20 @@ async function log_reputation(client, author, message, pending) {
     get_channel_log(client).send(pending.toString());
 }
 async function log_reputation_message_deleted(client, author, message, pending) {
-    await get_channel_log(client).send(`A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``);
+    const id = author.id;
+    const row = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
+        .setCustomId(`active_user_reset_reputation;${id}`)
+        .setLabel("Reset reputation")
+        .setStyle(discord_js_1.ButtonStyle.Secondary));
+    await get_channel_log(client).send({
+        content: `A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
+        components: [row]
+    });
     get_channel_log(client).send(pending.toString());
+}
+async function log_inform_user_message_deleted(author, message, pending) {
+    await message.channel.send(`<@${author.id}>, your recent message(s) were deleted as they were detected as potential spam. If you think this is a false positive and your message is legitimate, please wait a few seconds and send it again **but** make sure to avoid pinging too many people, sending too many links, or too many messages in a short amount of time.\n\nDepending on how many of your messages were flagged recently, it is possible that you may be unable to send anything in the next 10 minutes, however it should resolve itself automatically after that delay!\n\nYou can also find a breakdown of why the message flagged as spam below:`);
+    message.channel.send(pending.toString());
 }
 async function log_reputation_user_shutdown(client, author, message, jailed_user) {
     const row = new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()

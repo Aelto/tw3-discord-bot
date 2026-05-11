@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RestrictedUser = void 0;
 const caches_1 = require("./antispam/caches");
+const discord_utils_1 = require("../discord_utils");
 const { SHUT_ROLE, BASIC_ROLE } = require("../constants");
 class RestrictedUser {
     original_message;
@@ -23,7 +24,7 @@ class RestrictedUser {
         this.creation_date = new Date();
         this.unique_id = `${this.user.id}-${message.id}-${Math.random()}`;
         this.restrict_user();
-        message.delete().catch(console.error);
+        (0, discord_utils_1.deleteMessage)(message);
     }
     get_unique_id() {
         return this.unique_id;

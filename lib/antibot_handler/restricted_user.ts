@@ -1,5 +1,6 @@
 import { Message, TextChannel, GuildMember } from "discord.js";
 import { REPUTATION_CACHE } from "./antispam/caches";
+import { deleteMessage } from "../discord_utils";
 const { SHUT_ROLE, BASIC_ROLE } = require("../constants");
 
 export class RestrictedUser {
@@ -26,7 +27,7 @@ export class RestrictedUser {
     this.unique_id = `${this.user.id}-${message.id}-${Math.random()}`;
 
     this.restrict_user();
-    message.delete().catch(console.error);
+    deleteMessage(message);
   }
 
   get_unique_id() {

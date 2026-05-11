@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+import { deleteMessage } from "../discord_utils";
 
 module.exports = function consumeCommand(
   client,
@@ -10,7 +11,7 @@ module.exports = function consumeCommand(
 ) {
   const deleted_promise = keep_original_message
     ? Promise.resolve()
-    : message.delete();
+    : deleteMessage(message);
 
   deleted_promise
     .then((msg) => {
@@ -74,7 +75,7 @@ module.exports = function consumeCommand(
         .catch(console.error)
         .then((msg) => {
           setTimeout(() => {
-            msg.delete().catch((error) => console.log(error));
+            deleteMessage(msg);
           }, 1 * 60 * 1000);
         });
     });

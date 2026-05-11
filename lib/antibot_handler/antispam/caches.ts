@@ -64,7 +64,7 @@ class AntiSpamMessageCache {
   }
 
   private isAuthorIdValid(id: CacheId): boolean {
-    return id.length > 0;
+    return typeof id === "string" && id.length > 0;
   }
 }
 

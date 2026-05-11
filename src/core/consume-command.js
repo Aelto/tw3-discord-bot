@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const discord_utils_1 = require("../discord_utils");
 module.exports = function consumeCommand(client, message, title, output, color = "default", keep_original_message = false) {
     const deleted_promise = keep_original_message
         ? Promise.resolve()
-        : message.delete();
+        : (0, discord_utils_1.deleteMessage)(message);
     deleted_promise
         .then((msg) => {
         let embedColor = 0;
@@ -59,7 +60,7 @@ module.exports = function consumeCommand(client, message, title, output, color =
             .catch(console.error)
             .then((msg) => {
             setTimeout(() => {
-                msg.delete().catch((error) => console.log(error));
+                (0, discord_utils_1.deleteMessage)(msg);
             }, 1 * 60 * 1000);
         });
     });

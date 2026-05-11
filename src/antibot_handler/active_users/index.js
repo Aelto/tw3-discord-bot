@@ -6,6 +6,7 @@ const cache_1 = require("./cache");
 const active_user_1 = require("./active_user");
 const logging_1 = require("../logging");
 const discord_utils_1 = require("../../discord_utils");
+const caches_1 = require("../antispam/caches");
 const { WELCOME_CHANNEL_ID } = require("../../constants");
 function activeUserDetectionOnMessage(message, client) {
     if (!isNewActiveUser(message)) {
@@ -42,6 +43,12 @@ async function activeUserInteractionHandler(interaction, client) {
         const user = cache_1.default.getMember(member_id);
         if (user) {
             user.increaseHitGoal(client);
+        }
+    }
+    else if (interaction.customId.startsWith("active_user_reset_reputation;")) {
+        const [id, member_id] = interaction.customId.split(";");
+        if (member_id) {
+            caches_1.REPUTATION_CACHE.resetReputationByauthorId(member_id);
         }
     }
 }

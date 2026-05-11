@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const logging_1 = require("./antibot_handler/logging");
+const discord_utils_1 = require("./discord_utils");
 const { THREAD_CHANNEL_ID, THREAD_CHANNEL_ROLE_ID } = require("./constants");
 const NO_THREAD_MESSAGE = "Thank you";
 const defer_channels = new Map();
@@ -75,14 +77,15 @@ module.exports = async function thread_channel_handler(message, client) {
     if (message.channel.id !== THREAD_CHANNEL_ID) {
         return;
     }
-    // when the message if from the bot
+    // when the message is from the bot
     if (message.author.id === client.user.id) {
         return;
     }
     const author_member = message.guild.members.cache.get(message.author.id);
     const has_thread_channel_role = author_member && author_member.roles.cache.has(THREAD_CHANNEL_ROLE_ID);
     if (!has_thread_channel_role) {
-        await message.delete().catch(console.error);
+        await (0, discord_utils_1.deleteMessage)(message);
+        (0, logging_1.get_channel_log)(client).send(`<@${message.author.id}> tried to send a message in <#${THREAD_CHANNEL_ID}> but lacked the roles, the message was deleted:\n\n\`\`\`${message.content}\`\`\``);
         return;
     }
     if (message.content
@@ -95,7 +98,7 @@ module.exports = async function thread_channel_handler(message, client) {
         if (some_defered_channel) {
             const { bot_message = null } = defer_channels.get(author_id);
             if (bot_message !== null) {
-                bot_message.delete().catch(console.error);
+                (0, discord_utils_1.deleteMessage)(bot_message);
             }
         }
         return;

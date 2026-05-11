@@ -19,7 +19,7 @@ export class DeferredSet<Key, Accumulator> {
 
   public set(
     id: Key,
-    action: (acc?: Accumulator) => void,
+    action: (acc?: Accumulator) => Accumulator | undefined,
     // runs if this action get delayed by another call to `set` with the same id
     on_debounce?: (acc?: Accumulator) => Accumulator
   ) {
@@ -48,7 +48,11 @@ export class DeferredSet<Key, Accumulator> {
     this.debounce_buffer.set(
       id,
       setTimeout(() => {
-        action(accumulator);
+        const new_accumulator = action(accumulator);
+        if (new_accumulator) {
+          this.debounce_accumulators.set(id, new_accumulator);
+        }
+
         this.debounce_buffer.delete(id);
         this.debounce_actions.delete(id);
 

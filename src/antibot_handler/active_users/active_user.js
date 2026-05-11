@@ -4,7 +4,7 @@ exports.NewActiveUser = void 0;
 const logging_1 = require("../logging");
 const deferred_set_1 = require("../../datatypes/deferred-set");
 const { BASIC_ROLE } = require("../../constants");
-const debouncer = new deferred_set_1.DeferredSet(60, 0);
+const debouncer = new deferred_set_1.DeferredSet(30, 30);
 /**
  * Represent a new but active user that may require some attention to get his
  * basic roles set up.
@@ -15,6 +15,7 @@ class NewActiveUser {
     member;
     last_message_sent;
     last_channel_id;
+    previous_log;
     /**
      * represents the amount of messages since the member has been created noticed
      */
@@ -45,11 +46,23 @@ class NewActiveUser {
     }
     onHitGoalAchieved(client) {
         if (this.last_message_sent) {
-            debouncer.set(this.member.id, (debounced_messages) => (0, logging_1.log_new_active_user)(client, this.member.id, this.last_message_sent, this.last_channel_id, debounced_messages || []), (acc) => [...(acc || []), this.last_message_sent]);
+            debouncer.set(this.member.id, (debounced_messages) => {
+                this.sendLog(client, debounced_messages);
+                return debounced_messages;
+            }, (acc) => [...(acc || []), this.last_message_sent]);
         }
     }
     allow_user() {
         this.member.roles.add(BASIC_ROLE).catch(console.error);
+    }
+    async sendLog(client, debounced_messages) {
+        if (this.previous_log && this.previous_log.deletable) {
+            this.previous_log.delete().catch(console.error);
+        }
+        const message = await (0, logging_1.log_new_active_user)(client, this.member.id, this.last_message_sent, this.last_channel_id, debounced_messages);
+        if (message) {
+            this.previous_log = message;
+        }
     }
     setLastMessageSent(content, channel_id) {
         this.last_message_sent = content;

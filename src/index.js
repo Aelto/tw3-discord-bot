@@ -5,6 +5,7 @@ const active_users_1 = require("./antibot_handler/active_users");
 const listen_1 = require("./commands/listen");
 const antibot_handler_1 = require("./antibot_handler");
 const constants_1 = require("./constants");
+const discord_utils_1 = require("./discord_utils");
 const is_bot_1 = require("./core/is-bot");
 const Discord = require("discord.js");
 const fs = require("fs");
@@ -414,7 +415,7 @@ commands["say"] = {
         try {
             const channel = await client.channels.fetch(channel_id);
             const text = words.join(" ");
-            message.delete();
+            (0, discord_utils_1.deleteMessage)(message);
             channel.send(text).catch(console.error);
         }
         catch (err) {
@@ -445,7 +446,7 @@ commands["announce"] = {
                 .setDescription(String(text))
                 .setColor(0)
                 .setTimestamp(new Date());
-            message.delete();
+            (0, discord_utils_1.deleteMessage)(message);
             channel.send({ embeds: [embed] }).catch(console.error);
         }
         catch (err) {
@@ -478,7 +479,7 @@ commands["poll"] = {
                 channel.send(line).catch(console.error);
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }
-            message.delete();
+            (0, discord_utils_1.deleteMessage)(message);
         }
         catch (err) {
             consume(client, message, "Unknown channel", `no channel exists with the id ${channel_id}`, "red");
@@ -589,7 +590,7 @@ client.on("messageCreate", async (message) => {
     if (!(0, is_bot_1.isBot)(message)) {
         if (message?.member?.roles?.cache.some((r) => r.id == constants_1.SILENCED_ROLE_ID) ??
             false) {
-            await message.delete().catch(console.error);
+            await (0, discord_utils_1.deleteMessage)(message);
             return;
         }
         (0, listen_1.listenForMessage)(message);

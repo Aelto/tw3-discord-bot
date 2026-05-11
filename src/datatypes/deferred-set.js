@@ -35,7 +35,10 @@ class DeferredSet {
             this.debounce_actions.set(id, on_debounce);
         }
         this.debounce_buffer.set(id, setTimeout(() => {
-            action(accumulator);
+            const new_accumulator = action(accumulator);
+            if (new_accumulator) {
+                this.debounce_accumulators.set(id, new_accumulator);
+            }
             this.debounce_buffer.delete(id);
             this.debounce_actions.delete(id);
             // disable similar actions
