@@ -5,7 +5,7 @@ import { AntispamMessage } from "./types";
 type CacheId = Message["author"]["id"];
 
 class AntiSpamMessageCache {
-  private messages_by_author_id: Map<CacheId, AntispamMessage>;
+  private messages_by_author_id: Map<CacheId, AntispamMessage> = new Map();
 
   private last_cleanup: number = Date.now();
   public cleanupAntispamMessages() {

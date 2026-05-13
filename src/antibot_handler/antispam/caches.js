@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RECENT_MESSAGES = exports.REPUTATION_CACHE = void 0;
 const fifo_queue_1 = require("../../datatypes/fifo-queue");
 class AntiSpamMessageCache {
-    messages_by_author_id;
+    messages_by_author_id = new Map();
     last_cleanup = Date.now();
     cleanupAntispamMessages() {
         const now = Date.now();
