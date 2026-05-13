@@ -5,7 +5,10 @@ import { DeferredSet } from "../../datatypes/deferred-set";
 const { BASIC_ROLE } = require("../../constants");
 
 type DebouncedAccumulatedData = Array<string>;
-const debouncer = new DeferredSet<GuildMember["id"], DebouncedAccumulatedData>(30, 30);
+const debouncer = new DeferredSet<GuildMember["id"], DebouncedAccumulatedData>(
+  30,
+  30,
+);
 
 /**
  * Represent a new but active user that may require some attention to get his
@@ -60,11 +63,14 @@ export class NewActiveUser {
       debouncer.set(
         this.member.id,
         (debounced_messages?: DebouncedAccumulatedData) => {
-          this.sendLog(client, debounced_messages);
+          this.sendLog(client, debounced_messages || []);
 
           return debounced_messages;
         },
-        (acc?: DebouncedAccumulatedData) => [...(acc || []), this.last_message_sent]
+        (acc?: DebouncedAccumulatedData) => [
+          ...(acc || []),
+          this.last_message_sent,
+        ],
       );
     }
   }
@@ -73,10 +79,9 @@ export class NewActiveUser {
     this.member.roles.add(BASIC_ROLE).catch(console.error);
   }
 
-
   async sendLog(client, debounced_messages: DebouncedAccumulatedData) {
     if (this.previous_log && this.previous_log.deletable) {
-      this.previous_log.delete().catch(console.error)
+      this.previous_log.delete().catch(console.error);
     }
 
     const message = await log_new_active_user(
@@ -84,7 +89,7 @@ export class NewActiveUser {
       this.member.id,
       this.last_message_sent,
       this.last_channel_id,
-      debounced_messages
+      debounced_messages,
     );
 
     if (message) {

@@ -36,7 +36,7 @@ export async function log_restrict(client, restricted_user) {
     new ButtonBuilder()
       .setCustomId(`ban_user;${restricted_user.get_unique_id()}`)
       .setLabel("Ban")
-      .setStyle(ButtonStyle.Danger)
+      .setStyle(ButtonStyle.Danger),
   );
 
   const message = await get_channel_log(client)
@@ -74,7 +74,7 @@ export async function log_new_active_user(
   id: string,
   last_message_sent: string,
   last_channel_id: string,
-  previous_messages: string[]
+  previous_messages: string[],
 ): Promise<Message> {
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
@@ -84,7 +84,7 @@ export async function log_new_active_user(
     new ButtonBuilder()
       .setCustomId(`active_user_postpone;${id}`)
       .setLabel("Wait 3 more messages")
-      .setStyle(ButtonStyle.Secondary)
+      .setStyle(ButtonStyle.Secondary),
   );
 
   const message_history = [...previous_messages, last_message_sent]
@@ -107,14 +107,14 @@ export async function log_reputation(
   client: Client,
   author: GuildMember,
   message: AntispamMessage,
-  pending: MessagePendingReputation
+  pending: MessagePendingReputation,
 ) {
   const rounded_reputation = Math.floor(
-    Math.floor(message.reputation * 10) * 0.1
+    Math.floor(message.reputation * 10) * 0.1,
   );
 
   await get_channel_log(client).send(
-    `<@${author.id}>, <#${message.channel_id}>, reputation: ${rounded_reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``
+    `<@${author.id}>, <#${message.channel_id}>, reputation: ${rounded_reputation}, tendency: ${message.tendency}\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
   );
 
   get_channel_log(client).send(pending.toString());
@@ -124,7 +124,7 @@ export async function log_reputation_message_deleted(
   client: Client,
   author: GuildMember,
   message: Message,
-  pending: MessagePendingReputation
+  pending: MessagePendingReputation,
 ) {
   const id = author.id;
   const row = new ActionRowBuilder().addComponents(
@@ -136,7 +136,7 @@ export async function log_reputation_message_deleted(
 
   await get_channel_log(client).send({
     content: `A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
-    components: [row]
+    components: [row],
   });
 
   get_channel_log(client).send(pending.toString());
@@ -145,10 +145,10 @@ export async function log_reputation_message_deleted(
 export async function log_inform_user_message_deleted(
   author: GuildMember,
   message: Message,
-  pending: MessagePendingReputation
+  pending: MessagePendingReputation,
 ) {
   await message.channel.send(
-    `<@${author.id}>, your recent message(s) were deleted as they were detected as potential spam. If you think this is a false positive and your message is legitimate, please wait a few seconds and send it again **but** make sure to avoid pinging too many people, sending too many links, or too many messages in a short amount of time.\n\nDepending on how many of your messages were flagged recently, it is possible that you may be unable to send anything in the next 10 minutes, however it should resolve itself automatically after that delay!\n\nYou can also find a breakdown of why the message flagged as spam below:`
+    `<@${author.id}>, your recent message(s) were deleted as they were detected as potential spam. If you think this is a false positive and your message is legitimate, please wait a few seconds and send it again **but** make sure to avoid pinging too many people, sending too many links, or too many messages in a short amount of time.\n\nDepending on how many of your messages were flagged recently, it is possible that you may be unable to send anything in the next 10 minutes, however it should resolve itself automatically after that delay!\n\nYou can also find a breakdown of why the message flagged as spam below:`,
   );
 
   message.channel.send(pending.toString());
@@ -158,7 +158,7 @@ export async function log_reputation_user_shutdown(
   client: Client,
   author: GuildMember,
   message: Message,
-  jailed_user: RestrictedUser
+  jailed_user: RestrictedUser,
 ) {
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
@@ -168,7 +168,7 @@ export async function log_reputation_user_shutdown(
     new ButtonBuilder()
       .setCustomId(`ban_user;${jailed_user.unique_id}`)
       .setLabel("Ban")
-      .setStyle(ButtonStyle.Secondary)
+      .setStyle(ButtonStyle.Secondary),
   );
 
   get_channel_log(client).send({
@@ -180,7 +180,7 @@ export async function log_reputation_user_shutdown(
 export async function log_message_from_jailed(
   client: Client,
   message: Message,
-  jailed_user: RestrictedUser
+  jailed_user: RestrictedUser,
 ) {
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
@@ -190,7 +190,7 @@ export async function log_message_from_jailed(
     new ButtonBuilder()
       .setCustomId(`ban_user;${jailed_user.unique_id}`)
       .setLabel("Ban")
-      .setStyle(ButtonStyle.Secondary)
+      .setStyle(ButtonStyle.Secondary),
   );
 
   get_channel_log(client).send({
@@ -202,18 +202,18 @@ export async function log_message_from_jailed(
 export async function log_invite_created(
   client: Client,
   user: User,
-  channel: Channel
+  channel: Channel,
 ) {
   get_channel_log(client).send(
-    `Member <@${user.id}> created an invite for <#${channel.id}>`
+    `Member <@${user.id}> created an invite for <#${channel.id}>`,
   );
 }
 
 export async function log_invite_from_non_hunter(
   client: Client,
-  member: GuildMember
+  member: GuildMember,
 ) {
   get_channel_log(client).send(
-    `Member <@${member.id}> created an invite but was lacking the basic roles, invite was automatically deleted.`
+    `Member <@${member.id}> created an invite but was lacking the basic roles, invite was automatically deleted.`,
   );
 }

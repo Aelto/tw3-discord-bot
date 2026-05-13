@@ -47,9 +47,12 @@ class NewActiveUser {
     onHitGoalAchieved(client) {
         if (this.last_message_sent) {
             debouncer.set(this.member.id, (debounced_messages) => {
-                this.sendLog(client, debounced_messages);
+                this.sendLog(client, debounced_messages || []);
                 return debounced_messages;
-            }, (acc) => [...(acc || []), this.last_message_sent]);
+            }, (acc) => [
+                ...(acc || []),
+                this.last_message_sent,
+            ]);
         }
     }
     allow_user() {

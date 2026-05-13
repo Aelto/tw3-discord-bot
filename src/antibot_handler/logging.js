@@ -94,7 +94,7 @@ async function log_reputation_message_deleted(client, author, message, pending) 
         .setStyle(discord_js_1.ButtonStyle.Secondary));
     await get_channel_log(client).send({
         content: `A recent message from <@${author.id}> in <#${message.channelId}> was deleted. **Reason**: Negative reputation tendency.\n\n**Message**:\n\`\`\`${message.content}\`\`\``,
-        components: [row]
+        components: [row],
     });
     get_channel_log(client).send(pending.toString());
 }
