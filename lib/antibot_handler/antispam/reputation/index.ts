@@ -3,7 +3,7 @@ import { AntispamMessage, messageToAntiSpamMessage } from "../types";
 import { BaseMessageReputationRule } from "./rule";
 import { MessagePendingReputation } from "./pending_reputation";
 import { RoleDetection } from "./rules/1-roles";
-import { SpamDeltaDetection } from "./rules/6-multichannel";
+import { SpamDeltaDetection } from "./rules/6-0-multichannel";
 import { SameContentDetection } from "./rules/2-same-content";
 import { MentionsDetection } from "./rules/5-mentions";
 import { LinkDetection } from "./rules/0-links";
@@ -35,7 +35,7 @@ class MessageReputationCalculator {
 
   calculateReputation(
     message: Message,
-    author_member: GuildMember
+    author_member: GuildMember,
   ): [AntispamMessage, MessagePendingReputation] {
     const author = message.author?.id;
     const pending = new MessagePendingReputation();
@@ -50,7 +50,7 @@ class MessageReputationCalculator {
     // NOTE: use the current reputation for building the new object:
     const current = messageToAntiSpamMessage(
       message,
-      previous?.reputation ?? 10
+      previous?.reputation ?? 10,
     );
 
     const delta = current.timestamp - (previous?.timestamp ?? 0);
