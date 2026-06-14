@@ -11,6 +11,7 @@ import { FirstMessageDetection } from "./rules/3-first-message";
 import { ScamKeywordsDetection } from "./rules/7-scam_keywords";
 import { PositiveGainsDetection } from "./rules/8-positive_gains";
 import { REPUTATION_CACHE } from "../caches";
+import { AttachmentsDetection } from "./rules/6-1-images-only";
 
 class MessageReputationCalculator {
   rules: BaseMessageReputationRule[];
@@ -27,6 +28,7 @@ class MessageReputationCalculator {
       new FirstMessageDetection(),
       new MentionsDetection(),
       new SpamDeltaDetection(),
+      new AttachmentsDetection(),
       new ScamKeywordsDetection(),
 
       new PositiveGainsDetection(),
