@@ -4,7 +4,7 @@ exports.MESSAGE_REPUTATION_CALCULATOR = void 0;
 const types_1 = require("../types");
 const pending_reputation_1 = require("./pending_reputation");
 const _1_roles_1 = require("./rules/1-roles");
-const _6_multichannel_1 = require("./rules/6-multichannel");
+const _6_0_multichannel_1 = require("./rules/6-0-multichannel");
 const _2_same_content_1 = require("./rules/2-same-content");
 const _5_mentions_1 = require("./rules/5-mentions");
 const _0_links_1 = require("./rules/0-links");
@@ -12,6 +12,7 @@ const _3_first_message_1 = require("./rules/3-first-message");
 const _7_scam_keywords_1 = require("./rules/7-scam_keywords");
 const _8_positive_gains_1 = require("./rules/8-positive_gains");
 const caches_1 = require("../caches");
+const _6_1_images_only_1 = require("./rules/6-1-images-only");
 class MessageReputationCalculator {
     rules;
     constructor() {
@@ -24,7 +25,8 @@ class MessageReputationCalculator {
             new _2_same_content_1.SameContentDetection(),
             new _3_first_message_1.FirstMessageDetection(),
             new _5_mentions_1.MentionsDetection(),
-            new _6_multichannel_1.SpamDeltaDetection(),
+            new _6_0_multichannel_1.SpamDeltaDetection(),
+            new _6_1_images_only_1.AttachmentsDetection(),
             new _7_scam_keywords_1.ScamKeywordsDetection(),
             new _8_positive_gains_1.PositiveGainsDetection(),
         ];

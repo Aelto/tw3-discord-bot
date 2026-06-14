@@ -6,7 +6,7 @@ import {
 import { BaseMessageReputationRule } from "../rule";
 import { AntispamMessage } from "../../types";
 
-export class SpamDeltaDetection extends BaseMessageReputationRule {
+export class AttachmentsDetection extends BaseMessageReputationRule {
   process(
     message: Message,
     current: AntispamMessage,

@@ -4,6 +4,7 @@ exports.ScamKeywordsDetection = void 0;
 const pending_reputation_1 = require("../pending_reputation");
 const rule_1 = require("../rule");
 const scam_words = [
+    "bro",
     "steam",
     "telegram",
     "hours",
