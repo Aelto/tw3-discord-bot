@@ -23,12 +23,20 @@ export class AttachmentsDetection extends BaseMessageReputationRule {
       ]);
 
     const message_is_empty = message.content.trim().length < 5;
-    const powered_attachments_count = Math.pow(message.attachments.size, 1.25);
+    const powered_attachments_count = Math.round(
+      Math.pow(message.attachments.size, 1.25),
+    );
 
     pending.append_if(
       message.attachments.size > 0,
       "Message contains attachments",
       message.attachments.size * -0.5,
+    );
+
+    pending.append_if(
+      !has_role && message.attachments.size > 1,
+      "User has no role and message contains 2 or more attachments",
+      -1 * powered_attachments_count,
     );
 
     pending.append_if(

@@ -13,15 +13,16 @@ export class MentionsDetection extends BaseMessageReputationRule {
     current: AntispamMessage,
     previous: AntispamMessage | null,
     author_member: GuildMember,
-    pending: MessagePendingReputation
+    pending: MessagePendingReputation,
   ): void {
     const has_role = Boolean(
-      pending.getVar(ReputationRuleResultKey.AuthorHasRole)
+      pending.getVar(ReputationRuleResultKey.AuthorHasRole),
     );
 
-    const mentions_count = message.mentions.users.size;
-    const mentions_someone = mentions_count > 0;
+    const mentions_count =
+      message.mentions.users.size + message.mentions.roles.size;
     const mentions_everyone = message.mentions.everyone;
+    const mentions_someone = mentions_count > 0 || mentions_everyone;
 
     pending.setVar(ReputationRuleResultKey.MentionsSomeone, mentions_someone);
 
@@ -38,14 +39,14 @@ export class MentionsDetection extends BaseMessageReputationRule {
 
         pending.append(
           "Message mentions one or more persons (author has a role)",
-          amount * change
+          amount * change,
         );
       } else {
         const change = -1.0;
 
         pending.append(
           "Message mentions one or more persons (author DOES NOT have a role)",
-          amount * change
+          amount * change,
         );
       }
     }
