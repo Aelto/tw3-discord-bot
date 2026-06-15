@@ -6,9 +6,9 @@ const rule_1 = require("../rule");
 class MentionsDetection extends rule_1.BaseMessageReputationRule {
     process(message, current, previous, author_member, pending) {
         const has_role = Boolean(pending.getVar(pending_reputation_1.ReputationRuleResultKey.AuthorHasRole));
-        const mentions_count = message.mentions.users.size;
-        const mentions_someone = mentions_count > 0;
+        const mentions_count = message.mentions.users.size + message.mentions.roles.size;
         const mentions_everyone = message.mentions.everyone;
+        const mentions_someone = mentions_count > 0 || mentions_everyone;
         pending.setVar(pending_reputation_1.ReputationRuleResultKey.MentionsSomeone, mentions_someone);
         if (mentions_everyone) {
             pending.append("Message mentions everyone", -100);
