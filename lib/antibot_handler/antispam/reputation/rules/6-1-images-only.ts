@@ -33,21 +33,30 @@ export class AttachmentsDetection extends BaseMessageReputationRule {
       message.attachments.size * -0.5,
     );
 
+    // the punishment for people without roles is high because a role is needed
+    // to post images. Anyone bypassing that limit (somehow) deserves to lose a
+    // lot of reputation.
     pending.append_if(
       !has_role && message.attachments.size > 1,
       "User has no role and message contains 2 or more attachments",
-      -1 * powered_attachments_count,
+      -3 * powered_attachments_count,
     );
 
     pending.append_if(
       !has_role && message.attachments.size > 0,
       "User has no role and message contains attachments",
-      -1 * powered_attachments_count,
+      -3 * powered_attachments_count,
     );
 
     pending.append_if(
       message_is_empty && message.attachments.size > 0,
       "message is short or empty but contains attachments",
+      -1 * powered_attachments_count,
+    );
+
+    pending.append_if(
+      !has_role && message_is_empty && message.attachments.size > 0,
+      "user has no role and message is short or empty but contains attachments",
       -1 * powered_attachments_count,
     );
 
