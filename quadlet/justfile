@@ -1,15 +1,28 @@
-container := "tw3discordbot"
+ctnr := "tw3discordbot"
 
 # installs the `.container` file on the current host
-container-release: dockerfile-build podman-save
+container-release: dockerfile-build podman-save deploy-locally systemd-reload systemd-start-service
+
+systemd-reload:
+  sudo systemctl daemon-reload
+
+systemd-start-service:
+  sudo systemctl start {{ctnr}}.service
+
+systemd-stop-service:
+  sudo systemctl stop {{ctnr}}.service
+
+deploy-locally:
+  sudo mkdir -p /etc/containers/systemd/{{ctnr}}
+  sudo cp {{ctnr}}.container {{ctnr}}-image.tar {{ctnr}}.env /etc/containers/systemd/{{ctnr}}/
 
 dockerfile-build:
-    podman build .. --platform linux/arm64 --no-cache --rm --tag {{container}} -f ./{{container}}.Dockerfile
+    podman build .. --platform linux/arm64 --no-cache --rm --tag {{ctnr}} -f ./{{ctnr}}.Dockerfile
 
 # saves the docker image into a `.tar` file
 podman-save:
-    rm -f ./{{container}}-image.tar
-    podman save --output ./{{container}}-image.tar localhost/{{container}}
+    rm -f ./{{ctnr}}-image.tar
+    podman save --output ./{{ctnr}}-image.tar localhost/{{ctnr}}
 
 release-make-zip:
-  zip -r {{container}}.release.zip {{container}}.container {{container}}.env {{container}}-image.tar
+  zip -r {{ctnr}}.release.zip {{ctnr}}.container {{ctnr}}.env {{ctnr}}-image.tar
