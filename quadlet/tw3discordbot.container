@@ -8,6 +8,8 @@ After=network-online.target
 ContainerName=tw3discordbot
 Image=docker-archive:/etc/containers/systemd/tw3discordbot/tw3discordbot-image.tar
 
+Mount=type=bind,source=./listeners-database.json,destination=/app/listeners-database.json
+
 # Network options
 PublishPort=3000:3000
 
