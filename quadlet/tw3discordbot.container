@@ -1,0 +1,18 @@
+# refer to the justfile in the current folder to see how to deploy it.
+[Unit]
+Description=TW3 Discord Bot
+After=network-online.target
+
+[Container]
+# Base options
+ContainerName=tw3discordbot
+Image=docker-archive:/etc/containers/systemd/tw3discordbot/tw3discordbot-image.tar
+
+# Network options
+PublishPort=3000:3000
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

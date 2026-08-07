@@ -1,0 +1,15 @@
+container := "tw3discordbot"
+
+# installs the `.container` file on the current host
+container-release: dockerfile-build podman-save
+
+dockerfile-build:
+    podman build .. --platform linux/arm64 --no-cache --rm --tag {{container}} -f ./{{container}}.Dockerfile
+
+# saves the docker image into a `.tar` file
+podman-save:
+    rm -f ./{{container}}-image.tar
+    podman save --output ./{{container}}-image.tar localhost/{{container}}
+
+release-make-zip:
+  zip -r {{container}}.release.zip {{container}}.container {{container}}.env {{container}}-image.tar

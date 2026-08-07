@@ -17,7 +17,7 @@ function saveListenersDatabase() {
   fs.writeFileSync(
     "listeners-database.json",
     JSON.stringify(listeners_database, null, "  "),
-    { encoding: "utf-8" }
+    { encoding: "utf-8" },
   );
 }
 
@@ -28,10 +28,13 @@ function getListenersDatabase() {
     return;
   }
 
-  const content = JSON.parse(
-    fs.readFileSync("listeners-database.json", "utf-8")
-  );
+  const raw_content = fs.readFileSync("listeners-database.json", "utf-8");
 
+  if (raw_content.trim().length <= 0) {
+    return;
+  }
+
+  const content = JSON.parse(raw_content);
   listeners_database = ListenersDatabase.fromJson(content);
 }
 
@@ -51,7 +54,7 @@ export function addListenCommands(commands) {
           message,
           "Missing permissions",
           "You don't have the sufficient role to add a listener",
-          "red"
+          "red",
         );
       }
 
@@ -71,7 +74,7 @@ export function addListenCommands(commands) {
             message,
             "Incorrect parameters",
             `The JSON object you passed appears to be incorrect:\n\`\`\`${err}\`\`\``,
-            "red"
+            "red",
           );
         }
       } else {
@@ -83,7 +86,7 @@ export function addListenCommands(commands) {
               message,
               `Please provide an answer for the listener. You have 300 seconds to answer`,
               300,
-              true
+              true,
             );
 
             listener_object.answers.push(answer.content);
@@ -93,7 +96,7 @@ export function addListenCommands(commands) {
               message,
               `Do you wish to continue adding answers? (Yes/No)`,
               60,
-              true
+              true,
             );
 
             if (!yes_or_no.content.toLowerCase().startsWith("y")) {
@@ -109,7 +112,7 @@ export function addListenCommands(commands) {
               `Please provide a match for the listener. You have 300 seconds to answer. Examples:\n` +
                 "`rer bible` or even a regex `/rer.*bible/`",
               300,
-              true
+              true,
             );
 
             listener_object.matches.push(answer.content);
@@ -119,7 +122,7 @@ export function addListenCommands(commands) {
               message,
               `Do you wish to continue adding matches? (Yes/No)`,
               60,
-              true
+              true,
             );
 
             if (!yes_or_no.content.toLowerCase().startsWith("y")) {
@@ -135,7 +138,7 @@ export function addListenCommands(commands) {
               `What do you wish the probability to be. You have 300 seconds to answer.\n` +
                 `It must be a number between 0 and 1 where 0 is 0% and 1 is 100%`,
               300,
-              true
+              true,
             );
 
             listener_object.probability = Number(answer.content);
@@ -148,7 +151,7 @@ export function addListenCommands(commands) {
               message,
               `Do you wish the listener to trigger only in direct conversations with the bot? You have 60 seconds to answer (Yes/No)`,
               60,
-              true
+              true,
             );
 
             listener_object.only_direct_conversation = answer.content
@@ -174,7 +177,7 @@ export function addListenCommands(commands) {
         "Listener added",
         `A listener was created with the following matches:\n - ${listener_object.matches
           .map((m) => `\`${m}\``)
-          .join("\n - ")}`
+          .join("\n - ")}`,
       );
     },
   };
@@ -195,7 +198,7 @@ export function addListenCommands(commands) {
           message,
           "Missing permissions",
           "You don't have the sufficient role to remove a listener",
-          "red"
+          "red",
         );
       }
 
@@ -205,7 +208,7 @@ export function addListenCommands(commands) {
           message,
           "Missing parameter",
           "Please provide the id of a listener, to get its id use the `find-listeners` command",
-          "red"
+          "red",
         );
       }
 
@@ -220,7 +223,7 @@ export function addListenCommands(commands) {
         message,
         "Listener removed",
         `Listener with previous id \`${id}\` was removed`,
-        "green"
+        "green",
       );
     },
   };
@@ -236,7 +239,7 @@ export function addListenCommands(commands) {
      */
     command: (client, message, args) => {
       const listeners = new Set(
-        listeners_database.getListenersThatMatch(args.join(" "))
+        listeners_database.getListenersThatMatch(args.join(" ")),
       );
 
       const filtered_listeners = listeners_database.listeners
@@ -252,13 +255,13 @@ export function addListenCommands(commands) {
                   `**#${index}**:\n\`\`\`${JSON.stringify(
                     listener,
                     null,
-                    " "
-                  )}\`\`\``
+                    " ",
+                  )}\`\`\``,
               )
               .join("\n"),
             {
               split: true,
-            }
+            },
           )
           .catch(console.error);
       }
@@ -286,7 +289,7 @@ export async function listenForMessage(message: Message) {
   };
 
   const found_listeners = listeners_database.getListenersThatMatch(
-    message.content
+    message.content,
   );
 
   for (const listener of found_listeners) {
