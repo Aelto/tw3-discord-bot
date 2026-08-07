@@ -14,7 +14,7 @@ systemd-stop-service:
 
 deploy-locally:
   sudo mkdir -p /etc/containers/systemd/{{ctnr}}
-  sudo cp {{ctnr}}.container {{ctnr}}-image.tar {{ctnr}}.env /etc/containers/systemd/{{ctnr}}/
+  sudo cp {{ctnr}}.container {{ctnr}}-image.tar /etc/containers/systemd/{{ctnr}}/
 
 dockerfile-build:
     podman build .. --platform linux/arm64 --no-cache --rm --tag {{ctnr}} -f ./{{ctnr}}.Dockerfile
@@ -25,4 +25,4 @@ podman-save:
     podman save --output ./{{ctnr}}-image.tar localhost/{{ctnr}}
 
 release-make-zip:
-  zip -r {{ctnr}}.release.zip {{ctnr}}.container {{ctnr}}.env {{ctnr}}-image.tar
+  zip -r {{ctnr}}.release.zip {{ctnr}}.container {{ctnr}}-image.tar
