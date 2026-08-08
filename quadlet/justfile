@@ -1,16 +1,13 @@
 ctnr := "tw3discordbot"
 
 # installs the `.container` file on the current host
-container-release: dockerfile-build podman-save deploy-locally systemd-reload systemd-start-service
+container-release: dockerfile-build podman-save deploy-locally systemd-reload systemd-restart-service
 
 systemd-reload:
   sudo systemctl daemon-reload
 
-systemd-start-service:
-  sudo systemctl start {{ctnr}}.service
-
-systemd-stop-service:
-  sudo systemctl stop {{ctnr}}.service
+systemd-restart-service:
+  sudo systemctl restart {{ctnr}}.service
 
 deploy-locally:
   sudo mkdir -p /etc/containers/systemd/{{ctnr}}
