@@ -12,6 +12,7 @@ Mount=type=bind,source=./listeners-database.json,destination=/app/listeners-data
 
 # Network options
 PublishPort=3000:3000
+Network=host
 
 [Service]
 Restart=on-failure
