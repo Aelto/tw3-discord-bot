@@ -5,6 +5,7 @@ import {
 } from "../pending_reputation";
 import { BaseMessageReputationRule } from "../rule";
 import { AntispamMessage } from "../../types";
+import { SCREENSHOT_CHANNEL_ID } from "../../../../constants";
 
 export class AttachmentsDetection extends BaseMessageReputationRule {
   process(
@@ -27,10 +28,14 @@ export class AttachmentsDetection extends BaseMessageReputationRule {
       Math.pow(message.attachments.size, 1.25),
     );
 
+    const multiplier = message.channel.id === SCREENSHOT_CHANNEL_ID
+      ? 0.5
+      : 1.0;
+
     pending.append_if(
       message.attachments.size > 0,
       "Message contains attachments",
-      message.attachments.size * -0.5,
+      message.attachments.size * -0.5 * multiplier,
     );
 
     // the punishment for people without roles is high because a role is needed
@@ -39,31 +44,31 @@ export class AttachmentsDetection extends BaseMessageReputationRule {
     pending.append_if(
       !has_role && message.attachments.size > 1,
       "User has no role and message contains 2 or more attachments",
-      -3 * powered_attachments_count,
+      -3 * powered_attachments_count * multiplier,
     );
 
     pending.append_if(
       !has_role && message.attachments.size > 0,
       "User has no role and message contains attachments",
-      -3 * powered_attachments_count,
+      -3 * powered_attachments_count * multiplier,
     );
 
     pending.append_if(
       message_is_empty && message.attachments.size > 0,
       "message is short or empty but contains attachments",
-      -1 * powered_attachments_count,
+      -1 * powered_attachments_count * multiplier,
     );
 
     pending.append_if(
       !has_role && message_is_empty && message.attachments.size > 0,
       "user has no role and message is short or empty but contains attachments",
-      -1 * powered_attachments_count,
+      -1 * powered_attachments_count * multiplier,
     );
 
     pending.append_if(
       mentions_someone && message.attachments.size > 0,
       "mentions someone and message contains attachments",
-      -1 * powered_attachments_count,
+      -1 * powered_attachments_count * multiplier,
     );
   }
 }
